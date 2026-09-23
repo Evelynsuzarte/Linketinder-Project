@@ -1,7 +1,8 @@
 package controller
 
-import model.PessoaJuridica
-import model.PessoaFisica
+import model.Empresa
+import model.Candidato
+import model.Vaga
 
 class LinketinderController {
 
@@ -25,40 +26,50 @@ class LinketinderController {
     }
 
 
-    def listagemCandidatos(List<PessoaFisica> candidatos){
+    def listagemCandidatos(List<Candidato> candidatos){
         for (p in candidatos){
             println(p.exibirDados())
         }
     }
 
-    def listagemEmpresas(List<PessoaJuridica> empresas){
+    def listagemEmpresas(List<Empresa> empresas){
         for (p in empresas){
             println(p.exibirDados())
         }
     }
 
-    def novoCandidato(List<PessoaFisica> candidatos, String nome, String email,
+    def novoCandidato(List<Candidato> candidatos, String nome, String email,
                       String cpf, int idade, String estado, String cep,
                       String descricao, List<String> competencias){
-        PessoaFisica candidato = new PessoaFisica(nome:nome, email: email, descricao: descricao, cep:cep,
+        Candidato candidato = new Candidato(nome:nome, email: email, descricao: descricao, cep:cep,
                 estado:estado, competencias:competencias,cpf:cpf, idade:idade)
         candidatos<<candidato
         println ("!!!! Cadastro realizado com sucesso !!!!")
+        return candidatos
+
     }
 
-    def novaEmpresa(List<PessoaJuridica> empresas, String nome, String email,
-                      String cnpj, String estado, String cep,
-                      String descricao, List<String> competencias, String pais){
-        PessoaJuridica empresa = new PessoaJuridica(nome:nome, email: email, descricao: descricao, cep:cep,
+    def novaEmpresa(List<Empresa> empresas, String nome, String email,
+                    String cnpj, String estado, String cep,
+                    String descricao, List<String> competencias, String pais){
+        Empresa empresa = new Empresa(nome:nome, email: email, descricao: descricao, cep:cep,
                 estado:estado, competencias:competencias,cnpj:cnpj,pais:pais)
         empresas.add(empresa)
         println ("!!!! Cadastro realizado com sucesso !!!!")
+        return empresas
     }
 
-    def match(List<PessoaFisica> candidatos, List<PessoaJuridica> empresas, String visao){
+    def novaVaga(List<Vaga> vagas, String nome, Empresa empresa) {
+        Vaga vaga = new Vaga(nome, empresa)
+        vagas.add(vaga)
+        println ("!!!! Vaga cadastrada com sucesso !!!!")
+    }
+
+    def match(List<Candidato> candidatos, List<Empresa> empresas, String visao){
         List<Map> matchesGerais = []
         int nMatch, competenciasCand
         List<Map> resultados = []
+
         if (visao == 'c'){
             for (c in candidatos){
                 resultados = []
@@ -107,12 +118,12 @@ class LinketinderController {
 
     }
 
-    def matchIndividual(List<PessoaFisica> candidatos, List<PessoaJuridica> empresas, String visao, String nome){
+    def matchIndividual(List<Candidato> candidatos, List<Empresa> empresas, String visao, String nome){
         List<Map> resultados = []
         int nMatch
         int competenciasCand, competenciasEmp
         if (visao == 'c'){
-            PessoaFisica candidato = candidatos.find { it.nome == nome }
+            Candidato candidato = candidatos.find { it.nome == nome }
             if (candidato == null){
                 return []
             }
@@ -131,7 +142,7 @@ class LinketinderController {
             }
 
         } else if (visao == 'e'){
-            PessoaJuridica empresa = empresas.find { it.nome == nome }
+            Empresa empresa = empresas.find { it.nome == nome }
             if (empresa == null){
                 return []
             }
@@ -176,5 +187,64 @@ class LinketinderController {
             println("")
         }
     }
+
+    def avaliarVagas(Candidato candidato, List<Vaga> vagas) {
+        Scanner scanner = new Scanner(System.in)
+        List<Vaga> interesse = []
+        println("\n=== BEM-VINDO, ${candidato.nome} ===")
+        println("Encontre sua próxima oportunidade! Digite 'S' para Curtir ou 'N' para Passar.")
+
+        for (vaga in vagas) {
+            println("\n---------------------------------------------------")
+            println("VAGA DISPONÍVEL: ${vaga.nome}")
+            println("Descrição: ${vaga.descricao}")
+            println("---------------------------------------------------")
+
+            print("Tem interesse nesta vaga? (S/N): ")
+            String escolha = scanner.nextLine().toUpperCase()
+
+            if (escolha == 'S') {
+                println("-> Você curtiu a vaga: ${vaga.nome}!")
+                interesse = candidato.getVagasInteresse()
+                interesse<<vaga
+                // TODO: Lógica para salvar o interesse.
+                // Exemplo: candidato.vagasCurtidas.add(vaga)
+                // Se a vaga também já curtiu o candidato, aqui rolaria o "MATCH!"
+            } else {
+                println("-> Vaga ignorada.")
+            }
+        }
+        println("\nVocê já viu todas as vagas disponíveis no momento!")
+    }
+
+
+    def avaliarCandidatos(Empresa empresa, List<Candidato> candidatos) {
+        Scanner scanner = new Scanner(System.in)
+        println("\n=== BEM-VINDO, RECRUTADOR DA ${empresa.nome} ===")
+        println("Encontre talentos! Digite 'S' para Curtir ou 'N' para Passar.")
+
+        for (candidato in candidatos) {
+            println("\n---------------------------------------------------")
+            println("PERFIL ANÔNIMO")
+            println("Idade: ${candidato.idade} anos | Estado: ${candidato.estado}")
+            println("Descrição: ${candidato.descricao}")
+            println("Competências: ${candidato.competencias.join(', ')}")
+            println("---------------------------------------------------")
+
+            print("A empresa tem interesse neste perfil? (S/N): ")
+            String escolha = scanner.nextLine().toUpperCase()
+
+            if (escolha == 'S') {
+                println("-> Você curtiu este perfil!")
+                // TODO: Lógica para salvar o interesse da empresa
+                // Exemplo: empresa.candidatosCurtidos.add(candidato)
+            } else {
+                println("-> Perfil ignorado.")
+            }
+        }
+        println("\nVocê já viu todos os candidatos disponíveis no momento!")
+    }
+
+
 
 }

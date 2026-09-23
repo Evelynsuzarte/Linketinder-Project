@@ -2,9 +2,10 @@ package model;
 import groovy.transform.MapConstructor
 
 @MapConstructor(includeSuperProperties = true)
-class PessoaFisica extends Pessoa{
+class Candidato extends Pessoa{
     String cpf
     int idade
+    List<Vaga> vagasInteresse
 
     def exibirDados() {
         return "Candidato: ${nome} | email: ${email} | Idade: ${idade} | " +

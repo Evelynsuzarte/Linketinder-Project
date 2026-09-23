@@ -2,7 +2,7 @@ package model
 import groovy.transform.MapConstructor
 
 @MapConstructor(includeSuperProperties = true)
-class PessoaJuridica extends Pessoa{
+class Empresa extends Pessoa{
     String cnpj;
     String pais;
 

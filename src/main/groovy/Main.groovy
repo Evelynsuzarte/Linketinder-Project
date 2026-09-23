@@ -1,38 +1,50 @@
 import controller.LinketinderController
-import model.PessoaFisica
-import model.PessoaJuridica
+import model.Candidato
+import model.Empresa
 
 class Main {
     static void main(String[] args) {
-        List<PessoaJuridica> empresas = []
-        List<PessoaFisica> candidatos = []
+        List<Empresa> empresas = []
+        List<Candidato> candidatos = []
+        List<Candidato> vagas = []
         LinketinderController gerenciador = new LinketinderController()
         Scanner scanner = new Scanner(System.in)
         int opcao, idade
         String nome, email, cnpj, cpf, estado, cep, pais, descricao
         List<String> competencias = []
 
-        gerenciador.novoCandidato(candidatos, "Carlos Silva", "carlos.silva@email.com", "123.456.789-00", 28,
+        candidatos = gerenciador.novoCandidato(candidatos, "Carlos Silva", "carlos.silva@email.com", "123.456.789-00", 28,
                 "SP", "01001-000", "Desenvolvedor Java sênior", ["Java", "Groovy", "SQL"])
-        gerenciador.novoCandidato(candidatos, "Ana Costa", "ana.costa@email.com", "987.654.321-11", 24,
+        candidatos = gerenciador.novoCandidato(candidatos, "Ana Costa", "ana.costa@email.com", "987.654.321-11", 24,
                 "RJ", "20020-010", "Designer UX/UI", ["Figma", "Design System", "HTML"])
-        gerenciador.novoCandidato(candidatos, "Bruno Alves", "bruno.a@email.com", "456.123.789-22", 35,
+        candidatos = gerenciador.novoCandidato(candidatos, "Bruno Alves", "bruno.a@email.com", "456.123.789-22", 35,
                 "MG", "30140-050", "Gerente de Projetos", ["Scrum", "Agile", "Jira"])
-        gerenciador.novoCandidato(candidatos, "Mariana Souza", "mari.souza@email.com", "789.456.123-33", 31,
+        candidatos = gerenciador.novoCandidato(candidatos, "Mariana Souza", "mari.souza@email.com", "789.456.123-33", 31,
                 "PR", "80010-000", "Cientista de Dados", ["Python", "Pandas", "SQL"])
-        gerenciador.novoCandidato(candidatos, "Ricardo Lima", "ricardo.l@email.com", "321.654.987-44", 27,
+        candidatos = gerenciador.novoCandidato(candidatos, "Ricardo Lima", "ricardo.l@email.com", "321.654.987-44", 27,
                 "SC", "88010-100", "Dev DevOps", ["Docker", "AWS", "Linux"])
 
-        gerenciador.novaEmpresa(empresas, "Tech Solutions Ltda", "contato@techsolutions.com", "12.345.678/0001-99",
+        empresas = gerenciador.novaEmpresa(empresas, "Tech Solutions Ltda", "contato@techsolutions.com", "12.345.678/0001-99",
                 "SP", "04538-133", "Foco em desenvolvimento web", ["Java", "Node.js", "React"], "Brasil")
-        gerenciador.novaEmpresa(empresas, "Inova Digital", "vagas@inovadigital.com", "98.765.432/0001-88",
+        empresas = gerenciador.novaEmpresa(empresas, "Inova Digital", "vagas@inovadigital.com", "98.765.432/0001-88",
                 "RJ", "22020-001", "Agência de marketing e design", ["Figma", "Photoshop", "HTML"], "Brasil")
-        gerenciador.novaEmpresa(empresas, "Data Corp", "recrutamento@datacorp.com", "45.678.901/0001-77",
+        empresas = gerenciador.novaEmpresa(empresas, "Data Corp", "recrutamento@datacorp.com", "45.678.901/0001-77",
                 "MG", "31150-120", "Consultoria em inteligência de dados", ["Python", "SQL", "Cloud"], "Brasil")
-        gerenciador.novaEmpresa(empresas, "Global Development", "hr@globaldev.com", "23.456.789/0001-66",
+        empresas = gerenciador.novaEmpresa(empresas, "Global Development", "hr@globaldev.com", "23.456.789/0001-66",
                 "SP", "01310-200", "Fábrica de software internacional", ["Java", "Groovy", "SQL"], "Brasil")
-        gerenciador.novaEmpresa(empresas, "Nexus Security", "info@nexussec.com", "34.567.890/0001-55",
+        empresas = gerenciador.novaEmpresa(empresas, "Nexus Security", "info@nexussec.com", "34.567.890/0001-55",
                 "RS", "90010-240", "Segurança da informação e infraestrutura", ["Linux", "Docker", "Python"], "Brasil")
+
+        Empresa techBank = empresas[0] // Tech Solutions
+        Empresa dataCorp = empresas[2] // Data Corp
+        Empresa cloudSolutions = empresas[4] // Nexus Security
+
+        gerenciador.novaVaga(vagas, "Desenvolvedora Java Jr", techBank, "Atuação com APIs REST em Spring Boot e bancos relacionais.")
+        gerenciador.novaVaga(vagas, "Engenheiro de Dados Pleno", dataCorp, "Construção de pipelines de dados em Python e SQL.")
+        gerenciador.novaVaga(vagas, "Desenvolvedora Fullstack", techBank, "Manutenção de microsserviços e interfaces com integração contínua.")
+        gerenciador.novaVaga(vagas, "Analista de DevOps", cloudSolutions, "Gerenciamento de containers Docker e pipelines de CI/CD na AWS.")
+        gerenciador.novaVaga(vagas, "Desenvolvedor Back-end Pleno", cloudSolutions, "Desenvolvimento de microsserviços escaláveis e mensageria com Kafka.")
+        gerenciador.novaVaga(vagas, "Analista de QA / Automação", techBank, "Criação de testes automatizados unitários, de carga e de integração.")
 
         while (true){
             opcao = gerenciador.menu()
@@ -125,22 +137,24 @@ class Main {
                     break;
                 case 6:
                     println("--- MATCH EMPRESA<->CANDIDATO ---")
-                    println("1 - MATCH INDIVIDUAL DA EMPRESA")
-                    println("2 - MATCH GERAL DAS EMPRESAS")
-                    println("==== ESCOLHA")
-                    opcao = scanner.nextLine().toInteger()
-                    if (opcao == 1){
-                        println("--- MATCH INDIVIDUAL DA EMPRESA ---")
-                        println("Digite o nome da empresa")
-                        nome = scanner.nextLine()
 
-                        List<Map> matchs = gerenciador.matchIndividual(candidatos, empresas, "e", nome)
-                        gerenciador.exibirMatchEmpresas(matchs)
-                    } else{
-                        println("--- MATCH GERAL DAS EMPRESA ---")
-                        List<Map> matchs = gerenciador.match(candidatos, empresas, "e")
-                        gerenciador.exibirMatchEmpresas(matchs)
-                    }
+
+//                    println("1 - MATCH INDIVIDUAL DA EMPRESA")
+//                    println("2 - MATCH GERAL DAS EMPRESAS")
+//                    println("==== ESCOLHA")
+//                    opcao = scanner.nextLine().toInteger()
+//                    if (opcao == 1){
+//                        println("--- MATCH INDIVIDUAL DA EMPRESA ---")
+//                        println("Digite o nome da empresa")
+//                        nome = scanner.nextLine()
+//
+//                        List<Map> matchs = gerenciador.matchIndividual(candidatos, empresas, "e", nome)
+//                        gerenciador.exibirMatchEmpresas(matchs)
+//                    } else{
+//                        println("--- MATCH GERAL DAS EMPRESA ---")
+//                        List<Map> matchs = gerenciador.match(candidatos, empresas, "e")
+//                        gerenciador.exibirMatchEmpresas(matchs)
+//                    }
                     break;
                 default:
                     println("Tente novamente. Você digitou errado!")
