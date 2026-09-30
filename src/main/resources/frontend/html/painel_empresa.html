@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/painel_empresa_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cagliostro&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Tilt+Warp&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../../images/logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Cadastro - Linketinder</title>
+</head>
+<body>
+
+<header>
+    <nav>
+        <span><a href="../html/index.html"><img class="logo" src="../../images/logo.png" alt="logo"></a></span>
+        <ul>
+            <li><a href="">Home</a></li>
+            <li><a href="painel_empresa.html">Vagas</a></li>
+            <li><a href="">Perfil</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="painel-empresa">
+        <div class="cabecalho-vagas">
+            <h1>Minhas vagas - Painel de inscrições</h1>
+            <a href="criar-vaga.html" class="btn-criar-vaga">+ Criar Nova Vaga</a>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- SEÇÃO DO GRÁFICO (TypeScript + Chart.js ou similar)      -->
+        <!-- ======================================================== -->
+        <div class="painel-metricas">
+            <h2>Visão Geral: candidatos por competência</h2>
+            <p>Análise de quantas pessoas possuem cada skill (ex: Python, Java, etc.)</p>
+
+            <div class="grafico-container">
+                <!-- O TypeScript vai mirar neste ID para injetar e desenhar o gráfico de barras -->
+                <canvas id="graficoCompetencias"></canvas>
+            </div>
+        </div>
+
+        <!-- Container onde as vagas serão renderizadas -->
+        <div id="lista-vagas" class="lista-vagas">
+
+            <!-- ========================================== -->
+            <!-- INÍCIO DO LOOP DE VAGAS (TypeScript)       -->
+            <!-- Iterar gerando um <article> para cada vaga -->
+            <!-- ========================================== -->
+            <article class="vaga-card">
+                <div class="vaga-detalhes">
+                    <!-- Preencher com os dados da vaga -->
+                    <h2 class="vaga-titulo"></h2>
+                    <p>Descrição: <span class="vaga-descricao"></span></p>
+                    <p>Status: <span class="vaga-status"></span></p>
+                </div>
+
+                <div class="vaga-candidatos">
+                    <p>Candidatos Aplicados</p>
+                    <table class="tabela-candidatos">
+                        <thead>
+                        <tr>
+                            <th>Candidato</th>
+                            <th>Skills (Competências)</th>
+                            <th>Formação</th>
+                            <th>Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- ======================================================== -->
+                        <!-- INÍCIO DO LOOP DE CANDIDATOS (TypeScript)                -->
+                        <!-- Iterar gerando uma <tr> para cada candidato desta vaga   -->
+                        <!-- ======================================================== -->
+                        <tr>
+                            <!-- Preencher com os dados do candidato (mantendo anonimato) -->
+                            <td class="candidato-id"></td>
+                            <td class="candidato-skills"></td>
+                            <td class="candidato-formacao"></td>
+                            <td class="acoes-tabela">
+                                <button class="btn-match">❤️ Match</button>
+                                <button class="btn-recusar">❌ Não Interessado</button>
+                            </td>
+                        </tr>
+                        <!-- ======================================================== -->
+                        <!-- FIM DO LOOP DE CANDIDATOS                                -->
+                        <!-- ======================================================== -->
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+            <!-- ========================================== -->
+            <!-- FIM DO LOOP DE VAGAS                       -->
+            <!-- ========================================== -->
+
+        </div>
+    </section>
+</main>
+
+<footer>
+    <span>Evelyn Suzarte Fernandes - ACZG 2026.2</span>
+</footer>
+
+
+<script src="../js/script.js"></script>
+
+</body>
+</html>

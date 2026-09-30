@@ -34,4 +34,6 @@ class CadastroSpec extends Specification {
         empresas[0].email == "contato@globaltech.com"
         empresas[0].cnpj == "12345678000199"
     }
+
+
 }

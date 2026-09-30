@@ -1,0 +1,224 @@
+/* ==========================================================
+   ACRÉSCIMOS AO style.css  (cole no FINAL do seu arquivo)
+   Não altera: body, header, nav, footer, table, th, td
+   ========================================================== */
+
+/* Espaço para o footer fixo não cobrir o conteúdo */
+main {
+    padding-bottom: 60px;
+}
+
+/* ---------- BOX BRANCO TRANSPARENTE (regra geral) ----------
+   Index (ações + sobre nós), login, cadastro, painéis        */
+.inicio-acoes,
+.inicio-sobre,
+.logar,
+.formulario-adicionar-tarefa,
+.painel-metricas,
+.vaga-card,
+.tabela-container {
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 25px;
+}
+
+/* ---------- INDEX ---------- */
+.inicio-acoes h1 {
+    margin-bottom: 15px;
+}
+
+.inicio-acoes p,
+.inicio-sobre p {
+    line-height: 1.6;
+    font-family: "Calistro", sans-serif;
+}
+
+.inicio-sobre h2 {
+    margin-bottom: 10px;
+}
+
+.botoes-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+/* Links com cara de botão (mesmo visual do <button>) */
+.btn,
+.btn-criar-vaga {
+    display: inline-block;
+    padding: 9px 20px;
+    border-radius: 30px;
+    border: 2px solid #ccc;
+    background-color: #fff;
+    color: rgb(36, 36, 36);
+    text-decoration: none;
+    font-family: "Calistro", sans-serif;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover,
+.btn-criar-vaga:hover,
+.btn-enviar:hover,
+.btn-inscrever:hover {
+    border-color: #00bcd4;
+    color: #00bcd4;
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.7);
+}
+
+/* ---------- LOGIN ---------- */
+.logar {
+    max-width: 500px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.login-informacoes {
+    margin: 20px 0;
+}
+
+/* ---------- FORMULÁRIOS (login e cadastro) ----------
+   No style.css essas classes estavam sem o "." e por isso
+   a regra antiga não funcionava. Aqui está corrigido.      */
+.form-nome,
+.form-email,
+.form-senha,
+.form-descricao,
+.form-cep,
+.form-estado,
+.form-cpf,
+.form-idade,
+.form-cnpj,
+.form-pais {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    align-items: center;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.formulario-login label {
+    font-family: "Calistro", sans-serif;
+    font-weight: 600;
+    color: #4a4a4a;
+}
+
+fieldset {
+    border: 1px solid #7a7a7a;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-family: "Calistro", sans-serif;
+}
+
+fieldset label {
+    margin-right: 15px;
+}
+
+.btn-enviar {
+    margin-top: 10px;
+}
+
+/* ---------- PAINEL DO CANDIDATO ---------- */
+.painel-candidato,
+.painel-empresa {
+    width: 90%;
+    margin: 20px auto;
+}
+
+.cabecalho-painel,
+.cabecalho-vagas {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: "Calistro", sans-serif;
+}
+
+.cabecalho-vagas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.select-filtro {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.acoes-tabela {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.btn-inscrever {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* ---------- PAINEL DA EMPRESA + GRÁFICO ---------- */
+.painel-metricas {
+    margin-bottom: 30px;
+    text-align: center;
+    font-family: "Calistro", sans-serif;
+}
+
+.painel-metricas p {
+    margin-bottom: 15px;
+}
+
+/* A altura (300px) vem do style inline do HTML */
+.grafico-container {
+    position: relative;
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.grafico-container canvas {
+    max-width: 100%;
+}
+
+.lista-vagas {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.vaga-card {
+    font-family: "Calistro", sans-serif;
+}
+
+.vaga-detalhes {
+    margin-bottom: 15px;
+}
+
+.vaga-detalhes p {
+    margin-top: 5px;
+}
+
+.vaga-candidatos > p {
+    font-weight: 600;
+    text-align: center;
+}
+
+.btn-match,
+.btn-recusar {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.btn-match:hover {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.btn-recusar:hover {
+    border-color: #dc3545;
+    color: #dc3545;
+}

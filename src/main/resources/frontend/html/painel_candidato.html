@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/painel_candidato_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cagliostro&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Tilt+Warp&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../../images/logo.png">
+    <title>Cadastro - Linketinder</title>
+</head>
+<body>
+
+<header>
+    <nav>
+        <span><a href="../html/index.html"><img class="logo" src="../../images/logo.png" alt="logo"></a></span>
+        <ul>
+            <li><a href="">Home</a></li>
+            <li><a href="painel_candidato.html">Vagas</a></li>
+            <li><a href="">Perfil</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="painel-candidato">
+        <div class="cabecalho-painel">
+            <h1>Painel de vagas</h1>
+            <p>Encontre a oportunidade ideal ou acompanhe suas candidaturas.</p>
+        </div>
+
+        <div class="filtros-container">
+            <label for="filtro-vagas"><strong>Filtrar por:</strong></label>
+            <select id="filtro-vagas" name="filtro-vagas" class="select-filtro">
+                <option value="novas">Novas vagas disponíveis</option>
+                <option value="cadastradas">Minhas vagas inscritas</option>
+            </select>
+        </div>
+
+        <div class="tabela-container">
+            <table class="tabela-vagas">
+                <thead>
+                <tr>
+                    <th>Cargo</th>
+                    <th>Descrição da Vaga</th>
+                    <th>Competências Exigidas</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody id="lista-vagas-disponiveis">
+                <!-- ======================================================== -->
+                <!-- INÍCIO DO LOOP DE VAGAS (TypeScript)                     -->
+                <!-- Iterar gerando uma <tr> para cada vaga disponível        -->
+                <!-- ======================================================== -->
+                <tr>
+                    <td class="vaga-titulo"></td>
+                    <td class="vaga-descricao"></td>
+                    <td class="vaga-requisitos"></td>
+
+                    <td class="acoes-tabela">
+                        <!-- Exibido quando o filtro for "novas" -->
+                        <button class="btn-inscrever" data-acao="candidatar">Inscrever-se</button>
+
+                        <!-- Exibido quando o filtro for "cadastradas" (adicione 'display: none' no CSS para a classe btn-cancelar por padrão) -->
+                        <button class="btn-cancelar escondido" data-acao="cancelar">Cancelar interesse</button>
+                    </td>
+                </tr>
+                <!-- ======================================================== -->
+                <!-- FIM DO LOOP DE VAGAS                                     -->
+                <!-- ======================================================== -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<footer>
+    <span>Evelyn Suzarte Fernandes - ACZG 2026.2</span>
+</footer>
+<script src="../js/script.js"></script>
+
+</body>
+</html>

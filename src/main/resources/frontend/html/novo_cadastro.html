@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/cadastro_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cagliostro&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Tilt+Warp&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../../images/logo.png">
+    <title>Cadastro - Linketinder</title>
+</head>
+<body>
+
+<header>
+    <nav>
+        <span><a href="../html/index.html"><img class="logo" src="../../images/logo.png" alt="logo"></a></span>
+
+    </nav>
+</header>
+
+<main>
+
+    <section class="adicionar-conta">
+        <h1>Criar conta</h1>
+        <form class="formulario-adicionar-conta">
+            <fieldset class="tipo-conta">
+                <legend> Selecione se você é:</legend>
+                <div>
+                    <input type="radio" id="cadastrocandidato" name="contact" value="email" />
+                    <label for="cadastrocandidato">Candidato</label>
+
+                    <input type="radio" id="cadastroempresa" name="contact" value="phone" />
+                    <label for="cadastroempresa">Empresa</label>
+                </div>
+            </fieldset>
+
+        <div class="cadastro-informacoes">
+            <div class="cadastro-comum">
+                <div class="form-nome">
+                    <label>Nome:</label>
+                    <input type="text" placeholder="Nome">
+                </div>
+                <div class="form-email">
+                    <label>Email:</label>
+                    <input type="email" placeholder="Seu email">
+                </div>
+                <div class="form-descricao">
+                    <label>Descrição curta sobre você:</label>
+                    <textarea placeholder="Digite uma informação sobre sobre você"></textarea>
+                </div>
+                <div class="form-cep">
+                    <label>CEP:</label>
+                    <input type="text">
+                </div>
+                <div>
+                    <div class="form-estado">
+                        <label>Estado:</label>
+                        <select name="estado">
+                            <option value="">Selecione o estado</option>
+                            <option value="AC">Acre</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
+                        </select>
+                </div>
+            </div>
+
+            <div class="cadastro-candidato">
+                <div class="form-cpf">
+                    <label>CPF:</label>
+                    <input type="text" maxlength="11" placeholder="Digite sem pontos e sem hífen">
+                </div>
+                <div class="form-idade">
+                    <label>Idade:</label>
+                    <input type="number" maxlength="2">
+                </div>
+            </div>
+
+
+            <div class="cadastro-empresa">
+                <div class="form-cnpj">
+                    <label>CNPJ:</label>
+                    <input type="text" maxlength="14" placeholder="Digite sem pontos e sem barra.">
+                </div>
+                <div class="form-pais">
+                    <label>País:</label>
+                    <input type="text" placeholder="Descrição da tarefa">
+                </div>
+            </div>
+        </div>
+            <button type="submit" class="btn-enviar">Cadastrar</button>
+        </form>
+    </section>
+
+</main>
+<footer>
+    <span>Evelyn Suzarte Fernandes - ACZG 2026.2</span>
+</footer>
+<script src="../js/script.js"></script>
+
+</body>
+</html>

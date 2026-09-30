@@ -6,6 +6,6 @@ class Vaga {
     List<Candidato> interessados;
     Empresa empresa;
     String descricao;
-
+    List<String> competencias = []
 
 }

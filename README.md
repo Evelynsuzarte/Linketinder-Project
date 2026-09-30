@@ -3,7 +3,7 @@
 Autor: Evelyn Suzarte Fernandes
 
 <div align="center">
-  <img src="src/main/resources/logo.png" alt="Texto Alternativo" width="300">
+  <img src="src/main/resources/images/logo.png" alt="Texto Alternativo" width="300">
 </div>
 
 ## Sobre o projeto

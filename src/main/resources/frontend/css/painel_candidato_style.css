@@ -1,0 +1,225 @@
+/* FIXO */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: grid;
+    overflow-x: hidden;
+    min-height: 100vh;
+    margin: 0;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "cabecalho"
+        "conteudo"
+        "rodape";
+    font-family: "Calistro", sans-serif;
+    font-weight: 400;
+    box-sizing: border-box;
+
+    background-color: rgb(162 194 253);
+}
+
+
+footer {
+    grid-area: rodape;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background-color: #005cc6;
+    color: #ffffff;
+}
+
+header nav {
+    display: flex;
+    grid-area: cabecalho;    /* Ajustado de 'conteudo' para 'cabecalho' para encaixar no seu grid do body */
+    justify-content: center; /* Mudado de 'space-around' para 'center' para centralizar perfeitamente */
+    align-items: center;
+    width: 100%;             /* Trocar 100vw por 100% evita barras de rolagem horizontais quebradas */
+    height: 60px;            /* Adicionado apenas para dar altura à barra azul */
+    padding-top: 15px;       /* Descola o conteúdo do topo da tela */
+    padding-bottom: 15px;
+}
+
+.logo {
+    width: 30%;              /* Mantém o tamanho que você definiu */
+    height: auto;            /* Garante que a imagem não fique esticada ou distorcida */
+    display: block;          /* Transforma em bloco para aceitar margens automáticas */
+    margin: 0 auto;          /* Força o alinhamento centralizado do elemento de imagem */
+
+}
+
+
+
+
+
+
+
+
+
+
+h1{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+
+table {
+    width: 90%;
+    border: 1px solid #7a7a7a;
+    border-collapse: collapse;
+    font-family: "Calistro", sans-serif;
+    margin: 20px auto;
+}
+
+table th {
+    background-color: #192bff;
+    color: #ffffff;
+    padding: 10px;
+    border: 1px solid #7a7a7a;
+    text-align: center;
+}
+
+table td {
+    padding: 10px;
+    border: 1px solid #7a7a7a;
+}
+
+
+button {
+    padding: 9px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 30px;
+    border: 2px solid #ccc;
+    background-color: #fff;
+    transition: all 0.3s ease-in-out;
+    font-family: "Calistro", sans-serif;
+}
+.btn-tarefa {
+    min-width: 200px;
+}
+.btn-tarefa:hover {
+    border-color: #00bcd4;
+    color: #00bcd4;
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.7);
+}
+
+.escondido {
+    display: none;
+}
+
+/* Sugestão de estilo para o botão de cancelar */
+.btn-cancelar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-cancelar:hover {
+    background-color: #c82333;
+}
+
+.btn-main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 15px;
+
+}
+
+header nav {
+    display: flex;
+    grid-area: conteudo;
+    justify-content: space-around;
+    align-items: center;
+    width: 100vw;
+}
+
+ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    list-style: none;
+    width: 25%;
+}
+nav h2 {
+    font-weight: 300;
+}
+
+ul li a {
+    text-decoration: none;
+    color: rgb(36, 36, 36);
+
+}
+
+li a:hover {
+    transform: scale(1.05);
+    border-bottom: 1.3px solid black;
+}
+
+.logo {
+    width: 30%;
+}
+
+
+
+
+/* Estilização do bloco de texto do topo */
+.cabecalho-painel {
+    text-align: center;
+    margin-bottom: 30px; /* Dá um espaço confortável antes de começarem os filtros */
+}
+
+.cabecalho-painel h1 {
+    color: #004aad; /* Usa o azul padrão que você escolheu para a identidade do site */
+    margin-bottom: 5px;
+}
+
+.cabecalho-painel p {
+    color: #555555;
+    font-size: 1.1rem;
+}
+
+/* Alinhamento do bloco de filtros (antigo estilo inline) */
+.filtros-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centraliza o filtro na tela para combinar com o seu layout */
+    gap: 12px;               /* Espaço perfeito entre a palavra 'Filtrar por:' e a caixinha */
+    margin-bottom: 25px;
+}
+
+/* Estilo do texto do Filtro */
+.filtros-container label {
+    font-family: "Calistro", sans-serif;
+    color: #333333;
+}
+
+/* Estilização da caixa de seleção (Select) */
+.select-filtro {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #7a7a7a;
+    background-color: #ffffff;
+    font-family: "Calistro", sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+/* Efeito sutil quando o usuário clica na caixinha de seleção */
+.select-filtro:focus {
+    border-color: #004aad;
+    box-shadow: 0 0 0 2px rgba(0, 74, 173, 0.2);
+}

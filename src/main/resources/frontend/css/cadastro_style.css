@@ -1,0 +1,188 @@
+/* FIXO */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: grid;
+    overflow-x: hidden;
+    min-height: 100vh;
+    margin: 0;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "cabecalho"
+        "conteudo"
+        "rodape";
+    font-family: "Calistro", sans-serif;
+    font-weight: 400;
+    box-sizing: border-box;
+
+    background-image: url('../../images/fundo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    background-color: rgb(162 194 253);
+    background-blend-mode: overlay;
+}
+
+
+footer {
+    grid-area: rodape;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background-color: #005cc6;
+    color: #ffffff;
+}
+
+header nav {
+    display: flex;
+    grid-area: cabecalho;    /* Ajustado de 'conteudo' para 'cabecalho' para encaixar no seu grid do body */
+    justify-content: center; /* Mudado de 'space-around' para 'center' para centralizar perfeitamente */
+    align-items: center;
+    width: 100%;             /* Trocar 100vw por 100% evita barras de rolagem horizontais quebradas */
+    height: 60px;            /* Adicionado apenas para dar altura à barra azul */
+    padding-top: 15px;       /* Descola o conteúdo do topo da tela */
+    padding-bottom: 15px;
+}
+
+.logo {
+    width: 30%;              /* Mantém o tamanho que você definiu */
+    height: auto;            /* Garante que a imagem não fique esticada ou distorcida */
+    display: block;          /* Transforma em bloco para aceitar margens automáticas */
+    margin: 0 auto;          /* Força o alinhamento centralizado do elemento de imagem */
+
+}
+
+/* FIXO */
+
+/*ul {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: space-around;*/
+/*    list-style: none;*/
+/*    width: 25%;*/
+/*}*/
+/*nav h2 {*/
+/*    font-weight: 300;*/
+/*}*/
+
+/*ul li a {*/
+/*    text-decoration: none;*/
+/*    color: rgb(36, 36, 36);*/
+
+/*}*/
+
+/*li a:hover {*/
+/*    transform: scale(1.05);*/
+/*    border-bottom: 1.3px solid black;*/
+/*}*/
+
+
+
+
+
+
+
+
+/* Transforma cada bloco em uma linha de "tabela" com 2 colunas */
+.form-nome,
+.form-email,
+.form-descricao,
+.form-cep,
+.form-estado,
+.form-cpf,
+.form-idade,
+.form-prioridade,
+.form-cnpj,
+.form-pais{
+    display: grid;
+    grid-template-columns: 130px 1fr; /* 1ª coluna fixa para o texto, 2ª coluna ocupa o resto */
+    align-items: center;              /* Alinha verticalmente o texto com o campo */
+    margin-bottom: 15px;              /* Afasta uma linha da outra */
+}
+
+
+input, select, textarea {
+    border-radius: 8px;
+    border: 1px solid #7a7a7a;
+    padding: 6px 10px;
+    font-family: "Calistro", sans-serif;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 9px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 30px;
+    border: 2px solid #ccc;
+    background-color: #fff;
+    transition: all 0.3s ease-in-out;
+    font-family: "Calistro", sans-serif;
+}
+
+
+.formulario-adicionar-conta {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilo do texto (Labels) */
+.formulario-adicionar-conta label {
+    font-family: "Calistro", sans-serif;
+    font-weight: 600;
+    color: #4a4a4a;
+    text-align: left;
+}
+
+.formulario-adicionar-conta textarea {
+    height: 60px;
+    resize: vertical;
+}
+
+.adicionar-conta{
+    padding: 10px;
+    text-align: center;
+}
+
+/* Estilização da área de tipo de conta */
+.tipo-conta {
+    font-family: "Calistro", sans-serif;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 25px auto;      /* Centraliza o bloco inteiro na tela se houver largura fixa */
+    text-align: center;     /* Centraliza o texto do legend e dos labels */
+}
+
+/* Garante o alinhamento centralizado do título do campo */
+.tipo-conta legend {
+    font-weight: 600;
+    padding: 0 10px;
+    font-size: 1.1rem;
+    margin: 0 auto;         /* Centraliza o legend em alguns navegadores */
+}
+
+/* Alinha as opções de seleção (Radio + Texto) exatamente no centro */
+.tipo-conta div {
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente as opções lado a lado */
+    align-items: center;     /* Alinha verticalmente os botões redondos com as palavras */
+    gap: 15px;
+    margin-top: 15px;
+}
+
+/* Mantém o cursor de clique nos textos */
+.tipo-conta label {
+    cursor: pointer;
+    margin-right: 10px;      /* Dá um leve espaço após cada label */
+}
+

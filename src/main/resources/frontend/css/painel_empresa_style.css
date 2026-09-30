@@ -1,0 +1,359 @@
+/* FIXO */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: grid;
+    overflow-x: hidden;
+    min-height: 100vh;
+    margin: 0;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "cabecalho"
+        "conteudo"
+        "rodape";
+    font-family: "Calistro", sans-serif;
+    font-weight: 400;
+    box-sizing: border-box;
+
+    background-color: rgb(162 194 253);
+}
+
+
+footer {
+    grid-area: rodape;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background-color: #005cc6;
+    color: #ffffff;
+}
+
+header nav {
+    display: flex;
+    grid-area: cabecalho;    /* Ajustado de 'conteudo' para 'cabecalho' para encaixar no seu grid do body */
+    justify-content: center; /* Mudado de 'space-around' para 'center' para centralizar perfeitamente */
+    align-items: center;
+    width: 100%;             /* Trocar 100vw por 100% evita barras de rolagem horizontais quebradas */
+    height: 60px;            /* Adicionado apenas para dar altura à barra azul */
+    padding-top: 15px;       /* Descola o conteúdo do topo da tela */
+    padding-bottom: 15px;
+}
+
+.logo {
+    width: 30%;              /* Mantém o tamanho que você definiu */
+    height: auto;            /* Garante que a imagem não fique esticada ou distorcida */
+    display: block;          /* Transforma em bloco para aceitar margens automáticas */
+    margin: 0 auto;          /* Força o alinhamento centralizado do elemento de imagem */
+
+}
+
+h1{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+
+table {
+    width: 90%;
+    border: 1px solid #7a7a7a;
+    border-collapse: collapse;
+    font-family: "Calistro", sans-serif;
+    margin: 20px auto;
+}
+
+table th {
+    background-color: #192bff;
+    color: #ffffff;
+    padding: 10px;
+    border: 1px solid #7a7a7a;
+    text-align: center;
+}
+
+table td {
+    padding: 10px;
+    border: 1px solid #7a7a7a;
+}
+
+
+button {
+    padding: 9px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 30px;
+    border: 2px solid #ccc;
+    background-color: #fff;
+    transition: all 0.3s ease-in-out;
+    font-family: "Calistro", sans-serif;
+}
+.btn-tarefa {
+    min-width: 200px;
+}
+.btn-tarefa:hover {
+    border-color: #00bcd4;
+    color: #00bcd4;
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.7);
+}
+
+.escondido {
+    display: none;
+}
+
+/* Sugestão de estilo para o botão de cancelar */
+.btn-cancelar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-cancelar:hover {
+    background-color: #c82333;
+}
+
+.btn-main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 15px;
+
+}
+
+header nav {
+    display: flex;
+    grid-area: conteudo;
+    justify-content: space-around;
+    align-items: center;
+    width: 100vw;
+}
+
+ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    list-style: none;
+    width: 25%;
+}
+nav h2 {
+    font-weight: 300;
+}
+
+ul li a {
+    text-decoration: none;
+    color: rgb(36, 36, 36);
+
+}
+
+li a:hover {
+    transform: scale(1.05);
+    border-bottom: 1.3px solid black;
+}
+
+.logo {
+    width: 30%;
+}
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   PAINEL DA EMPRESA - IDENTIDADE VISUAL E ESTRUTURA
+   ========================================================================== */
+
+/* Container da página inteira */
+.painel-empresa {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: "Calistro", sans-serif;
+}
+
+/* Cabeçalho do Painel (Título e Botão de Criar Vaga) */
+.cabecalho-vagas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.cabecalho-vagas h1 {
+    color: #004aad;
+    font-family: "Calistro", sans-serif;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+/* Botão + Criar Nova Vaga */
+.btn-criar-vaga {
+    display: inline-block;
+    background-color: #005cc6;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-criar-vaga:hover {
+    background-color: #004aad;
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   SEÇÃO DO GRÁFICO (Chart.js / TypeScript)
+   ========================================================================== */
+.painel-metricas {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 35px;
+}
+
+.painel-metricas h2 {
+    color: #004aad;
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+}
+
+.painel-metricas p {
+    color: #555555;
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+}
+
+.grafico-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* ==========================================================================
+   LISTA DE VAGAS EM CARD (Article)
+   ========================================================================== */
+.lista-vagas {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Caixa Branca do Card de cada Vaga */
+.vaga-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-left: 5px solid #005cc6;
+}
+
+.vaga-detalhes {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eef2f7;
+    padding-bottom: 15px;
+}
+
+.vaga-titulo {
+    color: #333333;
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+}
+
+.vaga-detalhes p {
+    color: #555555;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+.vaga-detalhes span {
+    font-weight: 600;
+    color: #222222;
+}
+
+/* ==========================================================================
+   SUA TABELA MANTIDA (Apenas vinculada à classe .tabela-candidatos)
+   ========================================================================== */
+.vaga-candidatos > p {
+    font-weight: 700;
+    color: #004aad;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    text-align: center; /* Centraliza para combinar com a tabela */
+}
+
+.tabela-candidatos {
+    width: 90%;
+    border: 1px solid #7a7a7a;
+    border-collapse: collapse;
+    font-family: "Calistro", sans-serif;
+    margin: 20px auto;
+}
+
+.tabela-candidatos th {
+    background-color: #192bff;
+    color: #ffffff;
+    padding: 10px;
+    border: 1px solid #7a7a7a;
+    text-align: center;
+}
+
+.tabela-candidatos td {
+    padding: 10px;
+    border: 1px solid #7a7a7a;
+}
+
+/* Elementos internos da tabela (Ações e botões) */
+.acoes-tabela {
+    display: flex;
+    gap: 8px;
+    justify-content: center; /* Centraliza os botões dentro da célula */
+}
+
+.acoes-tabela button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.btn-match {
+    border-color: #ff4a5a !important;
+    color: #ff4a5a;
+}
+
+.btn-match:hover {
+    background-color: #ff4a5a;
+    color: #ffffff;
+}
+
+.btn-recusar {
+    border-color: #7a7a7a !important;
+    color: #7a7a7a;
+}
+
+.btn-recusar:hover {
+    background-color: #7a7a7a;
+    color: #ffffff;
+}
