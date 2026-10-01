@@ -76,3 +76,38 @@ ou aperte no play dentro da IDE desejada.
 ## Como funciona o match
 
 O match compara as competências de um candidato com as competências buscadas por uma empresa (ou vice-versa). Se a quantidade de competências em comum for igual ou maior que "total de competências - 2", o par é considerado um match. Os resultados são ordenados pela quantidade de competências em comum e, no match geral, são exibidos até 3 melhores resultados por candidato/empresa.
+
+
+## 🌐 Versão web (front-end)
+
+Além do CLI, o Linketinder tem uma versão web feita com **HTML, CSS e TypeScript**, sem back-end: os dados ficam salvos no `localStorage` do navegador.
+
+### Páginas
+
+- `index.html`: página inicial.
+- `novo_cadastro.html`: cadastro de candidato ou empresa (os campos mudam conforme o tipo escolhido).
+- `acessar.html`: login por e-mail e senha.
+- `painel_candidato.html`: lista de vagas com filtro entre "Novas vagas" e "Minhas vagas inscritas", com os botões **Inscrever-se** e **Cancelar interesse**.
+- `painel_empresa.html`: vagas da empresa com os candidatos inscritos (anônimos), botões **Match** e **Não Interessado** e um gráfico de candidatos por competência, feito com Chart.js.
+
+### TypeScript
+
+- `storage.ts`: interfaces (`Usuario`, `Candidato`, `Empresa`, `Vaga`), dados fictícios iniciais (3 candidatos, 3 empresas e 9 vagas) e funções de leitura e gravação no `localStorage`. As outras páginas importam este arquivo.
+- `acesso.ts`: valida o login e redireciona para o painel do tipo de usuário.
+- `novo_cadastro.ts`: valida os campos, impede e-mail repetido e salva o novo usuário.
+- `painel_candidato.ts` e `painel_empresa.ts`: desenham as tabelas e o gráfico na tela e tratam os cliques dos botões, salvando as alterações.
+
+O candidato guarda os ids das vagas de interesse (`vagasInteresse`) e a empresa guarda os ids das suas vagas (`vagas`).
+
+### HTML e CSS
+
+- O HTML tem a estrutura fixa de cada página, e as linhas das tabelas e os cards de vagas são criados pelo TypeScript.
+- Cada página tem sua folha de estilo (como `acessar_style.css`, `painel_candidato_style.css` e `painel_empresa_style.css`), com CSS simples e as fontes do Google Fonts (Cagliostro, Josefin Sans e Tilt Warp).
+
+### Como executar
+
+1. Compile o TypeScript: `tsc`.
+2. Sirva a pasta do projeto por um servidor local (Live Server, `npx serve` ou o servidor embutido do IntelliJ), porque os módulos ES não funcionam abrindo o HTML direto.
+3. Abra `index.html` no navegador. Na primeira abertura, os dados fictícios são gravados automaticamente.
+
+Logins de teste: candidato `gabriel@email.com` / `123` e empresa `vagas@techsolutions.com` / `admin`.

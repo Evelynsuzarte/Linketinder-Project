@@ -98,7 +98,8 @@ header nav {
 .form-idade,
 .form-prioridade,
 .form-cnpj,
-.form-pais{
+.form-pais,
+.form-senha{
     display: grid;
     grid-template-columns: 130px 1fr; /* 1ª coluna fixa para o texto, 2ª coluna ocupa o resto */
     align-items: center;              /* Alinha verticalmente o texto com o campo */
@@ -186,3 +187,8 @@ button {
     margin-right: 10px;      /* Dá um leve espaço após cada label */
 }
 
+/* Esconde ambos os blocos específicos na inicialização da página */
+.cadastro-candidato,
+.cadastro-empresa {
+    display: none;
+}

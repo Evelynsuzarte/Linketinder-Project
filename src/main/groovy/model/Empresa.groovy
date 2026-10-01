@@ -5,6 +5,7 @@ import groovy.transform.MapConstructor
 class Empresa extends Pessoa{
     String cnpj;
     String pais;
+    List<Vaga> vagas = []
 
     def exibirDados() {
         return "Empresa: ${nome} | Descricao:${descricao} | Estado: ${estado} | " +

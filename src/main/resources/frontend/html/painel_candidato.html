@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/painel_candidato_style.css">
     <link href="https://fonts.googleapis.com/css2?family=Cagliostro&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Tilt+Warp&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="../../images/logo.png">
-    <title>Cadastro - Linketinder</title>
+    <title>Painel - Linketinder</title>
 </head>
 <body>
 
@@ -16,7 +16,8 @@
         <ul>
             <li><a href="">Home</a></li>
             <li><a href="painel_candidato.html">Vagas</a></li>
-            <li><a href="">Perfil</a></li>
+            <li><a href="painel_candidato.html">Perfil</a></li>
+            <li><a href="index.html">Logoff</a></li>
         </ul>
     </nav>
 </header>
@@ -41,33 +42,13 @@
                 <thead>
                 <tr>
                     <th>Cargo</th>
-                    <th>Descrição da Vaga</th>
-                    <th>Competências Exigidas</th>
+                    <th>Descrição da vaga</th>
+                    <th>Competências exigidas</th>
                     <th>Ações</th>
                 </tr>
                 </thead>
-                <tbody id="lista-vagas-disponiveis">
-                <!-- ======================================================== -->
-                <!-- INÍCIO DO LOOP DE VAGAS (TypeScript)                     -->
-                <!-- Iterar gerando uma <tr> para cada vaga disponível        -->
-                <!-- ======================================================== -->
-                <tr>
-                    <td class="vaga-titulo"></td>
-                    <td class="vaga-descricao"></td>
-                    <td class="vaga-requisitos"></td>
-
-                    <td class="acoes-tabela">
-                        <!-- Exibido quando o filtro for "novas" -->
-                        <button class="btn-inscrever" data-acao="candidatar">Inscrever-se</button>
-
-                        <!-- Exibido quando o filtro for "cadastradas" (adicione 'display: none' no CSS para a classe btn-cancelar por padrão) -->
-                        <button class="btn-cancelar escondido" data-acao="cancelar">Cancelar interesse</button>
-                    </td>
-                </tr>
-                <!-- ======================================================== -->
-                <!-- FIM DO LOOP DE VAGAS                                     -->
-                <!-- ======================================================== -->
-                </tbody>
+                <!-- As linhas e os botões (Inscrever-se / Cancelar interesse) são criados pelo TypeScript -->
+                <tbody id="lista-vagas-disponiveis"></tbody>
             </table>
         </div>
     </section>
@@ -75,7 +56,7 @@
 <footer>
     <span>Evelyn Suzarte Fernandes - ACZG 2026.2</span>
 </footer>
-<script src="../js/script.js"></script>
+<script type="module" src="../js/painel_candidato.js"></script>
 
 </body>
 </html>

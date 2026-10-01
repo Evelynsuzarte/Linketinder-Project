@@ -25,11 +25,11 @@
             <fieldset class="tipo-conta">
                 <legend> Selecione se você é:</legend>
                 <div>
-                    <input type="radio" id="cadastrocandidato" name="contact" value="email" />
-                    <label for="cadastrocandidato">Candidato</label>
+                    <input type="radio" class="classe-radio-candidato" name="tipoConta" value="candidato" />
+                    <label>Candidato</label>
 
-                    <input type="radio" id="cadastroempresa" name="contact" value="phone" />
-                    <label for="cadastroempresa">Empresa</label>
+                    <input type="radio" class="classe-radio-empresa" name="tipoConta" value="empresa" />
+                    <label>Empresa</label>
                 </div>
             </fieldset>
 
@@ -96,6 +96,10 @@
                     <label>Idade:</label>
                     <input type="number" maxlength="2">
                 </div>
+                <div class="form-senha">
+                    <label>Senha:</label>
+                    <input type="password" placeholder="Digite sua senha">
+                </div>
             </div>
 
 
@@ -108,6 +112,10 @@
                     <label>País:</label>
                     <input type="text" placeholder="Descrição da tarefa">
                 </div>
+                <div class="form-senha">
+                    <label>Senha:</label>
+                    <input type="password" placeholder="Digite sua senha">
+                </div>
             </div>
         </div>
             <button type="submit" class="btn-enviar">Cadastrar</button>
@@ -118,7 +126,7 @@
 <footer>
     <span>Evelyn Suzarte Fernandes - ACZG 2026.2</span>
 </footer>
-<script src="../js/script.js"></script>
+<script src="../js/cadastro.js" type="module"></script>
 
 </body>
 </html>
