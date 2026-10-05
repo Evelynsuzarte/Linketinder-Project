@@ -23,7 +23,7 @@ O banco de dados foi desenvolvido para armazenar e relacionar as principais info
 A modelagem foi feita pensando nos relacionamentos existentes na aplicação e utilizando chaves primárias e estrangeiras para manter a integridade dos dados.
 
 
-<img src="modelagem_data.png" alt="Modelagem de dados" style="display: block; margin: 0 auto;">
+<img src="modelagem_data.jpeg" alt="Modelagem de dados" style="display: block; margin: 0 auto;">
 
 
 
