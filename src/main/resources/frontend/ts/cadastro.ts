@@ -32,14 +32,12 @@ function alternarCampos(): void {
         secaoCandidato.style.display = 'block';
         secaoEmpresa.style.display = 'none';
 
-        // Limpa os dados do tipo oposto
         inputCnpj.value = '';
         inputPais.value = '';
     } else if (radioEmpresa.checked) {
         secaoCandidato.style.display = 'none';
         secaoEmpresa.style.display = 'block';
 
-        // Limpa os dados do tipo oposto
         inputCpf.value = '';
         inputIdade.value = '';
     } else {
@@ -53,7 +51,7 @@ function alternarCampos(): void {
     }
 }
 
-// Gera o próximo id livre (maior id existente + 1), em vez de Math.random()
+// Gera o próximo id livre
 function gerarNovoId(usuarios: (Candidato | Empresa)[]): number {
     const maiorId = usuarios.reduce((maior, u) => Math.max(maior, u.id), 0);
     return maiorId + 1;
@@ -67,17 +65,14 @@ radioEmpresa.addEventListener('change', alternarCampos);
 formulario.addEventListener('submit', (event: Event) => {
     event.preventDefault();
 
-    // Lista atual de usuários (vinda do storage)
     const usuarios = obterTodosUsuarios();
 
-    // O login busca por e-mail, então não pode haver e-mails repetidos
     const emailJaExiste = usuarios.some(u => u.email === inputEmail.value);
     if (emailJaExiste) {
         alert('Já existe uma conta com este e-mail.');
         return;
     }
 
-    // Coleta dados base comuns
     const dadosBase = {
         id: gerarNovoId(usuarios),
         nome: inputNome.value,
@@ -88,7 +83,6 @@ formulario.addEventListener('submit', (event: Event) => {
         senha: inputSenha.value
     };
 
-    // Validação e persistência condicional
     if (radioCandidato.checked) {
         if (!inputCpf.value || !inputIdade.value) {
             alert('Por favor, preencha o CPF e a Idade.');

@@ -5,7 +5,7 @@ import groovy.transform.MapConstructor
 class Candidato extends Pessoa{
     String cpf
     int idade
-    List<Vaga> vagasInteresse
+    List<Vaga> vagasInteresse = []
 
     def exibirDados() {
         return "Candidato: ${nome} | email: ${email} | Idade: ${idade} | " +

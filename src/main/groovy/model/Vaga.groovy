@@ -1,11 +1,11 @@
 package model
 
 class Vaga {
-
     String nome;
-    List<Candidato> interessados;
     Empresa empresa;
     String descricao;
-    List<String> competencias = []
-
+    String local;
+    List<String> competencias = [];
+    List<Candidato> interessados = [];
+    List<Candidato> matches = [];
 }

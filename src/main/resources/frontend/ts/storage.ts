@@ -15,28 +15,26 @@ export interface Usuario {
 export interface Candidato extends Usuario {
     cpf: string;
     idade: number;
-    vagasInteresse: number[];     // ids das vagas em que demonstrou interesse
+    vagasInteresse: number[];
 }
 
 export interface Empresa extends Usuario {
     cnpj: string;
     pais: string;
-    vagas: number[];              // ids das vagas criadas pela empresa
+    vagas: number[];
 }
 
 export interface Vaga {
     id: number;
-    nome: string;                 // Nome/Título da vaga
-    interessados: Candidato[];    // Lista de objetos do tipo Candidato
-    empresa: Empresa;             // Objeto completo da Empresa criadora
+    nome: string;
+    interessados: Candidato[];
+    empresa: Empresa;
     descricao: string;
-    competencias: string[];       // Array de Strings
-    matches?: number[];           // ids dos candidatos que receberam match (opcional)
+    competencias: string[];
+    matches?: number[];
 }
 
-// ==========================================
-// 2. DADOS FICTÍCIOS (CARGA INICIAL)
-// ==========================================
+// DADOS FICTÍCIOS
 
 // Candidatos
 const cand1: Candidato = { id: 1, nome: "Gabriel Silva", email: "gabriel@email.com", descricao: "Dev Frontend.", cep: "01001-000", estado: "SP", tipo: "candidato", senha: "123", cpf: "12345678901", idade: 24, vagasInteresse: [1, 5] };
@@ -68,9 +66,6 @@ const vagasIniciais: Vaga[] = [
     { id: 9, nome: "Analista de Segurança", interessados: [], empresa: emp3, descricao: "Monitoramento de redes.", competencias: ["Cybersecurity", "Firewalls"] }
 ];
 
-// ==========================================
-// 3. CARGA INICIAL NO LOCALSTORAGE
-// ==========================================
 
 // Grava os dados fictícios apenas se as chaves estiverem vazias
 function inicializarLocalStorage(): void {
@@ -87,9 +82,8 @@ function inicializarLocalStorage(): void {
     }
 }
 
-// ==========================================
-// 4. MÉTODOS DE LEITURA DO LOCALSTORAGE
-// ==========================================
+// MÉTODOS DE LEITURA DO LOCALSTORAGE
+
 
 /** Lê e retorna todos os usuários (Candidatos e Empresas juntos) */
 export function obterTodosUsuarios(): (Candidato | Empresa)[] {
@@ -123,9 +117,9 @@ export function obterTodasVagas(): Vaga[] {
     return [];
 }
 
-// ==========================================
-// 5. MÉTODOS DE ESCRITA NO LOCALSTORAGE
-// ==========================================
+
+// MÉTODOS DE ESCRITA NO LOCALSTORAGE
+
 
 export function salvarUsuarios(usuarios: (Candidato | Empresa)[]): void {
     localStorage.setItem('linketinder_usuarios', JSON.stringify(usuarios));
@@ -135,5 +129,4 @@ export function salvarVagas(vagas: Vaga[]): void {
     localStorage.setItem('linketinder_vagas', JSON.stringify(vagas));
 }
 
-// Executa a carga inicial sempre que qualquer página importar este módulo
 inicializarLocalStorage();

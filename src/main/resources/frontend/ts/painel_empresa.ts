@@ -4,12 +4,10 @@ import {
     salvarUsuarios, salvarVagas
 } from "./storage.js";
 
-// O Chart.js é carregado por <script> no HTML e fica disponível como variável global
 declare const Chart: any;
 
-// ==========================================
 // USUÁRIO LOGADO (só empresa pode ver esta página)
-// ==========================================
+
 function voltarParaLogin(): never {
     window.location.href = "acessar.html";
     throw new Error("Sessão inválida: faça login como empresa.");
@@ -22,21 +20,17 @@ if (logado === null || logado.tipo !== 'empresa') {
     voltarParaLogin();
 }
 
-// ==========================================
-// LISTAS EM MEMÓRIA
-// ==========================================
+
 const candidatos: Candidato[] = obterTodosCandidatos();
 const empresas: Empresa[] = obterTodasEmpresas();
 const vagas: Vaga[] = obterTodasVagas();
 
-// Empresa atual, como está na lista (versão mais atualizada)
 const empresaAtual: Empresa = empresas.find(e => e.id === logado.id) ?? voltarParaLogin();
 
 function vagasDaEmpresa(): Vaga[] {
     return vagas.filter(v => v.empresa.id === empresaAtual.id);
 }
 
-// Protege contra dados antigos do navegador e mantém empresa.vagas em dia
 if (!Array.isArray(empresaAtual.vagas)) {
     empresaAtual.vagas = [];
 }
@@ -52,15 +46,11 @@ if (precisaSalvar) {
     salvarUsuarios([...candidatos, ...empresas]);
 }
 
-// ==========================================
-// ELEMENTOS DA PÁGINA
-// ==========================================
+
 const listaVagas = document.querySelector('#lista-vagas') as HTMLDivElement;
 const canvasGrafico = document.querySelector('#graficoCompetencias') as HTMLCanvasElement;
 
-// ==========================================
-// FUNÇÕES AUXILIARES
-// ==========================================
+
 function criarElemento<K extends keyof HTMLElementTagNameMap>(
     tag: K, classe?: string, texto?: string
 ): HTMLElementTagNameMap[K] {
@@ -70,7 +60,6 @@ function criarElemento<K extends keyof HTMLElementTagNameMap>(
     return el;
 }
 
-// Os objetos dentro de vaga.interessados são cópias; aqui pegamos a versão atual
 function buscarCandidato(interessado: Candidato): Candidato {
     return candidatos.find(c => c.id === interessado.id) ?? interessado;
 }
@@ -80,9 +69,7 @@ function salvarTudo(): void {
     salvarUsuarios([...candidatos, ...empresas]);
 }
 
-// ==========================================
-// GRÁFICO: CANDIDATOS POR COMPETÊNCIA
-// ==========================================
+
 let grafico: any = null;
 
 function desenharGrafico(): void {
@@ -109,7 +96,7 @@ function desenharGrafico(): void {
         .sort((a, b) => b.total - a.total || a.nome.localeCompare(b.nome));
 
     if (grafico) {
-        grafico.destroy(); // evita sobrepor o gráfico antigo ao redesenhar
+        grafico.destroy();
     }
 
     grafico = new Chart(canvasGrafico, {
@@ -129,16 +116,14 @@ function desenharGrafico(): void {
     });
 }
 
-// ==========================================
-// RENDERIZAÇÃO DAS VAGAS E CANDIDATOS
-// ==========================================
+
 function criarLinhaCandidato(vaga: Vaga, interessado: Candidato): HTMLTableRowElement {
     const candidato = buscarCandidato(interessado);
     const jaTemMatch = (vaga.matches ?? []).includes(candidato.id);
 
     const tr = criarElemento('tr');
 
-    // Anonimato: mostra só o número do candidato, sem nome
+    // mostra só o número do candidato, sem nome
     tr.appendChild(criarElemento('td', 'candidato-id', `Candidato #${candidato.id}`));
     tr.appendChild(criarElemento('td', 'candidato-skills', candidato.descricao));
     tr.appendChild(criarElemento('td', 'candidato-formacao', 'Não informada'));
@@ -166,7 +151,6 @@ function criarLinhaCandidato(vaga: Vaga, interessado: Candidato): HTMLTableRowEl
 function criarCardVaga(vaga: Vaga): HTMLElement {
     const card = criarElemento('article', 'vaga-card');
 
-    // --- Detalhes da vaga ---
     const detalhes = criarElemento('div', 'vaga-detalhes');
     detalhes.appendChild(criarElemento('h2', 'vaga-titulo', vaga.nome));
 
@@ -178,7 +162,6 @@ function criarCardVaga(vaga: Vaga): HTMLElement {
     pStatus.appendChild(criarElemento('span', 'vaga-status', 'Aberta'));
     detalhes.appendChild(pStatus);
 
-    // --- Tabela de candidatos ---
     const areaCandidatos = criarElemento('div', 'vaga-candidatos');
     areaCandidatos.appendChild(criarElemento('p', '', 'Candidatos Aplicados'));
 
@@ -234,9 +217,7 @@ function renderizarTudo(): void {
     desenharGrafico();
 }
 
-// ==========================================
-// AÇÕES: MATCH / NÃO INTERESSADO
-// ==========================================
+
 function darMatch(idVaga: number, idCandidato: number): void {
     const vaga = vagas.find(v => v.id === idVaga);
     if (!vaga) return;
@@ -284,4 +265,4 @@ listaVagas.addEventListener('click', (event: Event) => {
     renderizarTudo();
 });
 
-renderizarTudo(); // desenha vagas e gráfico ao abrir a página
+renderizarTudo();
