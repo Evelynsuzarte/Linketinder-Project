@@ -1,6 +1,4 @@
-// ==========================================
-// 2. DADOS FICTÍCIOS (CARGA INICIAL)
-// ==========================================
+// DADOS FICTÍCIOS
 // Candidatos
 const cand1 = { id: 1, nome: "Gabriel Silva", email: "gabriel@email.com", descricao: "Dev Frontend.", cep: "01001-000", estado: "SP", tipo: "candidato", senha: "123", cpf: "12345678901", idade: 24, vagasInteresse: [1, 5] };
 const cand2 = { id: 2, nome: "Mariana Souza", email: "mariana@email.com", descricao: "Designer UX/UI.", cep: "40020-000", estado: "BA", tipo: "candidato", senha: "abc", cpf: "98765432100", idade: 28, vagasInteresse: [3, 4] };
@@ -25,9 +23,6 @@ const vagasIniciais = [
     { id: 8, nome: "DevOps Engineer Sênior", interessados: [cand3], empresa: emp3, descricao: "Estruturar CI/CD.", competencias: ["Kubernetes", "Jenkins", "Linux"] },
     { id: 9, nome: "Analista de Segurança", interessados: [], empresa: emp3, descricao: "Monitoramento de redes.", competencias: ["Cybersecurity", "Firewalls"] }
 ];
-// ==========================================
-// 3. CARGA INICIAL NO LOCALSTORAGE
-// ==========================================
 // Grava os dados fictícios apenas se as chaves estiverem vazias
 function inicializarLocalStorage() {
     const usuariosSalvos = localStorage.getItem('linketinder_usuarios');
@@ -40,9 +35,7 @@ function inicializarLocalStorage() {
         localStorage.setItem('linketinder_vagas', JSON.stringify(vagasIniciais));
     }
 }
-// ==========================================
-// 4. MÉTODOS DE LEITURA DO LOCALSTORAGE
-// ==========================================
+// MÉTODOS DE LEITURA DO LOCALSTORAGE
 /** Lê e retorna todos os usuários (Candidatos e Empresas juntos) */
 export function obterTodosUsuarios() {
     const dados = localStorage.getItem('linketinder_usuarios');
@@ -71,15 +64,12 @@ export function obterTodasVagas() {
     }
     return [];
 }
-// ==========================================
-// 5. MÉTODOS DE ESCRITA NO LOCALSTORAGE
-// ==========================================
+// MÉTODOS DE ESCRITA NO LOCALSTORAGE
 export function salvarUsuarios(usuarios) {
     localStorage.setItem('linketinder_usuarios', JSON.stringify(usuarios));
 }
 export function salvarVagas(vagas) {
     localStorage.setItem('linketinder_vagas', JSON.stringify(vagas));
 }
-// Executa a carga inicial sempre que qualquer página importar este módulo
 inicializarLocalStorage();
 //# sourceMappingURL=storage.js.map

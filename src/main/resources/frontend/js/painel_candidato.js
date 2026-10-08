@@ -1,7 +1,5 @@
 import { obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas, salvarUsuarios, salvarVagas } from "./storage.js";
-// ==========================================
-// USUÁRIO LOGADO (só candidato pode ver esta página)
-// ==========================================
+// só candidato pode ver esta página
 function voltarParaLogin() {
     window.location.href = "acessar.html";
     throw new Error("Sessão inválida: faça login como candidato.");
@@ -11,20 +9,13 @@ const logado = dadosLogado ? JSON.parse(dadosLogado) : null;
 if (logado === null || logado.tipo !== 'candidato') {
     voltarParaLogin();
 }
-// ==========================================
-// LISTAS EM MEMÓRIA
-// ==========================================
 const candidatos = obterTodosCandidatos();
 const empresas = obterTodasEmpresas();
 const vagas = obterTodasVagas();
-// Candidato atual, como está na lista (versão mais atualizada)
 const candidatoAtual = candidatos.find(c => c.id === logado.id) ?? voltarParaLogin();
-// Protege contra dados antigos do navegador, que não tinham este campo
 if (!Array.isArray(candidatoAtual.vagasInteresse)) {
     candidatoAtual.vagasInteresse = [];
 }
-// Sincroniza com dados antigos: se o candidato consta em vaga.interessados,
-// o id dessa vaga precisa estar em vagasInteresse
 let precisaSalvar = false;
 for (const vaga of vagas) {
     const constaNaVaga = vaga.interessados.some(c => c.id === candidatoAtual.id);
@@ -37,15 +28,8 @@ if (precisaSalvar) {
     salvarUsuarios([...candidatos, ...empresas]);
 }
 console.log('Candidato:', candidatoAtual.nome, '| vagas no sistema:', vagas.length, '| interesses:', candidatoAtual.vagasInteresse);
-// ==========================================
-// ELEMENTOS DA PÁGINA
-// ==========================================
 const selectFiltro = document.querySelector('#filtro-vagas');
 const corpoTabela = document.querySelector('#lista-vagas-disponiveis');
-// ==========================================
-// FUNÇÕES AUXILIARES
-// ==========================================
-// A lista vagasInteresse do candidato é a fonte de verdade
 function estaInscrito(vaga) {
     return candidatoAtual.vagasInteresse.includes(vaga.id);
 }
@@ -57,12 +41,9 @@ function filtrarVagas(filtro) {
 function criarCelula(classe, texto) {
     const td = document.createElement('td');
     td.className = classe;
-    td.textContent = texto; // textContent evita injetar HTML vindo dos dados
+    td.textContent = texto;
     return td;
 }
-// ==========================================
-// RENDERIZAÇÃO DA TABELA
-// ==========================================
 function renderizarVagas() {
     const filtro = selectFiltro.value;
     const lista = filtrarVagas(filtro);
@@ -103,9 +84,7 @@ function renderizarVagas() {
         corpoTabela.appendChild(tr);
     }
 }
-// ==========================================
 // AÇÕES: INSCREVER-SE / CANCELAR INTERESSE
-// ==========================================
 function salvarTudo() {
     salvarVagas(vagas);
     salvarUsuarios([...candidatos, ...empresas]);
@@ -128,7 +107,6 @@ function cancelarInteresse(idVaga) {
     vaga.interessados = vaga.interessados.filter(c => c.id !== candidatoAtual.id);
     salvarTudo();
 }
-// Um único ouvinte no tbody atende todos os botões (inclusive os criados depois)
 corpoTabela.addEventListener('click', (event) => {
     const botao = event.target.closest('button');
     if (!botao)
@@ -142,9 +120,7 @@ corpoTabela.addEventListener('click', (event) => {
     }
     renderizarVagas();
 });
-// ==========================================
 // FILTRO
-// ==========================================
 selectFiltro.addEventListener('change', renderizarVagas);
-renderizarVagas(); // desenha a lista ao abrir a página
+renderizarVagas();
 //# sourceMappingURL=painel_candidato.js.map

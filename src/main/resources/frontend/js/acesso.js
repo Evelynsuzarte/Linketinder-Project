@@ -1,20 +1,12 @@
 import { obterTodosUsuarios, obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas, salvarUsuarios, salvarVagas } from "./storage.js";
-
-// LISTAS EM MEMÓRIA
 let candidatos = obterTodosCandidatos();
 let empresas = obterTodasEmpresas();
 let vagas = obterTodasVagas();
-
-
-
-// Regrava tudo no localStorage a partir das listas
 function salvarTudo() {
     salvarUsuarios([...candidatos, ...empresas]);
     salvarVagas(vagas);
 }
-
 // LOGIN
-
 const inputEmail = document.querySelector('.form-email input');
 const inputSenha = document.querySelector('.form-senha input');
 function buscarSenha(email) {

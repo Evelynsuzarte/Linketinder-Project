@@ -40,55 +40,23 @@ footer {
 
 header nav {
     display: flex;
-    grid-area: cabecalho;    /* Ajustado de 'conteudo' para 'cabecalho' para encaixar no seu grid do body */
-    justify-content: center; /* Mudado de 'space-around' para 'center' para centralizar perfeitamente */
+    grid-area: cabecalho;
+    justify-content: center;
     align-items: center;
-    width: 100%;             /* Trocar 100vw por 100% evita barras de rolagem horizontais quebradas */
-    height: 60px;            /* Adicionado apenas para dar altura à barra azul */
-    padding-top: 15px;       /* Descola o conteúdo do topo da tela */
+    width: 100%;
+    height: 60px;
+    padding-top: 15px;
     padding-bottom: 15px;
 }
 
 .logo {
-    width: 30%;              /* Mantém o tamanho que você definiu */
-    height: auto;            /* Garante que a imagem não fique esticada ou distorcida */
-    display: block;          /* Transforma em bloco para aceitar margens automáticas */
-    margin: 0 auto;          /* Força o alinhamento centralizado do elemento de imagem */
+    width: 30%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 
 }
 
-/* FIXO */
-
-/*ul {*/
-/*    display: flex;*/
-/*    align-items: center;*/
-/*    justify-content: space-around;*/
-/*    list-style: none;*/
-/*    width: 25%;*/
-/*}*/
-/*nav h2 {*/
-/*    font-weight: 300;*/
-/*}*/
-
-/*ul li a {*/
-/*    text-decoration: none;*/
-/*    color: rgb(36, 36, 36);*/
-
-/*}*/
-
-/*li a:hover {*/
-/*    transform: scale(1.05);*/
-/*    border-bottom: 1.3px solid black;*/
-/*}*/
-
-
-
-
-
-
-
-
-/* Transforma cada bloco em uma linha de "tabela" com 2 colunas */
 .form-nome,
 .form-email,
 .form-descricao,
@@ -99,11 +67,12 @@ header nav {
 .form-prioridade,
 .form-cnpj,
 .form-pais,
-.form-senha{
+.form-senha,
+.form-senha-empresa{
     display: grid;
-    grid-template-columns: 130px 1fr; /* 1ª coluna fixa para o texto, 2ª coluna ocupa o resto */
-    align-items: center;              /* Alinha verticalmente o texto com o campo */
-    margin-bottom: 15px;              /* Afasta uma linha da outra */
+    grid-template-columns: 130px 1fr;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
 
@@ -136,7 +105,6 @@ button {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* Estilo do texto (Labels) */
 .formulario-adicionar-conta label {
     font-family: "Calistro", sans-serif;
     font-weight: 600;
@@ -154,40 +122,36 @@ button {
     text-align: center;
 }
 
-/* Estilização da área de tipo de conta */
 .tipo-conta {
     font-family: "Calistro", sans-serif;
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 20px;
-    margin: 25px auto;      /* Centraliza o bloco inteiro na tela se houver largura fixa */
-    text-align: center;     /* Centraliza o texto do legend e dos labels */
+    margin: 25px auto;
+    text-align: center;
 }
 
-/* Garante o alinhamento centralizado do título do campo */
+
 .tipo-conta legend {
     font-weight: 600;
     padding: 0 10px;
     font-size: 1.1rem;
-    margin: 0 auto;         /* Centraliza o legend em alguns navegadores */
+    margin: 0 auto;
 }
 
-/* Alinha as opções de seleção (Radio + Texto) exatamente no centro */
 .tipo-conta div {
     display: flex;
-    justify-content: center; /* Centraliza horizontalmente as opções lado a lado */
-    align-items: center;     /* Alinha verticalmente os botões redondos com as palavras */
+    justify-content: center;
+    align-items: center;
     gap: 15px;
     margin-top: 15px;
 }
 
-/* Mantém o cursor de clique nos textos */
 .tipo-conta label {
     cursor: pointer;
-    margin-right: 10px;      /* Dá um leve espaço após cada label */
+    margin-right: 10px;
 }
 
-/* Esconde ambos os blocos específicos na inicialização da página */
 .cadastro-candidato,
 .cadastro-empresa {
     display: none;

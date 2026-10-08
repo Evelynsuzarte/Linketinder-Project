@@ -25,7 +25,8 @@ const inputIdade = document.querySelector('.form-idade input') as HTMLInputEleme
 const inputCnpj = document.querySelector('.form-cnpj input') as HTMLInputElement;
 const inputPais = document.querySelector('.form-pais input') as HTMLInputElement;
 const inputSenha = document.querySelector('.form-senha input') as HTMLInputElement;
-///////////// adicionar o input da senha da empresa /////////////////
+const inputSenhaEmpresa = document.querySelector('.form-senha-empresa input') as HTMLInputElement;
+
 
 // Função para alternar a exibição dos blocos de campos
 function alternarCampos(): void {
@@ -81,7 +82,6 @@ formulario.addEventListener('submit', (event: Event) => {
         descricao: inputDescricao.value,
         cep: inputCep.value,
         estado: selectEstado.value,
-        senha: inputSenha.value
     };
 
     if (radioCandidato.checked) {
@@ -92,6 +92,7 @@ formulario.addEventListener('submit', (event: Event) => {
 
         const novoCandidato: Candidato = {
             ...dadosBase,
+            senha: inputSenha.value,
             tipo: 'candidato',
             cpf: inputCpf.value,
             idade: parseInt(inputIdade.value),
@@ -108,6 +109,7 @@ formulario.addEventListener('submit', (event: Event) => {
 
         const novaEmpresa: Empresa = {
             ...dadosBase,
+            senha: inputSenhaEmpresa.value,
             tipo: 'empresa',
             cnpj: inputCnpj.value,
             pais: inputPais.value,

@@ -1,7 +1,5 @@
 import { obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas, salvarUsuarios, salvarVagas } from "./storage.js";
-// ==========================================
 // USUÁRIO LOGADO (só empresa pode ver esta página)
-// ==========================================
 function voltarParaLogin() {
     window.location.href = "acessar.html";
     throw new Error("Sessão inválida: faça login como empresa.");
@@ -11,18 +9,13 @@ const logado = dadosLogado ? JSON.parse(dadosLogado) : null;
 if (logado === null || logado.tipo !== 'empresa') {
     voltarParaLogin();
 }
-// ==========================================
-// LISTAS EM MEMÓRIA
-// ==========================================
 const candidatos = obterTodosCandidatos();
 const empresas = obterTodasEmpresas();
 const vagas = obterTodasVagas();
-// Empresa atual, como está na lista (versão mais atualizada)
 const empresaAtual = empresas.find(e => e.id === logado.id) ?? voltarParaLogin();
 function vagasDaEmpresa() {
     return vagas.filter(v => v.empresa.id === empresaAtual.id);
 }
-// Protege contra dados antigos do navegador e mantém empresa.vagas em dia
 if (!Array.isArray(empresaAtual.vagas)) {
     empresaAtual.vagas = [];
 }
@@ -36,14 +29,8 @@ for (const vaga of vagasDaEmpresa()) {
 if (precisaSalvar) {
     salvarUsuarios([...candidatos, ...empresas]);
 }
-// ==========================================
-// ELEMENTOS DA PÁGINA
-// ==========================================
 const listaVagas = document.querySelector('#lista-vagas');
 const canvasGrafico = document.querySelector('#graficoCompetencias');
-// ==========================================
-// FUNÇÕES AUXILIARES
-// ==========================================
 function criarElemento(tag, classe, texto) {
     const el = document.createElement(tag);
     if (classe)
@@ -52,7 +39,6 @@ function criarElemento(tag, classe, texto) {
         el.textContent = texto; // textContent evita injetar HTML vindo dos dados
     return el;
 }
-// Os objetos dentro de vaga.interessados são cópias; aqui pegamos a versão atual
 function buscarCandidato(interessado) {
     return candidatos.find(c => c.id === interessado.id) ?? interessado;
 }
@@ -60,9 +46,6 @@ function salvarTudo() {
     salvarVagas(vagas);
     salvarUsuarios([...candidatos, ...empresas]);
 }
-// ==========================================
-// GRÁFICO: CANDIDATOS POR COMPETÊNCIA
-// ==========================================
 let grafico = null;
 function desenharGrafico() {
     if (typeof Chart === 'undefined') {
@@ -84,7 +67,7 @@ function desenharGrafico() {
         .map(([nome, conjunto]) => ({ nome, total: conjunto.size }))
         .sort((a, b) => b.total - a.total || a.nome.localeCompare(b.nome));
     if (grafico) {
-        grafico.destroy(); // evita sobrepor o gráfico antigo ao redesenhar
+        grafico.destroy();
     }
     grafico = new Chart(canvasGrafico, {
         type: 'bar',
@@ -102,14 +85,11 @@ function desenharGrafico() {
         }
     });
 }
-// ==========================================
-// RENDERIZAÇÃO DAS VAGAS E CANDIDATOS
-// ==========================================
 function criarLinhaCandidato(vaga, interessado) {
     const candidato = buscarCandidato(interessado);
     const jaTemMatch = (vaga.matches ?? []).includes(candidato.id);
     const tr = criarElemento('tr');
-    // Anonimato: mostra só o número do candidato, sem nome
+    // mostra só o número do candidato, sem nome
     tr.appendChild(criarElemento('td', 'candidato-id', `Candidato #${candidato.id}`));
     tr.appendChild(criarElemento('td', 'candidato-skills', candidato.descricao));
     tr.appendChild(criarElemento('td', 'candidato-formacao', 'Não informada'));
@@ -130,7 +110,6 @@ function criarLinhaCandidato(vaga, interessado) {
 }
 function criarCardVaga(vaga) {
     const card = criarElemento('article', 'vaga-card');
-    // --- Detalhes da vaga ---
     const detalhes = criarElemento('div', 'vaga-detalhes');
     detalhes.appendChild(criarElemento('h2', 'vaga-titulo', vaga.nome));
     const pDescricao = criarElemento('p', '', 'Descrição: ');
@@ -139,7 +118,6 @@ function criarCardVaga(vaga) {
     const pStatus = criarElemento('p', '', 'Status: ');
     pStatus.appendChild(criarElemento('span', 'vaga-status', 'Aberta'));
     detalhes.appendChild(pStatus);
-    // --- Tabela de candidatos ---
     const areaCandidatos = criarElemento('div', 'vaga-candidatos');
     areaCandidatos.appendChild(criarElemento('p', '', 'Candidatos Aplicados'));
     const tabela = criarElemento('table', 'tabela-candidatos');
@@ -183,9 +161,6 @@ function renderizarTudo() {
     renderizarVagas();
     desenharGrafico();
 }
-// ==========================================
-// AÇÕES: MATCH / NÃO INTERESSADO
-// ==========================================
 function darMatch(idVaga, idCandidato) {
     const vaga = vagas.find(v => v.id === idVaga);
     if (!vaga)
@@ -226,5 +201,5 @@ listaVagas.addEventListener('click', (event) => {
     }
     renderizarTudo();
 });
-renderizarTudo(); // desenha vagas e gráfico ao abrir a página
+renderizarTudo();
 //# sourceMappingURL=painel_empresa.js.map
