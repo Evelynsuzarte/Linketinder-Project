@@ -25,6 +25,7 @@ const inputIdade = document.querySelector('.form-idade input') as HTMLInputEleme
 const inputCnpj = document.querySelector('.form-cnpj input') as HTMLInputElement;
 const inputPais = document.querySelector('.form-pais input') as HTMLInputElement;
 const inputSenha = document.querySelector('.form-senha input') as HTMLInputElement;
+///////////// adicionar o input da senha da empresa /////////////////
 
 // Função para alternar a exibição dos blocos de campos
 function alternarCampos(): void {

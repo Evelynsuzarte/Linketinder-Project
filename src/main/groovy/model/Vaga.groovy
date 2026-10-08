@@ -1,6 +1,7 @@
 package model
 
 class Vaga {
+    int id
     String nome;
     Empresa empresa;
     String descricao;

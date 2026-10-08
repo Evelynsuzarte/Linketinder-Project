@@ -1,11 +1,12 @@
 package model
 
-class Pessoa {
+class Usuario {
+    int id
     String nome;
     String email;
     String descricao;
     String cep;
     String estado;
-    List<String> competencias = []
     String senha;
+    String pais
 }

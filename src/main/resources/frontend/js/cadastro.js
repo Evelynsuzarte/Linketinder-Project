@@ -110,4 +110,3 @@ formulario.addEventListener('submit', (event) => {
     alternarCampos(); // Mantém a interface limpa e correta após o reset
 });
 alternarCampos();
-//# sourceMappingURL=cadastro.js.map

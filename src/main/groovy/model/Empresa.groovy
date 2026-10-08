@@ -2,13 +2,11 @@ package model
 import groovy.transform.MapConstructor
 
 @MapConstructor(includeSuperProperties = true)
-class Empresa extends Pessoa{
+class Empresa extends Usuario{
     String cnpj;
-    String pais;
     List<Vaga> vagas = []
 
     def exibirDados() {
-        return "Empresa: ${nome} | Descricao:${descricao} | Estado: ${estado} | " +
-                "Competencias: ${competencias}";
+        return "Empresa: ${nome} | Descricao:${descricao} | Estado: ${estado} | ";
     }
 }

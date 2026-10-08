@@ -1,6 +1,3 @@
-CREATE DATABASE linketinder
-
-USE linketinder
 
 -------------------------- CRIAÇÕES DE TABELAS
 CREATE TABLE candidatos (
@@ -8,12 +5,14 @@ CREATE TABLE candidatos (
     cpf VARCHAR(14) UNIQUE NOT NULL,
     nome VARCHAR(20),
     sobrenome VARCHAR(20),
-    data_nascimento DATE,
+    ---data_nascimento DATE,
+    idade int,
     email VARCHAR(50),
     pais VARCHAR(20),
     cep VARCHAR(10),
     descricao VARCHAR(100),
-    senha VARCHAR(20)
+    senha VARCHAR(20),
+    estado VARCHAR(20)
 );
 
 CREATE TABLE empresas (
@@ -24,13 +23,14 @@ CREATE TABLE empresas (
     pais VARCHAR(20),
     cep VARCHAR(10),
     descricao VARCHAR(100),
-    senha VARCHAR(20)
+    senha VARCHAR(20),
+    estado VARCHAR(20)
 );
 
 CREATE TABLE vagas (
     id SERIAL PRIMARY KEY NOT NULL,
     nome VARCHAR(20),
-    descricao VARCHAR(20),
+    descricao VARCHAR(100),
     local_vaga VARCHAR(20),
     id_empresa INT NOT NULL,
 
@@ -99,13 +99,22 @@ CREATE TABLE match (
 
 ---- CANDIDATOS
 INSERT INTO candidatos
-    (cpf, nome, sobrenome, data_nascimento, email, pais, cep, descricao, senha)
+(cpf, nome, sobrenome, idade, email, pais, cep, descricao, senha, estado)
 VALUES
-    ('111.111.111-11', 'Sandubinha', 'Silva', '2000-05-15', 'sandubinha@email.com', 'Brasil', '40000-000', 'Desenvolvedor backend', '123456'),
-    ('222.222.222-22', 'Carlos', 'Santos', '1999-08-20', 'carlos@email.com', 'Brasil', '40100-000', 'Desenvolvedor fullstack', '123456'),
-    ('333.333.333-33', 'Mariana', 'Oliveira', '2001-02-10', 'mariana@email.com', 'Brasil', '40200-000', 'Analista de dados', '123456'),
-    ('444.444.444-44', 'Joao', 'Costa', '1998-11-25', 'joao@email.com', 'Brasil', '40300-000', 'Desenvolvedor Java', '123456'),
-    ('555.555.555-55', 'Ana', 'Souza', '2002-07-30', 'ana@email.com', 'Brasil', '40400-000', 'Desenvolvedora frontend', '123456');
+    ('111.111.111-11', 'Sandubinha', 'Silva', 26, 'sandubinha@email.com', 'Brasil', '40000-000', 'Desenvolvedor backend', '123456', 'Bahia'),
+    ('222.222.222-22', 'Carlos', 'Santos', 27, 'carlos@email.com', 'Brasil', '40100-000', 'Desenvolvedor fullstack', '123456', 'São Paulo'),
+    ('333.333.333-33', 'Mariana', 'Oliveira', 25, 'mariana@email.com', 'Brasil', '40200-000', 'Analista de dados', '123456', 'Pernambuco'),
+    ('444.444.444-44', 'Joao', 'Costa', 27, 'joao@email.com', 'Brasil', '40300-000', 'Desenvolvedor Java', '123456','Santa Catarina'),
+    ('555.555.555-55', 'Ana', 'Souza', 24, 'ana@email.com', 'Brasil', '40400-000', 'Desenvolvedora frontend', '123456', 'Rio de Janeiro');
+
+-- INSERT INTO candidatos
+--     (cpf, nome, sobrenome, data_nascimento, email, pais, cep, descricao, senha)
+-- VALUES
+--     ('111.111.111-11', 'Sandubinha', 'Silva', '2000-05-15', 'sandubinha@email.com', 'Brasil', '40000-000', 'Desenvolvedor backend', '123456'),
+--     ('222.222.222-22', 'Carlos', 'Santos', '1999-08-20', 'carlos@email.com', 'Brasil', '40100-000', 'Desenvolvedor fullstack', '123456'),
+--     ('333.333.333-33', 'Mariana', 'Oliveira', '2001-02-10', 'mariana@email.com', 'Brasil', '40200-000', 'Analista de dados', '123456'),
+--     ('444.444.444-44', 'Joao', 'Costa', '1998-11-25', 'joao@email.com', 'Brasil', '40300-000', 'Desenvolvedor Java', '123456'),
+--     ('555.555.555-55', 'Ana', 'Souza', '2002-07-30', 'ana@email.com', 'Brasil', '40400-000', 'Desenvolvedora frontend', '123456');
 
 
 ---- EMPRESAS
