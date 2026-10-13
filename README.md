@@ -104,14 +104,39 @@ O match acontece quando os dois lados demonstram interesse:
 1. **Candidato curte a vaga (opção 6):** o candidato informa o nome e o sobrenome e vê as vagas uma de cada vez, mostrando apenas o **nome da vaga, as competências e o local**. Digitando `s`, a vaga entra na lista de interesses dele. Vagas já curtidas não aparecem de novo.
 2. **Empresa curte o candidato (opção 7):** a empresa informa o nome e vê os candidatos interessados nas suas vagas. Para preservar o anonimato, aparecem apenas a **descrição e as competências** do candidato. Digitando `s`, o match é gerado.
 3. **Ver matches (opção 8):** escolhendo a visão `c` (candidato) ou `e` (empresa) e informando o nome:
-  - Na visão do candidato aparecem a vaga, a empresa e o local.
-  - Na visão da empresa aparecem a vaga e o nome, o sobrenome e o e-mail do candidato.
+- Na visão do candidato aparecem a vaga, a empresa e o local.
+- Na visão da empresa aparecem a vaga e o nome, o sobrenome e o e-mail do candidato.
 
 ### Observações
 
 - Vagas ou candidatos recusados (`n`) não são guardados e voltam a aparecer na próxima avaliação.
 - As senhas são salvas em texto puro, por se tratar de um projeto de estudo.
 - Candidatos e empresas são identificados pelo nome, então nomes repetidos podem causar confusão.
+
+
+## 🧹 Refatoração e boas práticas (Clean Code)
+
+O `LinketinderController` foi refatorado para ter funções pequenas, com uma responsabilidade cada, e nomes que dizem o que a função faz.
+
+### O que foi feito
+
+1. **Retorno de `avaliarVagas`:** o tipo de retorno passou de `def` para `void`, já que a função não devolve nada (igual às demais).
+
+2. **Entrada de dados separada da gravação no banco:** os cadastros foram divididos em duas funções cada, uma só para ler o teclado e montar o objeto, e outra só para gravar.
+
+| Cadastro | Lê os dados e monta o objeto | Grava no banco |
+|---|---|---|
+| Candidato | `entradaDadosCandidato` | `novoCandidato` |
+| Empresa | `entradaDadosEmpresa` | `novaEmpresa` |
+| Vaga | `entradaDadosVaga` | `novaVaga` |
+
+Assim a leitura do teclado fica separada do acesso ao banco, o que facilita reutilizar e testar cada parte. Na vaga, a função de entrada devolve `null` quando a empresa não existe, e `novaVaga` não grava nada nesse caso.
+
+3. **`verMatches` dividido por visão:** a busca e a listagem foram para duas funções, `verMatchesCandidato(nome)` e `verMatchesEmpresa(nome)`. Elas devolvem um `StatusMatch` (`CANDIDATO_NAO_ENCONTRADO`, `EMPRESA_NAO_ENCONTRADA`, `COM_MATCHES` ou `SEM_MATCHES`), e o `verMatches` só pergunta a visão e escolhe a mensagem de acordo com o resultado.
+
+4. **Sequências de `println` extraídas:** a exibição de uma vaga virou `exibirVaga(vaga)`, usada em `avaliarVagas`, e a exibição do perfil de um candidato interessado virou `exibirMatch(perfil)`, usada em `avaliarCandidatos`.
+
+5. **Aviso quando não há o que avaliar:** `avaliarVagas` e `avaliarCandidatos` conferem se a lista está vazia e encerram com uma mensagem, antes de começar o laço.
 
 
 ## 🌐 Versão web (front-end)

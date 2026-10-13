@@ -6,7 +6,6 @@ class Main {
         Scanner scanner = new Scanner(System.in)
         int opcao
 
-
         while (true){
             opcao = gerenciador.menu()
             switch (opcao){
@@ -21,21 +20,23 @@ class Main {
                     gerenciador.listagemEmpresas()
                     break;
                 case 3:
-                    gerenciador.novoCadastro(scanner)
-                    break;
+                    gerenciador.listagemVagas()
                 case 4:
-                    gerenciador.novaEmpresa(scanner)
+                    gerenciador.novoCandidato(scanner)
                     break;
                 case 5:
-                    gerenciador.novaVaga(scanner)
+                    gerenciador.novaEmpresa(scanner)
                     break;
                 case 6:
+                    gerenciador.novaVaga(scanner)
+                    break;
+                case 7:
                     gerenciador.avaliarVagas(scanner)
                     break
-                case 7:
+                case 8:
                     gerenciador.avaliarCandidatos(scanner)
                     break
-                case 8:
+                case 9:
                     gerenciador.verMatches(scanner)
                     break;
                 default:
