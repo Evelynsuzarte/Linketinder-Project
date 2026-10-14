@@ -7,6 +7,7 @@ import db.dao.CandidatoDao
 import db.dao.EmpresaDao
 import db.dao.MatchDao
 import db.dao.VagaDao
+import java.sql.SQLException
 
 
 class LinketinderController {
@@ -24,7 +25,6 @@ class LinketinderController {
     }
 
     int menu(){
-        int opcao
         Scanner scanner = new Scanner(System.in)
 
         println("===== LINKETINDER =====")
@@ -40,8 +40,50 @@ class LinketinderController {
         println("10 -  SAIR")
         println("===== ESCOLHA:")
 
-        opcao = scanner.nextLine().toInteger()
-        return opcao
+        String texto = scanner.nextLine().trim()
+        return texto.isInteger() ? texto.toInteger() : -1
+    }
+
+
+    private String lerObrigatorio(Scanner scanner, String mensagem) {
+        String texto = ""
+        while (texto.isEmpty()) {
+            print(mensagem)
+            texto = scanner.nextLine().trim()
+            if (texto.isEmpty()) {
+                println("Campo obrigatório. Tente novamente.")
+            }
+        }
+        return texto
+    }
+
+    private int lerInteiro(Scanner scanner, String mensagem) {
+        while (true) {
+            print(mensagem)
+            String texto = scanner.nextLine().trim()
+            if (texto.isInteger()) {
+                return texto.toInteger()
+            }
+            println("Digite apenas números.")
+        }
+    }
+
+    private List<String> lerCompetencias(Scanner scanner, String mensagem) {
+        print(mensagem)
+        return scanner.nextLine().split(",").collect { it.trim() }.findAll { !it.isEmpty() }
+    }
+
+    private void avisarErroDeBanco(SQLException erro) {
+        switch (erro.SQLState) {
+            case '23505':
+                println("\nErro: já existe um registro com esses dados (CPF ou CNPJ repetido).")
+                break
+            case '22001':
+                println("\nErro: algum campo tem mais caracteres do que o permitido.")
+                break
+            default:
+                println("\nErro ao acessar o banco de dados: ${erro.message}")
+        }
     }
 
 
@@ -75,28 +117,21 @@ class LinketinderController {
         List<String> competencias = []
 
         println ("--- CADASTRO DE CANDIDATO ---")
-        print("Nome: ")
-        nome = scanner.nextLine()
-        print("Sobrenome: ")
-        sobrenome = scanner.nextLine()
-        print("Email: ")
-        email = scanner.nextLine()
+        nome = lerObrigatorio(scanner, "Nome: ")
+        sobrenome = lerObrigatorio(scanner, "Sobrenome: ")
+        email = lerObrigatorio(scanner, "Email: ")
         print("Descrição sobre você: ")
         descricao = scanner.nextLine()
-        print("Competências (separadas por vírgula): ")
-        competencias = scanner.nextLine().split(",").collect { it.trim() }
-        print("CPF: ")
-        cpf = scanner.nextLine()
-        print("Idade: ")
-        idade = scanner.nextLine().toInteger()
+        competencias = lerCompetencias(scanner, "Competências (separadas por vírgula): ")
+        cpf = lerObrigatorio(scanner, "CPF: ")
+        idade = lerInteiro(scanner, "Idade: ")
         print("Estado (UF): ")
         estado = scanner.nextLine()
         print("CEP: ")
         cep = scanner.nextLine()
         print("País: ")
         pais = scanner.nextLine()
-        print("Digite sua senha: ")
-        senha = scanner.nextLine()
+        senha = lerObrigatorio(scanner, "Digite sua senha: ")
 
         Candidato candidato = new Candidato(nome: nome, sobrenome: sobrenome, email: email, cpf: cpf,
                 idade: idade, pais: pais, cep: cep, descricao: descricao,
@@ -107,19 +142,20 @@ class LinketinderController {
 
     void novoCandidato(Scanner scanner){
         Candidato candidato = entradaDadosCandidato(scanner)
-        candidatoDao.inserir(candidato)
+        try {
+            candidatoDao.inserir(candidato)
+        } catch (SQLException erro) {
+            avisarErroDeBanco(erro)
+        }
     }
 
     Empresa entradaDadosEmpresa(Scanner scanner){
         String nome, email, cnpj, estado, cep, pais, descricao, senha
 
         println ("\n--- CADASTRO DE EMPRESA ---")
-        print("Nome da empresa: ")
-        nome = scanner.nextLine()
-        print("Email: ")
-        email = scanner.nextLine()
-        print("CNPJ: ")
-        cnpj = scanner.nextLine()
+        nome = lerObrigatorio(scanner, "Nome da empresa: ")
+        email = lerObrigatorio(scanner, "Email: ")
+        cnpj = lerObrigatorio(scanner, "CNPJ: ")
         print("Estado (UF): ")
         estado = scanner.nextLine()
         print("CEP: ")
@@ -128,8 +164,7 @@ class LinketinderController {
         descricao = scanner.nextLine()
         print("País: ")
         pais = scanner.nextLine()
-        print("Digite sua senha: ")
-        senha = scanner.nextLine()
+        senha = lerObrigatorio(scanner, "Digite sua senha: ")
 
         Empresa empresa = new Empresa(nome: nome, email: email, cnpj: cnpj, pais: pais,
                 cep: cep, descricao: descricao, senha: senha)
@@ -138,7 +173,11 @@ class LinketinderController {
 
     void novaEmpresa(Scanner scanner){
         Empresa empresa = entradaDadosEmpresa(scanner)
-        empresaDao.inserir(empresa)
+        try {
+            empresaDao.inserir(empresa)
+        } catch (SQLException erro) {
+            avisarErroDeBanco(erro)
+        }
     }
 
     Vaga entradaDadosVaga(Scanner scanner){
@@ -146,24 +185,20 @@ class LinketinderController {
         List<String> competencias = []
 
         println("\n--- CADASTRO DE VAGA ---")
-        print("Nome da empresa responsável pela vaga: ")
-        nomeEmpresa = scanner.nextLine()
+        nomeEmpresa = lerObrigatorio(scanner, "Nome da empresa responsável pela vaga: ")
 
         Empresa empresa = empresaDao.buscarPorNome(nomeEmpresa)
 
         if (empresa == null) {
-            println("Erro: Empresa não encontrada. Cadastre a empresa primeiro!")
             return null
         }
 
-        print("Nome da vaga: ")
-        nome = scanner.nextLine()
+        nome = lerObrigatorio(scanner, "Nome da vaga: ")
         print("Descrição da vaga: ")
         descricao = scanner.nextLine()
         print("Local: ")
         local = scanner.nextLine()
-        print("Competências exigidas (separadas por vírgula): ")
-        competencias = scanner.nextLine().split(",").collect { it.trim() }
+        competencias = lerCompetencias(scanner, "Competências exigidas (separadas por vírgula): ")
 
         Vaga vaga = new Vaga(nome: nome, descricao: descricao, local: local,
                 competencias: competencias, empresa: empresa)
@@ -172,10 +207,16 @@ class LinketinderController {
 
     void novaVaga(Scanner scanner) {
         Vaga vaga = entradaDadosVaga(scanner)
-        if (vaga == null)
+        if (vaga == null) {
             println("\nErro: Empresa não encontrada. Cadastre a empresa primeiro!")
-        else
+            return
+        }
+
+        try {
             vagaDao.inserir(vaga)
+        } catch (SQLException erro) {
+            avisarErroDeBanco(erro)
+        }
     }
 
 
@@ -204,7 +245,6 @@ class LinketinderController {
 
         Empresa empresa = empresaDao.buscarPorNome(nome)
         if (empresa == null) {
-            println("Empresa não encontrada.")
             return StatusMatch.EMPRESA_NAO_ENCONTRADA
         }
         println("=== MATCHES DA ${empresa.nome} ===")
@@ -225,10 +265,14 @@ class LinketinderController {
         String visao, nome
 
         print("Visão (c = candidato, e = empresa): ")
-        visao = scanner.nextLine()
-        print("Seu nome: ")
-        nome = scanner.nextLine()
+        visao = scanner.nextLine().trim().toLowerCase()
 
+        if (visao != 'c' && visao != 'e') {
+            println("Visão inválida. Digite 'c' ou 'e'.")
+            return
+        }
+
+        nome = lerObrigatorio(scanner, "Seu nome: ")
 
         if (visao == 'c') {
             def resultado = verMatchesCandidato(nome)
@@ -244,7 +288,7 @@ class LinketinderController {
                     break
             }
 
-        } else if (visao == 'e') {
+        } else {
             def resultado = verMatchesEmpresa(nome)
             switch (resultado) {
                 case StatusMatch.EMPRESA_NAO_ENCONTRADA:
@@ -282,8 +326,7 @@ class LinketinderController {
         println("\n=== BEM-VINDO AO SISTEMA DE VAGAS ===")
         println("Digite 's' para Curtir ou 'n' para Passar.")
 
-        print("Seu nome: ")
-        nome = scanner.nextLine()
+        nome = lerObrigatorio(scanner, "Seu nome: ")
         Candidato candidato_buscado = candidatoDao.buscarPorNome(nome)
 
         if (candidato_buscado == null){
@@ -302,8 +345,12 @@ class LinketinderController {
             String escolha = scanner.nextLine()
 
             if (escolha == 's') {
-                matchDao.curtirVaga(candidato_buscado.id, vaga.id)
-                println("!!! Você curtiu a vaga: ${vaga.nome}!")
+                try {
+                    matchDao.curtirVaga(candidato_buscado.id, vaga.id)
+                    println("!!! Você curtiu a vaga: ${vaga.nome}!")
+                } catch (SQLException erro) {
+                    avisarErroDeBanco(erro)
+                }
             } else {
                 println("-> Vaga ignorada.")
             }
@@ -313,8 +360,8 @@ class LinketinderController {
 
 
     void avaliarCandidatos(Scanner scanner) {
-        print("Nome da empresa: ")
-        Empresa empresa = empresaDao.buscarPorNome(scanner.nextLine())
+        String nomeEmpresa = lerObrigatorio(scanner, "Nome da empresa: ")
+        Empresa empresa = empresaDao.buscarPorNome(nomeEmpresa)
         if (empresa == null) {
             println("\nEmpresa não encontrada.")
             return
@@ -334,8 +381,12 @@ class LinketinderController {
             String escolha = scanner.nextLine()
 
             if (escolha == 's') {
-                matchDao.curtirCandidato(empresa.id, perfilMatch.idCandidato, perfilMatch.idVaga)
-                println("\n!!! MATCH !!!")
+                try {
+                    matchDao.curtirCandidato(empresa.id, perfilMatch.idCandidato, perfilMatch.idVaga)
+                    println("\n!!! MATCH !!!")
+                } catch (SQLException erro) {
+                    avisarErroDeBanco(erro)
+                }
             } else {
                 println("\nPerfil ignorado! Próximo!!!")
             }
@@ -345,5 +396,3 @@ class LinketinderController {
 
 
 }
-
-

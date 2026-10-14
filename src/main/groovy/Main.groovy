@@ -40,7 +40,7 @@ class Main {
                     gerenciador.verMatches(scanner)
                     break;
                 default:
-                    println("Tente novamente. Você digitou errado!")
+                    println("Tente novamente. Você digitou errado!\n")
                     break;
             }
         }
