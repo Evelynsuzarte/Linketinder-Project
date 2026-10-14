@@ -15,7 +15,7 @@ O programa permite:
 - Cadastrar candidatos, com nome, sobrenome, e-mail, CPF, idade, CEP, país, descrição, competências e senha.
 - Cadastrar empresas, com nome, e-mail, CNPJ, CEP, país, descrição e senha.
 - Cadastrar vagas, ligadas a uma empresa, com nome, descrição, local e competências exigidas.
-- Listar todos os candidatos e todas as empresas cadastrados.
+- Listar todos os candidatos, empresas e vagas cadastrados.
 - Candidato: ver as vagas disponíveis e curtir as que têm interesse.
 - Empresa: ver os candidatos interessados nas suas vagas e curtir os perfis que quiser.
 - Ver os matches, tanto na visão do candidato quanto na visão da empresa.
@@ -102,9 +102,9 @@ CREATE DATABASE linketinder;
 
 O match acontece quando os dois lados demonstram interesse:
 
-1. **Candidato curte a vaga (opção 6):** o candidato informa o nome e o sobrenome e vê as vagas uma de cada vez, mostrando apenas o **nome da vaga, as competências e o local**. Digitando `s`, a vaga entra na lista de interesses dele. Vagas já curtidas não aparecem de novo.
-2. **Empresa curte o candidato (opção 7):** a empresa informa o nome e vê os candidatos interessados nas suas vagas. Para preservar o anonimato, aparecem apenas a **descrição e as competências** do candidato. Digitando `s`, o match é gerado.
-3. **Ver matches (opção 8):** escolhendo a visão `c` (candidato) ou `e` (empresa) e informando o nome:
+1. **Candidato curte a vaga (opção 7):** o candidato informa o nome e o sobrenome e vê as vagas uma de cada vez, mostrando apenas o **nome da vaga, as competências e o local**. Digitando `s`, a vaga entra na lista de interesses dele. Vagas já curtidas não aparecem de novo.
+2. **Empresa curte o candidato (opção 8):** a empresa informa o nome e vê os candidatos interessados nas suas vagas. Para preservar o anonimato, aparecem apenas a **descrição e as competências** do candidato. Digitando `s`, o match é gerado.
+3. **Ver matches (opção 9):** escolhendo a visão `c` (candidato) ou `e` (empresa) e informando o nome:
 - Na visão do candidato aparecem a vaga, a empresa e o local.
 - Na visão da empresa aparecem a vaga e o nome, o sobrenome e o e-mail do candidato.
 
@@ -117,7 +117,7 @@ O match acontece quando os dois lados demonstram interesse:
 
 ## 🧹 Refatoração e boas práticas (Clean Code)
 
-O `LinketinderController` foi refatorado para ter funções pequenas, com uma responsabilidade cada, e nomes que dizem o que a função faz.
+O `LinketinderController` foi refatorado para ter funções pequenas, com uma responsabilidade cada, e nomes que dizem o que a função faz. A lógica do programa continua a mesma: mudou a organização do código e a forma de lidar com entradas inválidas e erros do banco.
 
 ### O que foi feito
 
@@ -139,6 +139,23 @@ Assim a leitura do teclado fica separada do acesso ao banco, o que facilita reut
 
 5. **Aviso quando não há o que avaliar:** `avaliarVagas` e `avaliarCandidatos` conferem se a lista está vazia e encerram com uma mensagem, antes de começar o laço.
 
+6. **Tratamento de erros simples:** entradas inválidas e falhas do banco não fecham mais o programa.
+    - O menu aceita só números: letras viram opção inválida.
+    - `lerObrigatorio` (nome, CPF/CNPJ, senha...), `lerInteiro` (idade) e `lerCompetencias` (descarta itens vazios) repetem a pergunta até a entrada ser válida.
+    - Cadastros e curtidas têm `try/catch` de `SQLException`, e `avisarErroDeBanco` mostra uma mensagem clara (CPF/CNPJ repetido, texto maior que a coluna ou erro de acesso ao banco).
+    - `verMatches` avisa quando a visão não é `c` nem `e`, e a mensagem de "não encontrado" aparece uma vez só.
+
+### Como a refatoração melhorou o código
+
+| Princípio do Clean Code | Antes | Depois |
+|---|---|---|
+| **Funções pequenas e de responsabilidade única** | `novoCandidato` lia dez campos, montava o objeto e gravava no banco. `verMatches` perguntava, buscava, imprimia e tratava os casos de erro, tudo numa função só | Cada função faz uma coisa: ler (`entradaDados*`), gravar (`novoCandidato`, `novaEmpresa`, `novaVaga`), buscar e listar (`verMatchesCandidato`, `verMatchesEmpresa`) e exibir (`exibirVaga`, `exibirMatch`) |
+| **Nomes que explicam a intenção** | Nomes genéricos para funções que faziam várias tarefas, e mensagens decididas no meio da lógica | O nome diz a tarefa (`entradaDadosVaga`, `verMatchesEmpresa`, `lerObrigatorio`), e o enum `StatusMatch` dá nome a cada resultado possível em vez de depender de mensagens soltas |
+| **Não se repetir (DRY)** | Blocos de `println` com as linhas separadoras e os dados da vaga ou do perfil escritos dentro do laço, e a validação de cada campo repetida na própria pergunta | O formato de exibição fica em um só lugar (`exibirVaga` e `exibirMatch`), e a leitura de campos obrigatórios, números e competências fica em três funções auxiliares |
+| **Tratamento de erros** | Letra no menu ou na idade lançava `NumberFormatException` e fechava o programa. CPF repetido ou texto maior que a coluna lançava `SQLException`. Campos vazios eram gravados | As entradas são validadas na leitura, os erros do banco são capturados e traduzidos em mensagens claras, e o programa volta ao menu |
+| **Fluxo mais claro** | O laço rodava mesmo sem itens, terminando com uma mensagem enganosa de "você já viu todas as vagas" | Retorno antecipado: se não há nada para avaliar, a função avisa e termina logo, deixando o caminho principal sem aninhamento extra |
+| **Separação de responsabilidades e testabilidade** | A lógica de busca decidia o que imprimir, e a leitura do teclado estava misturada com o banco | A busca devolve um `StatusMatch` e quem chama decide a mensagem. A gravação pode ser testada sem teclado, e a leitura de dados sem banco |
+| **Consistência** | `avaliarVagas` era declarada com `def`, diferente das demais | Todas as funções declaram o tipo de retorno que realmente têm |
 
 ## 🌐 Versão web (front-end)
 
