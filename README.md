@@ -190,3 +190,30 @@ O candidato guarda os ids das vagas de interesse (`vagasInteresse`) e a empresa 
 3. Abra `index.html` no navegador. Na primeira abertura, os dados fictícios são gravados automaticamente.
 
 Logins de teste: candidato `gabriel@email.com` / `123` e empresa `vagas@techsolutions.com` / `admin`.
+
+
+## 🧱 Refatoração com SOLID
+
+Depois do Clean Code, o Linketinder passou por uma refatoração baseada nos princípios SOLID. A lógica do programa continua a mesma: mudou a organização das classes, para cada uma ter um papel claro e depender de abstrações em vez de classes concretas.
+
+### O que foi feito
+
+1. **Criação da classe `LeitorConsole`:** toda a leitura do teclado (`lerObrigatorio`, `lerInteiro` e `lerCompetencias`) saiu do `LinketinderController` e foi para uma classe própria.
+
+2. **Criação da classe `AvisoErros`:** a tradução dos erros do banco em mensagens claras (CPF/CNPJ repetido, texto maior que a coluna, erro de acesso) saiu do controller e foi para uma classe só para isso.
+
+3. **Criação do pacote `repository`:** foram criadas interfaces para o acesso aos dados: `CandidatoRepository`, `EmpresaRepository`, `VagaRepository`, `CompetenciaRepository` e `MatchRepository`. Os DAOs passaram a implementá-las (`implements`).
+
+4. **`Usuario` como classe abstrata:** a classe base não pode mais ser instanciada diretamente e declara o método abstrato `exibirDados()`, que `Candidato` e `Empresa` implementam.
+
+5. **Remoção de comentários e sinalizações:** comentários e marcações soltas no código foram retirados, deixando o código explicar a si mesmo pelos nomes das classes e funções.
+
+### Como a refatoração melhorou o código
+
+| Princípio | Antes | Depois |
+|---|---|---|
+| **S: responsabilidade única** | O controller cuidava do fluxo do menu, da leitura do teclado e das mensagens de erro do banco | `LeitorConsole` lê os dados, `AvisoErros` traduz os erros, e o controller só coordena o fluxo |
+| **D: inversão de dependência** | O código estava preso às classes concretas dos DAOs, o que obrigava a ter o PostgreSQL no ar para testar | As interfaces do pacote `repository` definem o contrato. Qualquer implementação (inclusive uma em memória, usada nos testes) pode ser trocada sem mexer no restante |
+| **I: segregação de interface** | Não havia contrato: quem usava um DAO conhecia todos os métodos dele | Há uma interface por assunto (candidato, empresa, vaga, competência e match) |
+| **L: substituição de Liskov** | `Candidato` e `Empresa` tinham `exibirDados()`, mas a classe base não o declarava | `Usuario` declara `exibirDados()` como abstrato, então `Candidato` e `Empresa` podem ser usados onde se espera um `Usuario` |
+| **Clareza do código** | Comentários e marcações espalhados no código | Código mais limpo, com nomes que explicam a intenção |
