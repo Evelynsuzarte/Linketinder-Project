@@ -11,7 +11,7 @@ class Main {
     static void main(String[] args) {
         LinketinderController gerenciador = new LinketinderController(
                 new CandidatoDao(), new EmpresaDao(),
-                new VagaDao(), new CompetenciaDao(), new MatchDao(),
+                new VagaDao(), new MatchDao(),
                 new LeitorConsole(), new AvisoErros())
 
         Scanner scanner = new Scanner(System.in)

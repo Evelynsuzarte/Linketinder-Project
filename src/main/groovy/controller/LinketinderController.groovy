@@ -20,7 +20,8 @@ class LinketinderController{
     private final AvisoErros erros
 
     LinketinderController(CandidatoRepository candidatoDao, EmpresaRepository empresaDao,
-                          VagaRepository vagaDao, MatchRepository matchDao, LeitorConsole leitor, AvisoErros erros) {
+                          VagaRepository vagaDao, MatchRepository matchDao,
+                          LeitorConsole leitor, AvisoErros erros) {
         this.candidatoDao = candidatoDao
         this.empresaDao = empresaDao
         this.vagaDao = vagaDao
