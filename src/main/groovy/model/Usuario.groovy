@@ -10,4 +10,5 @@ abstract class Usuario {
     String senha;
     String pais;
 
+    abstract def exibirDados()
 }

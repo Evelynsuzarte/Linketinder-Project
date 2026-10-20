@@ -9,7 +9,6 @@ class Candidato extends Usuario{
     List<Vaga> vagasInteresse = []
     List<String> competencias = []
 
-    @Override
     def exibirDados() {
         return "Candidato: ${nome} ${sobrenome} | email: ${email} | Idade: ${idade} | " +
                 "Descricao:${descricao} | Estado: ${estado} | Competencias: ${competencias}";
