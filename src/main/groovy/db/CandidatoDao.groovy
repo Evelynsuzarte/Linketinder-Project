@@ -1,8 +1,9 @@
-package db.dao
+package db
 import groovy.sql.Sql
 import model.Candidato
+import repository.CandidatoRepository
 
-class CandidatoDao {
+class CandidatoDao implements CandidatoRepository {
 
     Sql sql = ConexaoDB.getSql()
     CompetenciaDao competenciaDAO = new CompetenciaDao()

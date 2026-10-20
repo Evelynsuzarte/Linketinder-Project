@@ -1,8 +1,9 @@
-package db.dao
+package db
 import groovy.sql.Sql
+import repository.CompetenciaRepository
 
 
-class CompetenciaDao {
+class CompetenciaDao implements CompetenciaRepository {
 
     Sql sql = ConexaoDB.getSql()
 

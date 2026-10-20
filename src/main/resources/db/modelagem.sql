@@ -119,13 +119,13 @@ VALUES
 
 ---- EMPRESAS
 INSERT INTO empresas
-    (cnpj, nome, email, pais, cep, descricao, senha)
+    (cnpj, nome, email, pais, cep, descricao, senha, estado)
 VALUES
-    ('11.111.111/0001-11', 'Pastelsoft', 'contato@pastelsoft.com', 'Brasil', '40000-001', 'Empresa de desenvolvimento de software', '123456'),
-    ('22.222.222/0001-22', 'Tech Bahia', 'contato@techbahia.com', 'Brasil', '40100-001', 'Empresa de tecnologia', '123456'),
-    ('33.333.333/0001-33', 'Data Solutions', 'contato@datasolutions.com', 'Brasil', '40200-001', 'Empresa de dados e analytics', '123456'),
-    ('44.444.444/0001-44', 'CodeMais', 'contato@codemais.com', 'Brasil', '40300-001', 'Empresa de desenvolvimento web', '123456'),
-    ('55.555.555/0001-55', 'InovaTech', 'contato@inovatech.com', 'Brasil', '40400-001', 'Empresa de inovação e tecnologia', '123456');
+    ('11.111.111/0001-11', 'Pastelsoft', 'contato@pastelsoft.com', 'Brasil', '40000-001', 'Empresa de desenvolvimento de software', '123456', 'Bahia'),
+    ('22.222.222/0001-22', 'Tech Bahia', 'contato@techbahia.com', 'Brasil', '40100-001', 'Empresa de tecnologia', '123456', 'São Paulo'),
+    ('33.333.333/0001-33', 'Data Solutions', 'contato@datasolutions.com', 'Brasil', '40200-001', 'Empresa de dados e analytics', '123456', 'Rio de Janeiro'),
+    ('44.444.444/0001-44', 'CodeMais', 'contato@codemais.com', 'Brasil', '40300-001', 'Empresa de desenvolvimento web', '123456', 'Sergipe'),
+    ('55.555.555/0001-55', 'InovaTech', 'contato@inovatech.com', 'Brasil', '40400-001', 'Empresa de inovação e tecnologia', '123456','Minas Gerais');
 
 ---- COMPETENCIAS
 INSERT INTO competencias 

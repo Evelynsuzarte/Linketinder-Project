@@ -5,11 +5,11 @@ import groovy.transform.MapConstructor
 class Candidato extends Usuario{
     String sobrenome
     String cpf
-
     int idade
     List<Vaga> vagasInteresse = []
     List<String> competencias = []
 
+    @Override
     def exibirDados() {
         return "Candidato: ${nome} ${sobrenome} | email: ${email} | Idade: ${idade} | " +
                 "Descricao:${descricao} | Estado: ${estado} | Competencias: ${competencias}";

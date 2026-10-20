@@ -1,10 +1,11 @@
-package db.dao
+package db
 
 import groovy.sql.Sql
 import model.Empresa
 import model.Vaga
+import repository.VagaRepository
 
-class VagaDao {
+class VagaDao implements VagaRepository {
 
     Sql sql = ConexaoDB.getSql()
     CompetenciaDao competenciaDAO = new CompetenciaDao()

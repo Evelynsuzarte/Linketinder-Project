@@ -6,6 +6,7 @@ class Empresa extends Usuario{
     String cnpj;
     List<Vaga> vagas = []
 
+    @Override
     def exibirDados() {
         return "Empresa: ${nome} | Descricao:${descricao} | Estado: ${estado} | ";
     }

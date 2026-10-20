@@ -1,7 +1,8 @@
-package db.dao
+package db
 import groovy.sql.Sql
+import repository.MatchRepository
 
-class MatchDao {
+class MatchDao implements MatchRepository {
 
     Sql sql = ConexaoDB.getSql()
     CompetenciaDao competenciaDAO = new CompetenciaDao()
@@ -11,7 +12,6 @@ class MatchDao {
                 [idCandidato, idVaga])
     }
 
-    // interessados nas vagas da empresa que a empresa ainda nao avaliou (so descricao e competencias)
     List<Map> listarInteressados(int idEmpresa) {
         def linhas = sql.rows("""
             SELECT c.id AS id_candidato, c.descricao, v.id AS id_vaga, v.nome AS nome_vaga
@@ -41,7 +41,6 @@ class MatchDao {
         }
     }
 
-    // visao do candidato
     List<Map> matchesDoCandidato(int idCandidato) {
         return sql.rows("""
             SELECT v.nome AS vaga, e.nome AS empresa, v.local_vaga AS local
@@ -51,7 +50,6 @@ class MatchDao {
             WHERE m.id_candidato = ?""", [idCandidato])
     }
 
-    // visao da empresa
     List<Map> matchesDaEmpresa(int idEmpresa) {
         return sql.rows("""
             SELECT v.nome AS vaga, c.nome, c.sobrenome, c.email

@@ -1,6 +1,6 @@
 package model
 
-class Usuario {
+abstract class Usuario {
     int id
     String nome;
     String email;
@@ -8,5 +8,6 @@ class Usuario {
     String cep;
     String estado;
     String senha;
-    String pais
+    String pais;
+
 }

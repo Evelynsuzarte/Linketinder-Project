@@ -1,4 +1,4 @@
-package db.dao
+package db
 import groovy.sql.Sql
 
 class ConexaoDB {

@@ -1,18 +1,19 @@
-package db.dao
+package db
 
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import model.Empresa
+import repository.EmpresaRepository
 
-class EmpresaDao {
+class EmpresaDao implements EmpresaRepository {
 
     Sql sql = ConexaoDB.getSql()
 
     void inserir(Empresa e) {
         def dados = sql.executeInsert("""
-            INSERT INTO empresas (cnpj, nome, email, pais, cep, descricao, senha)
-            VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                [e.cnpj, e.nome, e.email, e.pais, e.cep, e.descricao, e.senha], ['id'])
+            INSERT INTO empresas (cnpj, nome, email, pais, cep, descricao, senha, estado)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                [e.cnpj, e.nome, e.email, e.pais, e.cep, e.descricao, e.senha, e.estado], ['id'])
         e.id = dados[0][0]
 
         println("!!!! Cadastro realizado com sucesso !!!!")

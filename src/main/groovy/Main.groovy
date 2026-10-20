@@ -1,18 +1,25 @@
+import controller.AvisoErros
+import controller.LeitorConsole
 import controller.LinketinderController
+import db.CandidatoDao
+import db.CompetenciaDao
+import db.EmpresaDao
+import db.MatchDao
+import db.VagaDao
 
 class Main {
     static void main(String[] args) {
-        LinketinderController gerenciador = new LinketinderController()
+        LinketinderController gerenciador = new LinketinderController(
+                new CandidatoDao(), new EmpresaDao(),
+                new VagaDao(), new CompetenciaDao(), new MatchDao(),
+                new LeitorConsole(), new AvisoErros())
+
         Scanner scanner = new Scanner(System.in)
         int opcao
 
         while (true){
-            opcao = gerenciador.menu()
+            opcao = gerenciador.menu(scanner)
             switch (opcao){
-                case 0:
-                    println("Encerrando...")
-                    System.exit(0)
-                    break;
                 case 1:
                     gerenciador.listagemCandidatos()
                     break;
@@ -21,6 +28,7 @@ class Main {
                     break;
                 case 3:
                     gerenciador.listagemVagas()
+                    break;
                 case 4:
                     gerenciador.novoCandidato(scanner)
                     break;
@@ -38,6 +46,10 @@ class Main {
                     break
                 case 9:
                     gerenciador.verMatches(scanner)
+                    break;
+                case 10:
+                    println("Encerrando...")
+                    System.exit(0)
                     break;
                 default:
                     println("Tente novamente. Você digitou errado!\n")
