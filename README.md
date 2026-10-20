@@ -30,13 +30,20 @@ model/Usuario.groovy                     -> classe base com atributos comuns (no
 model/Candidato.groovy                   -> representa o candidato (estende Usuario)
 model/Empresa.groovy                     -> representa a empresa (estende Usuario)
 model/Vaga.groovy                        -> representa a vaga (nome, descrição, local, empresa, competências)
+db/ConexaoDB.groovy                      -> conexão única com o PostgreSQL
+db/CandidatoDao.groovy                   -> inserir e buscar candidatos
+db/EmpresaDao.groovy                     -> inserir e buscar empresas
+db/VagaDao.groovy                        -> inserir e listar vagas (todas ou as ainda não curtidas pelo candidato)
+db/CompetenciaDao.groovy                 -> competências do candidato e das vagas
+db/MatchDao.groovy                       -> curtidas e matches
 controller/LinketinderController.groovy  -> fluxo do menu: cadastros, listagens, curtidas e matches
-db/dao/ConexaoDB.groovy                  -> conexão única com o PostgreSQL
-db/dao/CandidatoDao.groovy               -> inserir e buscar candidatos
-db/dao/EmpresaDao.groovy                 -> inserir e buscar empresas
-db/dao/VagaDao.groovy                    -> inserir e listar vagas (todas ou as ainda não curtidas pelo candidato)
-db/dao/CompetenciaDao.groovy             -> competências do candidato e das vagas
-db/dao/MatchDao.groovy                   -> curtidas e matches
+controller/LeitorConsole.groovy          -> leitura e validação das entradas do teclado
+controller/AvisoErros.groovy             -> mensagens para os erros do banco de dados
+repository/CandidatoRepository.groovy    -> contrato de acesso aos candidatos
+repository/EmpresaRepository.groovy      -> contrato de acesso às empresas
+repository/VagaRepository.groovy         -> contrato de acesso às vagas
+repository/CompetenciaRepository.groovy  -> contrato de acesso às competências
+repository/MatchRepository.groovy        -> contrato de curtidas e matches
 modelagem.sql                            -> criação das tabelas e dados de exemplo
 ```
 
