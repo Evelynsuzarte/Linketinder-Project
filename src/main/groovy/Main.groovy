@@ -1,5 +1,6 @@
-import controller.AvisoErros
-import controller.LeitorConsole
+import view.AvisoErros
+import view.LeitorConsole
+import view.Menu
 import controller.LinketinderController
 import db.CandidatoDao
 import db.EmpresaDao
@@ -13,11 +14,12 @@ class Main {
                 new VagaDao(), new MatchDao(),
                 new LeitorConsole(), new AvisoErros())
 
+        Menu inicio = new Menu(new LeitorConsole())
         Scanner scanner = new Scanner(System.in)
         int opcao
 
         while (true){
-            opcao = gerenciador.menu(scanner)
+            opcao = inicio.menu(scanner)
             switch (opcao){
                 case 1:
                     gerenciador.listagemCandidatos()

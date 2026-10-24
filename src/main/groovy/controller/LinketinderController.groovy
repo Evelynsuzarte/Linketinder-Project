@@ -7,6 +7,8 @@ import repository.CandidatoRepository
 import repository.EmpresaRepository
 import repository.MatchRepository
 import repository.VagaRepository
+import view.AvisoErros
+import view.LeitorConsole
 
 import java.sql.SQLException
 

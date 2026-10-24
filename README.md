@@ -37,8 +37,9 @@ db/VagaDao.groovy                        -> inserir e listar vagas (todas ou as 
 db/CompetenciaDao.groovy                 -> competências do candidato e das vagas
 db/MatchDao.groovy                       -> curtidas e matches
 controller/LinketinderController.groovy  -> fluxo do menu: cadastros, listagens, curtidas e matches
-controller/LeitorConsole.groovy          -> leitura e validação das entradas do teclado
-controller/AvisoErros.groovy             -> mensagens para os erros do banco de dados
+view/LeitorConsole.groovy                -> leitura e validação das entradas do teclado
+view/AvisoErros.groovy                   -> mensagens para os erros do banco de dados
+view/Menu.groovy                         -> exibição do menu
 repository/CandidatoRepository.groovy    -> contrato de acesso aos candidatos
 repository/EmpresaRepository.groovy      -> contrato de acesso às empresas
 repository/VagaRepository.groovy         -> contrato de acesso às vagas
@@ -233,3 +234,31 @@ Depois do Clean Code, o Linketinder passou por uma refatoração baseada nos pri
 | **Singleton** | `ConexaoDB` | Garante uma única conexão em toda a aplicação, criada só quando é usada, e evita abrir uma conexão por DAO. |
 | **Repository** | pacote `repository` e DAOs em `db` | As regras do programa dependem de interfaces. O acesso ao banco (JDBC) fica escondido nos DAOs e pode ser substituído por fakes nos testes. |
 | **Injeção de dependência** | construtor do `LinketinderController` e `Main` | O `Main` monta as peças e o controller só recebe o que precisa, o que facilita testar e evoluir. |
+
+## 🏛️ Arquitetura MVC
+
+O Linketinder já seguia o padrão **MVC** desde as versões anteriores. Nesta etapa só reorganizei as classes de entrada e saída para que a divisão ficasse visível também nas pastas.
+
+### Como o projeto se divide
+
+| Camada | Pacote | Classes | Papel |
+|---|---|---|---|
+| **Model** | `model` | `Usuario`, `Candidato`, `Empresa`, `Vaga` | Dados e regras do domínio |
+| **Model** | `repository` e `db` | interfaces `Repository`, DAOs e fábrica de conexões | Acesso e persistência dos dados |
+| **View** | `view` | `Menu`, `LeitorConsole`, `AvisoErros` | O que o usuário vê e digita no console |
+| **Controller** | `controller` | `LinketinderController` | Coordena o fluxo: recebe a ação do usuário, chama o Model e pede à View para mostrar o resultado |
+
+### Por que já estava em MVC
+- Os dados e o acesso ao banco já viviam separados do resto, em `model`, `repository` e `db`. Nenhuma classe do Model lê o teclado nem imprime na tela.
+- O `LinketinderController` já era o único ponto que liga o menu aos cadastros, curtidas e matches, sem conter SQL.
+- A parte de console (leitura de dados e mensagens de erro) já estava isolada em classes próprias, `LeitorConsole` e `AvisoErros`. Faltava só colocá-las no lugar certo.
+
+### O que foi alterado
+1. `LeitorConsole` e `AvisoErros` saíram do pacote `controller` e foram para o novo pacote `view`, porque tratam de entrada e saída, que é responsabilidade da View.
+2. Foi criada a classe `Menu` no pacote `view`, para o menu não ficar dentro do controller.
+3. O `LinketinderController` e o `Main` foram ajustados para usar as classes no novo pacote.
+
+### O que melhorou
+- Fica claro onde mexer em cada tipo de mudança: trocar o banco afeta só o Model, mudar o texto do menu afeta só a View, e mudar o fluxo afeta só o Controller.
+- Como a View está separada, o console pode ser trocado no futuro por outra interface (por exemplo, a versão web) sem mexer nas regras do programa.
+- O controller deixa de depender de detalhes do console, o que facilita testá-lo com uma View falsa.
