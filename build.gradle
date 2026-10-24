@@ -1,8 +1,16 @@
 plugins {
     id 'groovy'
     id 'java'
+    id 'application'
 }
 
+application {
+    mainClass = 'Main'
+}
+
+run {
+    standardInput = System.in
+}
 group = 'org.example'
 version = '1.0-SNAPSHOT'
 
@@ -20,6 +28,7 @@ dependencies {
     testImplementation 'net.bytebuddy:byte-buddy:1.14.12'
     implementation 'org.apache.groovy:groovy-sql:4.0.15'
     implementation 'org.postgresql:postgresql:42.7.2'
+    runtimeOnly 'com.h2database:h2:2.2.224'
 }
 
 test {

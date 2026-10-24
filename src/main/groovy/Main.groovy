@@ -2,7 +2,6 @@ import controller.AvisoErros
 import controller.LeitorConsole
 import controller.LinketinderController
 import db.CandidatoDao
-import db.CompetenciaDao
 import db.EmpresaDao
 import db.MatchDao
 import db.VagaDao

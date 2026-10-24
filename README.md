@@ -224,3 +224,12 @@ Depois do Clean Code, o Linketinder passou por uma refatoração baseada nos pri
 | **I: segregação de interface** | Não havia contrato: quem usava um DAO conhecia todos os métodos dele | Há uma interface por assunto (candidato, empresa, vaga, competência e match) |
 | **L: substituição de Liskov** | `Candidato` e `Empresa` tinham `exibirDados()`, mas a classe base não o declarava | `Usuario` declara `exibirDados()` como abstrato, então `Candidato` e `Empresa` podem ser usados onde se espera um `Usuario` |
 | **Clareza do código** | Comentários e marcações espalhados no código | Código mais limpo, com nomes que explicam a intenção |
+
+## 🧩 Design Patterns
+
+| Padrão | Onde | Por que ajuda |
+|---|---|---|
+| **Factory** | `ConexaoFactory`, `PostgresConexaoFactory`, `H2ConexaoFactory` | O resto do código não conhece o banco nem a URL. Trocar de banco é trocar de fábrica (variável `DB_TIPO`), sem mexer nos DAOs. O H2 em memória permite testar sem PostgreSQL. |
+| **Singleton** | `ConexaoDB` | Garante uma única conexão em toda a aplicação, criada só quando é usada, e evita abrir uma conexão por DAO. |
+| **Repository** | pacote `repository` e DAOs em `db` | As regras do programa dependem de interfaces. O acesso ao banco (JDBC) fica escondido nos DAOs e pode ser substituído por fakes nos testes. |
+| **Injeção de dependência** | construtor do `LinketinderController` e `Main` | O `Main` monta as peças e o controller só recebe o que precisa, o que facilita testar e evoluir. |
