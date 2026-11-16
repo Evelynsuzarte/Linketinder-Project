@@ -11,7 +11,7 @@ class CandidatoService {
         this.repo = repo
     }
 
-    Candidato adicionar(Candidato candidato) {
+    Candidato inserir(Candidato candidato) {
         return repo.inserir(candidato)
     }
 

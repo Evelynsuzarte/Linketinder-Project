@@ -262,3 +262,54 @@ O Linketinder já seguia o padrão **MVC** desde as versões anteriores. Nesta e
 - Fica claro onde mexer em cada tipo de mudança: trocar o banco afeta só o Model, mudar o texto do menu afeta só a View, e mudar o fluxo afeta só o Controller.
 - Como a View está separada, o console pode ser trocado no futuro por outra interface (por exemplo, a versão web) sem mexer nas regras do programa.
 - O controller deixa de depender de detalhes do console, o que facilita testá-lo com uma View falsa.
+
+## 🌐 API RESTful (Tomcat Embutido + Servlets)
+
+Além do modo console (CLI) e do front-end estático, o back-end ganhou uma **API RESTful** feita com **Groovy**, **Apache Tomcat embutido** (`tomcat-embed-core`) e **Java Servlets**, sem o uso de frameworks externos (como Spring ou Micronaut). A arquitetura em camadas foi mantida e expandida com a camada de **Service** entre os controllers HTTP e os repositórios/DAOs.
+
+### O que foi feito
+
+1. **Servidor embutido no `Main.groovy`:** o Tomcat sobe diretamente pela aplicação na porta `8080`, registrando os servlets e suas rotas sem precisar instalar um servidor externo ou gerar arquivo `.war`.
+
+2. **Classe base `ApiServlet`:** criada para evitar repetição de código nos controllers HTTP, centralizando:
+   - Leitura e conversão do corpo da requisição em JSON (`JsonSlurper`);
+   - Validação de campos obrigatórios;
+   - Padronização das respostas em JSON (UTF-8) e dos status HTTP (`200 OK`, `201 Created`, `400 Bad Request` e `500 Internal Server Error`).
+
+3. **Controllers REST por recurso:** foram criados `CandidatoController`, `EmpresaController` e `VagaController`, usando os verbos HTTP adequados (`GET` para listar e `POST` para cadastrar) sobre cada recurso.
+
+4. **Camada `service`:** foram criadas as classes `CandidatoService`, `EmpresaService` e `VagaService` para intermediar os controllers e os repositórios, mantendo o acesso ao banco isolado nos DAOs.
+
+5. **Serialização limpa nas relações entre entidades:** `EmpresaDao` passou a carregar a lista de vagas vinculadas a cada empresa, e `VagaDao` formata os dados da empresa dentro da vaga retornando apenas `id` e `nome`, evitando campos `null` desnecessários no JSON.
+
+### Endpoints disponíveis
+
+| Recurso | Método | Rota | Status | Função |
+|---|---|---|---|---|
+| **Candidatos** | `GET` | `/candidatos` | `200` | Lista todos os candidatos e suas competências |
+| **Candidatos** | `POST` | `/candidatos` | `201` | Cadastra um novo candidato |
+| **Empresas** | `GET` | `/empresas` | `200` | Lista todas as empresas e suas vagas vinculadas |
+| **Empresas** | `POST` | `/empresas` | `201` | Cadastra uma nova empresa |
+| **Vagas** | `GET` | `/vagas` | `200` | Lista todas as vagas cadastradas |
+| **Vagas** | `POST` | `/vagas` | `201` | Cadastra uma nova vaga ligada a uma empresa (`idEmpresa`) |
+
+### Como executar e testar
+
+1. Com o PostgreSQL rodando e o banco `linketinder` criado, execute a classe `Main` pela IDE (ou via `./gradlew run`).
+2. Mantenha o programa em execução (`http://localhost:8080`) e envie requisições via **Postman**, **Insomnia**, **Thunder Client** ou `curl`, sempre com o cabeçalho `Content-Type: application/json` nos envios `POST`.
+
+Exemplo de corpo JSON para `POST http://localhost:8080/candidatos`:
+
+```json
+{
+  "cpf": "12345678900",
+  "nome": "Sandubinha",
+  "sobrenome": "Silva",
+  "idade": 25,
+  "email": "sandubinha@email.com",
+  "pais": "Brasil",
+  "cep": "44000-000",
+  "descricao": "Desenvolvedor backend",
+  "senha": "123",
+  "competencias": ["Groovy", "SQL", "REST"]
+}

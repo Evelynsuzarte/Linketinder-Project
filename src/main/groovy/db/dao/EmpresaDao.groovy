@@ -9,6 +9,7 @@ import model.repository.EmpresaRepository
 class EmpresaDao implements EmpresaRepository {
 
     Sql sql = ConexaoDB.getSql()
+    VagaDao vagaDao = new VagaDao()
 
     void inserir(Empresa e) {
         def dados = sql.executeInsert("""
@@ -61,6 +62,7 @@ class EmpresaDao implements EmpresaRepository {
 
     Empresa montarObjeto(GroovyRowResult linha) {
         return new Empresa(id: linha.id, cnpj: linha.cnpj, nome: linha.nome, email: linha.email,
-                pais: linha.pais, cep: linha.cep, estado: linha.estado, descricao: linha.descricao, senha: linha.senha)
+                pais: linha.pais, cep: linha.cep, estado: linha.estado, descricao: linha.descricao, senha: linha.senha,
+                vagas: vagaDao.listarPorEmpresa(linha.id))
     }
 }

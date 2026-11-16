@@ -32,7 +32,7 @@ class VagaService {
         return repo.buscarPorId(id)
     }
 
-    List<Vaga> listarTodas() {
+    List listarTodas() {
         return repo.listarTodas()
     }
 

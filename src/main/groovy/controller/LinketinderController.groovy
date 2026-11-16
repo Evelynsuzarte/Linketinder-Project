@@ -139,7 +139,7 @@ class LinketinderController{
         senha = leitor.lerObrigatorio(scanner, "Digite sua senha: ")
 
         Empresa empresa = new Empresa(nome: nome, email: email, cnpj: cnpj, pais: pais,
-                cep: cep, descricao: descricao, senha: senha)
+                cep: cep, descricao: descricao, senha: senha, estado:estado)
         return empresa
     }
 

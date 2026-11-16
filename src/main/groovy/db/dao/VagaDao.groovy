@@ -45,14 +45,26 @@ class VagaDao implements VagaRepository {
         return linha ? montar(linha) : null
     }
 
-    List<Vaga> listarTodas() {
-        return sql.rows(SELECT_VAGAS).collect { montar(it) }
-    }
 
     List<Vaga> listarNaoCurtidas(int idCandidato) {
         return sql.rows(SELECT_VAGAS + """
             WHERE v.id NOT IN (SELECT id_vaga FROM curtida_candidato_vaga WHERE id_candidato = ?)""",
                 [idCandidato]).collect { montar(it) }
+    }
+
+    List listarTodas() {
+        return sql.rows(SELECT_VAGAS).collect { montarMap(it) }
+    }
+
+    List listarPorEmpresa(int idEmpresa) {
+        return sql.rows(SELECT_VAGAS + " WHERE v.id_empresa = ?", [idEmpresa]).collect { montarMap(it) }
+    }
+
+    private Map montarMap(linha) {
+        Vaga v = montar(linha)
+        def vagaMap = v.properties.findAll { it.key != 'class' }
+        vagaMap.empresa = [id: v.empresa.id, nome: v.empresa.nome]
+        return vagaMap
     }
 
     Vaga montar(linha) {
