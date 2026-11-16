@@ -1,8 +1,8 @@
-import db.CandidatoDao
+import db.dao.CandidatoDao
 import db.ConexaoDB
 import db.H2ConexaoFactory
 import groovy.sql.Sql
-import model.Candidato
+import model.entity.Candidato
 import spock.lang.Specification
 
 class CandidatoDaoIntegracaoSpec extends Specification {

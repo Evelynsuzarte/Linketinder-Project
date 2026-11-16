@@ -1,4 +1,4 @@
-import repository.MatchRepository
+import model.repository.MatchRepository
 import spock.lang.Specification
 
 class CicloMatchSpec extends Specification {

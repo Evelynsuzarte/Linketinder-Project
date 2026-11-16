@@ -1,9 +1,10 @@
-package db
+package db.dao
 
+import db.ConexaoDB
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import model.Empresa
-import repository.EmpresaRepository
+import model.entity.Empresa
+import model.repository.EmpresaRepository
 
 class EmpresaDao implements EmpresaRepository {
 
@@ -17,6 +18,18 @@ class EmpresaDao implements EmpresaRepository {
         e.id = dados[0][0]
 
         println("!!!! Cadastro realizado com sucesso !!!!")
+    }
+
+    void atualizar(Empresa e) {
+        sql.executeUpdate("""
+        UPDATE empresas 
+        SET cnpj = ?, nome = ?, email = ?, pais = ?, 
+            cep = ?, descricao = ?, senha = ?, estado = ?
+        WHERE id = ?""",
+                [e.cnpj, e.nome, e.email, e.pais,
+                 e.cep, e.descricao, e.senha, e.estado, e.id])
+
+        println("!!!! Cadastro atualizado com sucesso !!!!")
     }
 
     List<Empresa> listarTodas() {
@@ -41,8 +54,13 @@ class EmpresaDao implements EmpresaRepository {
         }
     }
 
+    Empresa buscarPorId(int id) {
+        def linha = sql.firstRow("SELECT * FROM empresas WHERE id = ?", [id])
+        return linha ? montarObjeto(linha) : null
+    }
+
     Empresa montarObjeto(GroovyRowResult linha) {
         return new Empresa(id: linha.id, cnpj: linha.cnpj, nome: linha.nome, email: linha.email,
-                pais: linha.pais, cep: linha.cep, descricao: linha.descricao, senha: linha.senha)
+                pais: linha.pais, cep: linha.cep, estado: linha.estado, descricao: linha.descricao, senha: linha.senha)
     }
 }

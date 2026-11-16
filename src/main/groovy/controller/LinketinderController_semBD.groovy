@@ -4,9 +4,9 @@
 //import db.dao.EmpresaDao
 //import db.dao.MatchDao
 //import db.dao.VagaDao
-//import model.Candidato
-//import model.Empresa
-//import model.Vaga
+//import model.entity.Candidato
+//import model.entity.Empresa
+//import model.entity.Vaga
 //
 //class LinketinderController_semBD {
 //

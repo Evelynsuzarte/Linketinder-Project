@@ -1,4 +1,4 @@
-package repository
+package model.repository
 
 interface MatchRepository {
     void curtirVaga(int idCandidato, int idVaga)

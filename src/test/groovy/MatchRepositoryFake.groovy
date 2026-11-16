@@ -1,4 +1,4 @@
-import repository.MatchRepository
+import model.repository.MatchRepository
 
 class MatchRepositoryFake implements MatchRepository {
 

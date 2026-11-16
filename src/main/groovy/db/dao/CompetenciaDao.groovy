@@ -1,6 +1,8 @@
-package db
+package db.dao
+
+import db.ConexaoDB
 import groovy.sql.Sql
-import repository.CompetenciaRepository
+import model.repository.CompetenciaRepository
 
 
 class CompetenciaDao implements CompetenciaRepository {
@@ -42,5 +44,30 @@ class CompetenciaDao implements CompetenciaRepository {
                            JOIN vaga_competencia vc ON vc.id_competencia = c.id
                            WHERE vc.id_vaga = ?""", [idVaga])*.nome
     }
+
+    void atualizarDoCandidato(int idCandidato, List<String> nomes_competencias) {
+        sql.withTransaction {
+            sql.executeUpdate("DELETE FROM candidato_competencia WHERE id_candidato = ?", [idCandidato])
+            if (nomes_competencias) {
+                salvarDoCandidato(idCandidato, nomes_competencias)
+            }
+        }
+    }
+
+    void atualizarDaVaga(int idVaga, List<String> nomes_competencias) {
+        if (!nomes_competencias) return
+
+        sql.withTransaction {
+            sql.executeUpdate("DELETE FROM vaga_competencia WHERE id_vaga = ?", [idVaga])
+            salvarDaVaga(idVaga, nomes_competencias)
+        }
+    }
+
+    String buscarPorId(int id) {
+        def linha = sql.firstRow("SELECT nome FROM competencias WHERE id = ?", [id])
+        return linha?.nome
+    }
+
 }
+
 

@@ -29,6 +29,9 @@ dependencies {
     implementation 'org.apache.groovy:groovy-sql:4.0.15'
     implementation 'org.postgresql:postgresql:42.7.2'
     runtimeOnly 'com.h2database:h2:2.2.224'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.+'
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    implementation 'org.apache.groovy:groovy-json:4.0.23'
 }
 
 test {

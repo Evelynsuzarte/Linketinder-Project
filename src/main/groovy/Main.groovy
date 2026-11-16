@@ -2,10 +2,10 @@ import view.AvisoErros
 import view.LeitorConsole
 import view.Menu
 import controller.LinketinderController
-import db.CandidatoDao
-import db.EmpresaDao
-import db.MatchDao
-import db.VagaDao
+import db.dao.CandidatoDao
+import db.dao.EmpresaDao
+import db.dao.MatchDao
+import db.dao.VagaDao
 
 class Main {
     static void main(String[] args) {

@@ -1,9 +1,10 @@
-package db
+package db.dao
 
+import db.ConexaoDB
 import groovy.sql.Sql
-import model.Empresa
-import model.Vaga
-import repository.VagaRepository
+import model.entity.Empresa
+import model.entity.Vaga
+import model.repository.VagaRepository
 
 class VagaDao implements VagaRepository {
 
@@ -23,6 +24,25 @@ class VagaDao implements VagaRepository {
         v.id = chaves[0][0]
         competenciaDAO.salvarDaVaga(v.id, v.competencias)
         println("!!!! Vaga cadastrada com sucesso !!!!")
+    }
+
+    void atualizar(Vaga v) {
+        sql.executeUpdate("""
+            UPDATE vagas 
+            SET nome = ?, descricao = ?, local_vaga = ?, id_empresa = ?
+            WHERE id = ?""",
+                    [v.nome, v.descricao, v.local, v.empresa.id, v.id])
+
+        if (v.competencias != null) {
+            competenciaDAO.atualizarDaVaga(v.id, v.competencias)
+        }
+
+        println("!!!! Vaga atualizada com sucesso !!!!")
+    }
+
+    Vaga buscarPorId(int id) {
+        def linha = sql.firstRow(SELECT_VAGAS + " WHERE v.id = ?", [id])
+        return linha ? montar(linha) : null
     }
 
     List<Vaga> listarTodas() {

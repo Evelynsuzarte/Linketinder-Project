@@ -1,7 +1,7 @@
 import controller.LinketinderController
-import model.Candidato
-import model.Empresa
-import model.Vaga
+import model.entity.Candidato
+import model.entity.Empresa
+import model.entity.Vaga
 
 class Main_semDB {
     static void main(String[] args) {

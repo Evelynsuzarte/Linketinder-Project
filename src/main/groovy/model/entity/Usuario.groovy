@@ -1,4 +1,4 @@
-package model
+package model.entity
 
 abstract class Usuario {
     int id

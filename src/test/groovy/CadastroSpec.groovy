@@ -1,5 +1,5 @@
-//import model.Candidato
-//import model.Empresa
+//import model.entity.Candidato
+//import model.entity.Empresa
 //import controller.LinketinderController
 //import spock.lang.Specification
 //

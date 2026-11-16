@@ -1,6 +1,8 @@
-package db
+package db.dao
+
+import db.ConexaoDB
 import groovy.sql.Sql
-import repository.MatchRepository
+import model.repository.MatchRepository
 
 class MatchDao implements MatchRepository {
 

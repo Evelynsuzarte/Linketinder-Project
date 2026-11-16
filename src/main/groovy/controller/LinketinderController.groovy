@@ -1,12 +1,12 @@
 package controller
 
-import model.Empresa
-import model.Candidato
-import model.Vaga
-import repository.CandidatoRepository
-import repository.EmpresaRepository
-import repository.MatchRepository
-import repository.VagaRepository
+import model.entity.Empresa
+import model.entity.Candidato
+import model.entity.Vaga
+import model.repository.CandidatoRepository
+import model.repository.EmpresaRepository
+import model.repository.MatchRepository
+import model.repository.VagaRepository
 import view.AvisoErros
 import view.LeitorConsole
 

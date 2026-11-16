@@ -1,7 +1,9 @@
-package db
+package db.dao
+
+import db.ConexaoDB
 import groovy.sql.Sql
-import model.Candidato
-import repository.CandidatoRepository
+import model.entity.Candidato
+import model.repository.CandidatoRepository
 
 class CandidatoDao implements CandidatoRepository {
 
@@ -17,6 +19,22 @@ class CandidatoDao implements CandidatoRepository {
         c.id = chaves[0][0]
         competenciaDAO.salvarDoCandidato(c.id, c.competencias)
         println("!!!! Cadastro realizado com sucesso !!!!")
+    }
+
+    void atualizar(Candidato c) {
+        sql.executeUpdate("""
+            UPDATE candidatos 
+            SET cpf = ?, nome = ?, sobrenome = ?, idade = ?, 
+                email = ?, pais = ?, cep = ?, descricao = ?, senha = ?
+            WHERE id = ?""",
+                    [c.cpf, c.nome, c.sobrenome, c.idade,
+                     c.email, c.pais, c.cep, c.descricao, c.senha, c.id])
+
+        if (c.competencias != null) {
+            competenciaDAO.atualizarDoCandidato(c.id, c.competencias)
+        }
+
+        println("!!!! Cadastro atualizado com sucesso !!!!")
     }
 
     List<Candidato> listarTodos() {
@@ -41,6 +59,11 @@ class CandidatoDao implements CandidatoRepository {
         } else {
             return montarObjeto(linha)
         }
+    }
+
+    Candidato buscarPorId(int id) {
+        def linha = sql.firstRow("SELECT * FROM candidatos WHERE id = ?", [id])
+        return linha ? montarObjeto(linha) : null
     }
 
     Candidato montarObjeto(linha) {
