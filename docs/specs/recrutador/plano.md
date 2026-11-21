@@ -196,3 +196,18 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
     - Alterar: `docs/specs/recrutador/spec.md`, `docs/specs/recrutador/plano.md`, `CHANGELOG.md`
   - **Como validar:**
     - Executar `.\gradlew.bat test` e `npx.cmd tsc`; testar exclusão de vaga em `painel_empresa.html` e `painel_recrutador.html`.
+
+- [x] **13. Armazenamento seguro de senhas com hash (`PBKDF2WithHmacSHA256`) e anotação das senhas de teste**
+  - **Camada:** Banco de dados e Back-end
+  - **O que será feito:**
+    - Criar utilitário `SegurancaSenha` usando `PBKDF2WithHmacSHA256` + salt aleatório (nativo da JVM) e testes unitários em `SegurancaSenhaSpec`.
+    - Aplicar geração de hash em `RecrutadorService`, `CandidatoService` e `EmpresaService` (preservando o hash atual na edição se a senha vier vazia).
+    - Atualizar `modelagem.sql` (`VARCHAR(255)` em `candidatos.senha` e `empresas.senha`) e `migracao_recrutador.sql` (`ALTER COLUMN ... TYPE VARCHAR(255)`), substituindo as senhas iniciais em texto puro pelo hash da senha `123456`.
+    - Documentar as senhas originais de teste (`123456`) em `AGENTS.md` e `CHANGELOG.md` para consulta.
+  - **Arquivos criados ou alterados:**
+    - Criar: `src/main/groovy/service/SegurancaSenha.groovy`, `src/test/groovy/SegurancaSenhaSpec.groovy`
+    - Alterar: `src/main/groovy/service/RecrutadorService.groovy`, `src/main/groovy/service/CandidatoService.groovy`, `src/main/groovy/service/EmpresaService.groovy`, `src/test/groovy/RecrutadorServiceSpec.groovy`
+    - Alterar: `src/main/resources/db/modelagem.sql`, `src/main/resources/db/migracao_recrutador.sql`
+    - Alterar: `AGENTS.md`, `docs/specs/recrutador/spec.md`, `docs/specs/recrutador/plano.md`, `CHANGELOG.md`
+  - **Como validar:**
+    - Executar `.\gradlew.bat test --tests SegurancaSenhaSpec --tests RecrutadorServiceSpec` e `.\gradlew.bat test`.

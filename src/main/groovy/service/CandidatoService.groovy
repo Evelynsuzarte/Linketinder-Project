@@ -12,10 +12,16 @@ class CandidatoService {
     }
 
     Candidato inserir(Candidato candidato) {
+        if (candidato?.senha?.trim() && !SegurancaSenha.estaHasheada(candidato.senha)) {
+            candidato.senha = SegurancaSenha.gerarHash(candidato.senha)
+        }
         return repo.inserir(candidato)
     }
 
     Candidato editar(Candidato candidato) {
+        if (candidato?.senha?.trim() && !SegurancaSenha.estaHasheada(candidato.senha)) {
+            candidato.senha = SegurancaSenha.gerarHash(candidato.senha)
+        }
         return repo.atualizar(candidato)
     }
 

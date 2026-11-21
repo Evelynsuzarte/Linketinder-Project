@@ -188,8 +188,11 @@ O **match** acontece quando os dois lados demonstram interesse mútuo:
      - **Visão da empresa:** exibe o **nome da vaga, o nome e o sobrenome do candidato e o e-mail**.
 
 ### Observações importantes
-- Vagas ou candidatos recusados (`n`) **não** são gravados como rejeição e voltam a aparecer na próxima avaliação.
-- As senhas são armazenadas em **texto puro**, por se tratar de um projeto de estudo.
+- Vagas ou candidatos recusados (`n`) passam a ser registrados em `rejeicao_empresa_candidato` e podem ser consultados na lista anônima de rejeitados.
+- No back-end, as senhas (`Recrutador`, `Candidato` e `Empresa`) são armazenadas com hash seguro **`PBKDF2WithHmacSHA256`** + salt aleatório de 16 bytes (`SegurancaSenha`).
+- **Senhas de teste iniciais (para consulta):**
+  - **Banco SQL (`modelagem.sql` / `migracao_recrutador.sql`):** todos os candidatos, empresas e recrutadores iniciais utilizam a senha original **`123456`** (armazenada em hash no banco).
+  - **Front-end (`localStorage` / `storage.ts`):** candidatos (`gabriel@email.com` / `123`, `mariana@email.com` / `abc`, `carlos@email.com` / `456`), empresas (`vagas@techsolutions.com` / `admin`, `rh@inovastudio.com` / `inova`, `careers@softglobal.com` / `cloud`) e recrutadores (`fernanda@techsolutions.com` / `123`, `rafael@inovastudio.com` / `123`).
 - Candidatos e empresas são buscados pelo **nome** no fluxo CLI; nomes repetidos podem causar ambiguidade.
 
 ---

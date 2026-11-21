@@ -32,6 +32,7 @@ class RecrutadorService {
             throw new IllegalArgumentException("Já existe um recrutador cadastrado com este CPF.")
         }
 
+        recrutador.senha = SegurancaSenha.gerarHash(recrutador.senha)
         repo.inserir(recrutador)
     }
 
@@ -61,9 +62,19 @@ class RecrutadorService {
 
         if (!recrutador.senha?.trim()) {
             recrutador.senha = existente.senha
+        } else if (!SegurancaSenha.estaHasheada(recrutador.senha)) {
+            recrutador.senha = SegurancaSenha.gerarHash(recrutador.senha)
         }
 
         repo.atualizar(recrutador)
+    }
+
+    boolean autenticar(String email, String senha) {
+        if (!email?.trim() || !senha) {
+            return false
+        }
+        Recrutador recrutador = repo.buscarPorEmail(email.trim())
+        return recrutador != null && SegurancaSenha.verificarSenha(senha, recrutador.senha)
     }
 
     void remover(int id) {

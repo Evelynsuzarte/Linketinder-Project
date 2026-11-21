@@ -29,7 +29,7 @@ Consolidação das decisões alinhadas antes da implementação:
     - **E-mail:** formato válido e único entre recrutadores.
     - **CPF:** formato/dígitos válidos e único entre recrutadores.
     - **Data de nascimento:** formato `dd-mm-aaaa` e idade mínima de 18 anos.
-    - **Senha:** sem regras de complexidade mínima e sem hash (mantendo o padrão atual do projeto, sem expor o campo em retornos).
+    - **Senha:** sem regras de complexidade mínima, porém **armazenada com hash seguro (`PBKDF2WithHmacSHA256` + salt aleatório de 16 bytes, 65.536 iterações, formato `<saltBase64>:<hashBase64>`)** no back-end para recrutadores, candidatos e empresas (nunca em texto puro no banco e nunca exposta em retornos). As senhas originais de teste dos registros iniciais ficam documentadas em `AGENTS.md` e nesta spec para consulta.
 
 ---
 
@@ -77,7 +77,8 @@ Consolidação das decisões alinhadas antes da implementação:
    - A empresa pode cadastrar, listar, editar e remover seus recrutadores.
    - Não é permitido cadastrar ou atualizar recrutador com `id_empresa` inexistente, e-mail já utilizado por outro recrutador ou CPF já utilizado por outro recrutador.
    - O campo `data_nascimento` deve obedecer ao formato `dd-mm-aaaa`, representar uma data calendárica válida e corresponder a idade ≥ 18 anos na data atual.
-   - A senha é obrigatória no cadastro; na edição, caso omitida/vazia, mantém a senha atual.
+   - A senha é obrigatória no cadastro e deve ser convertida em hash `PBKDF2WithHmacSHA256` antes da persistência; na edição, caso omitida/vazia, mantém o hash atual.
+   - **Senhas de teste iniciais (banco SQL):** todos os registros iniciais em `modelagem.sql` e `migracao_recrutador.sql` (`candidatos`, `empresas` e `recrutadores`) utilizam a senha original **`123456`** (armazenada como hash no banco).
 2. **Gestão de Vagas pelo Recrutador:**
    - Um recrutador autenticado/identificado pode criar novas vagas vinculadas à sua empresa, editar e remover vagas pertencentes à sua empresa.
    - Um recrutador **não** pode criar, editar ou remover vagas de outra empresa.
@@ -109,7 +110,7 @@ O recrutador segue exatamente as mesmas regras de anonimato da empresa:
 - **Cenário 1: Cadastro de recrutador válido**
   - **Dado** uma empresa existente no banco
   - **Quando** a empresa cadastra um recrutador com nome, área, descrição, e-mail único válido, CPF único válido, data de nascimento `dd-mm-aaaa` (≥ 18 anos) e senha
-  - **Então** o recrutador é salvo vinculado à empresa e o retorno não expõe `senha`, `cpf` nem `data_nascimento`.
+  - **Então** o recrutador é salvo vinculado à empresa, a senha é armazenada como hash `<saltBase64>:<hashBase64>` (nunca em texto puro) e o retorno não expõe `senha`, `cpf` nem `data_nascimento`.
 
 - **Cenário 2: Validações de cadastro/edição de recrutador**
   - **Dado** dados inválidos (e-mail duplicado/inválido, CPF duplicado/inválido, data fora de `dd-mm-aaaa` ou menor de 18 anos, ou empresa inexistente)
@@ -156,4 +157,4 @@ O recrutador segue exatamente as mesmas regras de anonimato da empresa:
 - Integração HTTP entre o front-end estático e a API REST (o front-end continua usando `localStorage`).
 - Criação de tabelas/campos de formações acadêmicas e experiências profissionais para candidatos.
 - Autenticação por token/sessão (JWT/cookies) na API REST ou login no CLI.
-- Regras de complexidade ou hash de senha.
+- Regras de complexidade mínima de senha.

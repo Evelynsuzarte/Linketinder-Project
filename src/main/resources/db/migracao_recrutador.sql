@@ -28,21 +28,40 @@ CREATE TABLE IF NOT EXISTS rejeicao_empresa_candidato (
     FOREIGN KEY (id_recrutador) REFERENCES recrutadores(id) ON DELETE SET NULL
 );
 
+ALTER TABLE candidatos
+    ALTER COLUMN senha TYPE VARCHAR(255);
+
+ALTER TABLE empresas
+    ALTER COLUMN senha TYPE VARCHAR(255);
+
 ALTER TABLE curtida_empresa_candidato
     ADD COLUMN IF NOT EXISTS id_recrutador INT REFERENCES recrutadores(id) ON DELETE SET NULL;
 
 ALTER TABLE match
     ADD COLUMN IF NOT EXISTS id_recrutador INT REFERENCES recrutadores(id) ON DELETE SET NULL;
 
--- Dados iniciais de exemplo (inseridos apenas se as empresas existirem e ainda não houver conflito)
+-- Atualiza senhas iniciais em texto puro ('123456') para hash PBKDF2WithHmacSHA256
+UPDATE candidatos
+SET senha = 'muMPVMUoJ8QiCyymCV560Q==:aEBhMPLAiCAB2OSlPkLUaCepGlbd9tfIKlZd+GtZHKs='
+WHERE senha = '123456';
+
+UPDATE empresas
+SET senha = 'muMPVMUoJ8QiCyymCV560Q==:aEBhMPLAiCAB2OSlPkLUaCepGlbd9tfIKlZd+GtZHKs='
+WHERE senha = '123456';
+
+UPDATE recrutadores
+SET senha = 'muMPVMUoJ8QiCyymCV560Q==:aEBhMPLAiCAB2OSlPkLUaCepGlbd9tfIKlZd+GtZHKs='
+WHERE senha = '123456';
+
+-- Dados iniciais de exemplo (senha de teste original: 123456)
 INSERT INTO recrutadores
     (id_empresa, nome, area_recrutamento, descricao, email, cpf, data_nascimento, senha)
-SELECT 1, 'Fernanda Lima', 'TI', 'Tech Recruiter focada em backend e dados', 'fernanda@pastelsoft.com', '666.666.666-66', '1995-03-12', '123456'
+SELECT 1, 'Fernanda Lima', 'TI', 'Tech Recruiter focada em backend e dados', 'fernanda@pastelsoft.com', '666.666.666-66', '1995-03-12', 'muMPVMUoJ8QiCyymCV560Q==:aEBhMPLAiCAB2OSlPkLUaCepGlbd9tfIKlZd+GtZHKs='
 WHERE EXISTS (SELECT 1 FROM empresas WHERE id = 1)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO recrutadores
     (id_empresa, nome, area_recrutamento, descricao, email, cpf, data_nascimento, senha)
-SELECT 2, 'Rafael Mendes', 'RH', 'Recrutador de talentos de tecnologia', 'rafael@techbahia.com', '777.777.777-77', '1992-09-20', '123456'
+SELECT 2, 'Rafael Mendes', 'RH', 'Recrutador de talentos de tecnologia', 'rafael@techbahia.com', '777.777.777-77', '1992-09-20', 'muMPVMUoJ8QiCyymCV560Q==:aEBhMPLAiCAB2OSlPkLUaCepGlbd9tfIKlZd+GtZHKs='
 WHERE EXISTS (SELECT 1 FROM empresas WHERE id = 2)
 ON CONFLICT DO NOTHING;

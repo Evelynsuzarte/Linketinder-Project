@@ -19,6 +19,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Painel do Recrutador no front-end (`painel_recrutador.html`, `painel_recrutador_style.css`, `painel_recrutador.ts`) para criação/edição de vagas da empresa, avaliação anônima de candidatos, lista anônima de rejeitados e visualização de matches.
 - Tela de criação de vaga no front-end (`criar-vaga.html` e `criar_vaga.ts`) para empresa e recrutador cadastrarem novas vagas no `localStorage`.
 - Remoção de vagas (`VagaRepository`, `VagaDao`, `VagaService`, `DELETE /vagas`, CLI e botões `Remover Vaga` em `painel_empresa.ts` e `painel_recrutador.ts`).
+- Armazenamento seguro de senhas com hash `PBKDF2WithHmacSHA256` + salt (`SegurancaSenha`, `SegurancaSenhaSpec`) nos serviços de `Recrutador`, `Candidato` e `Empresa`, além de documentação das senhas de teste em `AGENTS.md` e `spec.md`.
 
 ### Modificado
 - Instruções de teste da API RESTful adicionadas em `AGENTS.md`.

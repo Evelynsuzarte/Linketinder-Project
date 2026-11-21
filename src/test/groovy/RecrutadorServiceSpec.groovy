@@ -3,6 +3,7 @@ import model.entity.Recrutador
 import model.repository.EmpresaRepository
 import model.repository.RecrutadorRepository
 import service.RecrutadorService
+import service.SegurancaSenha
 import spock.lang.Specification
 
 import java.time.LocalDate
@@ -37,7 +38,7 @@ class RecrutadorServiceSpec extends Specification {
         service.inserir(recrutador)
 
         then:
-        1 * repo.inserir({ it.cpf == "52998224725" })
+        1 * repo.inserir({ it.cpf == "52998224725" && it.senha != "123" && SegurancaSenha.verificarSenha("123", it.senha) })
     }
 
     def "deve rejeitar cadastro quando empresa não existe ou há e-mail/CPF duplicado"() {
