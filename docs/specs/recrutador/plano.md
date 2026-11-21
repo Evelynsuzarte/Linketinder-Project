@@ -6,7 +6,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
 
 ## Banco de Dados
 
-- [ ] **1. Modelagem e script de migração incremental do banco**
+- [x] **1. Modelagem e script de migração incremental do banco**
   - **Camada:** Banco de dados
   - **O que será feito:**
     - Atualizar `modelagem.sql` com as tabelas `recrutadores` e `rejeicao_empresa_candidato`, a coluna `id_recrutador` (nullable, `ON DELETE SET NULL`) em `curtida_empresa_candidato` e `match`, e `INSERT`s de exemplo.
