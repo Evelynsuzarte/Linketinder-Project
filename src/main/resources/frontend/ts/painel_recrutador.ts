@@ -20,8 +20,8 @@ if (logado === null || logado.tipo !== 'recrutador') {
 const candidatos: Candidato[] = obterTodosCandidatos();
 const empresas: Empresa[] = obterTodasEmpresas();
 const recrutadores: Recrutador[] = obterTodosRecrutadores();
-const vagas: Vaga[] = obterTodasVagas();
-const rejeicoes: Rejeicao[] = obterTodasRejeicoes();
+let vagas: Vaga[] = obterTodasVagas();
+let rejeicoes: Rejeicao[] = obterTodasRejeicoes();
 
 const recrutadorAtual: Recrutador = recrutadores.find(r => r.id === logado.id) ?? voltarParaLogin();
 const empresaAtual: Empresa = empresas.find(e => e.id === recrutadorAtual.idEmpresa) ?? voltarParaLogin();
@@ -100,11 +100,20 @@ function criarCardVaga(vaga: Vaga): HTMLElement {
     const cabecalho = criarElemento('div', 'vaga-cabecalho');
     cabecalho.appendChild(criarElemento('h2', '', vaga.nome));
 
+    const acoesVaga = criarElemento('div');
     const btnEditar = criarElemento('button', 'btn-editar', 'Editar Vaga');
     btnEditar.type = 'button';
     btnEditar.dataset.acao = 'editar-vaga';
     btnEditar.dataset.vaga = String(vaga.id);
-    cabecalho.appendChild(btnEditar);
+
+    const btnRemover = criarElemento('button', 'btn-remover', 'Remover Vaga');
+    btnRemover.type = 'button';
+    btnRemover.dataset.acao = 'remover-vaga';
+    btnRemover.dataset.vaga = String(vaga.id);
+
+    acoesVaga.appendChild(btnEditar);
+    acoesVaga.appendChild(btnRemover);
+    cabecalho.appendChild(acoesVaga);
     card.appendChild(cabecalho);
 
     card.appendChild(criarElemento('p', '', `Descrição: ${vaga.descricao}`));
@@ -272,6 +281,18 @@ listaVagas.addEventListener('click', (event: Event) => {
         inputVagaDescricao.value = vaga.descricao;
         inputVagaCompetencias.value = vaga.competencias.join(', ');
         btnCancelarVaga.classList.remove('escondido');
+        return;
+    }
+
+    if (acao === 'remover-vaga') {
+        vagas = vagas.filter(v => !(v.id === idVaga && v.empresa.id === empresaAtual.id));
+        empresaAtual.vagas = (empresaAtual.vagas ?? []).filter(id => id !== idVaga);
+        for (const c of candidatos) {
+            c.vagasInteresse = (c.vagasInteresse ?? []).filter(id => id !== idVaga);
+        }
+        rejeicoes = rejeicoes.filter(r => r.idVaga !== idVaga);
+        salvarTudo();
+        renderizarTudo();
         return;
     }
 

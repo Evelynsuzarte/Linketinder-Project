@@ -76,4 +76,25 @@ class CicloMatchSpec extends Specification {
         thrown(IllegalArgumentException)
         0 * vagaRepo.atualizar(_)
     }
+
+    def "recrutador pode remover vaga da própria empresa e não pode remover vaga de outra empresa"() {
+        given:
+        VagaRepository vagaRepo = Mock()
+        VagaService vagaService = new VagaService(vagaRepo)
+        vagaRepo.buscarPorId(VAGA_GROOVY) >> new Vaga(id: VAGA_GROOVY, empresa: new Empresa(id: ZG))
+        vagaRepo.buscarPorId(200) >> new Vaga(id: 200, empresa: new Empresa(id: OUTRA_EMPRESA))
+
+        when:
+        vagaService.removerComoRecrutador(VAGA_GROOVY, ZG)
+
+        then:
+        1 * vagaRepo.remover(VAGA_GROOVY)
+
+        when:
+        vagaService.removerComoRecrutador(200, ZG)
+
+        then:
+        thrown(IllegalArgumentException)
+        0 * vagaRepo.remover(200)
+    }
 }

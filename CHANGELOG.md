@@ -17,6 +17,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Camada de serviço `RecrutadorService` com validações de negócio, projeção segura (sem expor `cpf`, `dataNascimento` ou `senha`) e testes em `RecrutadorServiceSpec`.
 - Endpoints REST `/recrutadores` (`RecrutadorController` com `GET`, `POST`, `PUT`, `DELETE`) e `/matches` (`MatchController` para interessados, curtida, rejeição, rejeitados e matches).
 - Painel do Recrutador no front-end (`painel_recrutador.html`, `painel_recrutador_style.css`, `painel_recrutador.ts`) para criação/edição de vagas da empresa, avaliação anônima de candidatos, lista anônima de rejeitados e visualização de matches.
+- Tela de criação de vaga no front-end (`criar-vaga.html` e `criar_vaga.ts`) para empresa e recrutador cadastrarem novas vagas no `localStorage`.
+- Remoção de vagas (`VagaRepository`, `VagaDao`, `VagaService`, `DELETE /vagas`, CLI e botões `Remover Vaga` em `painel_empresa.ts` e `painel_recrutador.ts`).
 
 ### Modificado
 - Instruções de teste da API RESTful adicionadas em `AGENTS.md`.

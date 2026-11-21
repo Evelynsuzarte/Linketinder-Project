@@ -88,4 +88,37 @@ class VagaController extends ApiServlet {
             ])
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
+        executar(resp) {
+            String idParam = req.getParameter("id")
+            String idRecrutadorParam = req.getParameter("idRecrutador")
+            int id
+            Integer idRecrutador = idRecrutadorParam ? idRecrutadorParam.toInteger() : null
+
+            if (idParam) {
+                id = idParam.toInteger()
+            } else {
+                def body = lerDados(req)
+                validarCampos(body, ["id"])
+                id = body.id as Integer
+                if (body.idRecrutador != null) {
+                    idRecrutador = body.idRecrutador as Integer
+                }
+            }
+
+            if (idRecrutador != null) {
+                Recrutador recrutador = recrutadorService.buscarPorId(idRecrutador)
+                if (recrutador == null) {
+                    throw new IllegalArgumentException("Recrutador não encontrado.")
+                }
+                service.removerComoRecrutador(id, recrutador.empresa.id)
+            } else {
+                service.remover(id)
+            }
+
+            responder(resp, HttpServletResponse.SC_OK, [mensagem: "Vaga removida com sucesso"])
+        }
+    }
 }

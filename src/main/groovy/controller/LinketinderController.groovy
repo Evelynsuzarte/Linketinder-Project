@@ -499,7 +499,7 @@ class LinketinderController{
         }
 
         println("\n--- VAGAS DA EMPRESA ${recrutador.empresa.nome} (Recrutador: ${recrutador.nome}) ---")
-        println("1 - Listar vagas | 2 - Criar vaga | 3 - Editar vaga")
+        println("1 - Listar vagas | 2 - Criar vaga | 3 - Editar vaga | 4 - Remover vaga")
         int acao = leitor.lerInteiro(scanner, "Escolha: ")
 
         try {
@@ -529,6 +529,11 @@ class LinketinderController{
                     List<String> competencias = leitor.lerCompetencias(scanner, "Competências (separadas por vírgula): ")
                     Vaga editada = new Vaga(id: idVaga, nome: nome, descricao: descricao, local: local, competencias: competencias)
                     vagaService.atualizarComoRecrutador(editada, recrutador.empresa.id)
+                    break
+                case 4:
+                    int idVaga = leitor.lerInteiro(scanner, "ID da vaga para remover: ")
+                    vagaService.removerComoRecrutador(idVaga, recrutador.empresa.id)
+                    println("Vaga removida com sucesso!")
                     break
                 default:
                     println("Opção inválida.")

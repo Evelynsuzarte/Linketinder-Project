@@ -41,6 +41,30 @@ class VagaService {
         repo.atualizar(vaga)
     }
 
+    void remover(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("O ID da vaga deve ser válido.")
+        }
+        if (repo.buscarPorId(id) == null) {
+            throw new IllegalArgumentException("Vaga não encontrada.")
+        }
+        repo.remover(id)
+    }
+
+    void removerComoRecrutador(int idVaga, int idEmpresaRecrutador) {
+        if (idVaga <= 0 || idEmpresaRecrutador <= 0) {
+            throw new IllegalArgumentException("O ID da vaga e o ID da empresa do recrutador são obrigatórios.")
+        }
+        Vaga existente = repo.buscarPorId(idVaga)
+        if (existente == null) {
+            throw new IllegalArgumentException("Vaga não encontrada.")
+        }
+        if (existente.empresa?.id != idEmpresaRecrutador) {
+            throw new IllegalArgumentException("Recrutador não tem permissão para remover vaga de outra empresa.")
+        }
+        repo.remover(idVaga)
+    }
+
     Vaga buscarPorId(int id) {
         if (id <= 0) {
             throw new IllegalArgumentException("O ID da vaga deve ser válido.")

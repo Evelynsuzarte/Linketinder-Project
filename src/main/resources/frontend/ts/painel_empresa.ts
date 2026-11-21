@@ -24,7 +24,7 @@ if (logado === null || logado.tipo !== 'empresa') {
 
 const candidatos: Candidato[] = obterTodosCandidatos();
 const empresas: Empresa[] = obterTodasEmpresas();
-const vagas: Vaga[] = obterTodasVagas();
+let vagas: Vaga[] = obterTodasVagas();
 let recrutadores: Recrutador[] = obterTodosRecrutadores();
 let rejeicoes: Rejeicao[] = obterTodasRejeicoes();
 
@@ -170,6 +170,12 @@ function criarCardVaga(vaga: Vaga): HTMLElement {
 
     const detalhes = criarElemento('div', 'vaga-detalhes');
     detalhes.appendChild(criarElemento('h2', 'vaga-titulo', vaga.nome));
+
+    const btnRemoverVaga = criarElemento('button', 'btn-remover', 'Remover Vaga');
+    btnRemoverVaga.type = 'button';
+    btnRemoverVaga.dataset.acao = 'remover-vaga';
+    btnRemoverVaga.dataset.vaga = String(vaga.id);
+    detalhes.appendChild(btnRemoverVaga);
 
     const pDescricao = criarElemento('p', '', 'Descrição: ');
     pDescricao.appendChild(criarElemento('span', 'vaga-descricao', vaga.descricao));
@@ -483,6 +489,16 @@ listaRecrutadores.addEventListener('click', (event: Event) => {
     }
 });
 
+function removerVaga(idVaga: number): void {
+    vagas = vagas.filter(v => !(v.id === idVaga && v.empresa.id === empresaAtual.id));
+    empresaAtual.vagas = (empresaAtual.vagas ?? []).filter(id => id !== idVaga);
+    for (const c of candidatos) {
+        c.vagasInteresse = (c.vagasInteresse ?? []).filter(id => id !== idVaga);
+    }
+    rejeicoes = rejeicoes.filter(r => r.idVaga !== idVaga);
+    salvarTudo();
+}
+
 // Um único ouvinte no container atende todos os botões (inclusive os criados depois)
 listaVagas.addEventListener('click', (event: Event) => {
     const botao = (event.target as HTMLElement).closest('button');
@@ -491,7 +507,9 @@ listaVagas.addEventListener('click', (event: Event) => {
     const idVaga = Number(botao.dataset.vaga);
     const idCandidato = Number(botao.dataset.candidato);
 
-    if (botao.dataset.acao === 'match') {
+    if (botao.dataset.acao === 'remover-vaga') {
+        removerVaga(idVaga);
+    } else if (botao.dataset.acao === 'match') {
         darMatch(idVaga, idCandidato);
     } else if (botao.dataset.acao === 'recusar') {
         recusarCandidato(idVaga, idCandidato);

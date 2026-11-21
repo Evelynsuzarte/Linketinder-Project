@@ -183,7 +183,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Rodar `npx tsc`, abrir `painel_empresa.html` via `npx serve src/main/resources`, clicar em `+ Criar Nova Vaga`, cadastrar uma vaga e confirmar que ela aparece listada no painel.
 
-- [ ] **12. Remoção de vagas (Back-end, API, CLI e Front-end)**
+- [x] **12. Remoção de vagas (Back-end, API, CLI e Front-end)**
   - **Camada:** Back-end e Front-end
   - **O que será feito:**
     - Adicionar `remover` em `VagaRepository` e `VagaDao`, e `remover` / `removerComoRecrutador` em `VagaService` (validando pertencimento à empresa), com testes em `CicloMatchSpec`.

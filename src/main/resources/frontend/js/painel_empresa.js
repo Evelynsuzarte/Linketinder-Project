@@ -11,7 +11,7 @@ if (logado === null || logado.tipo !== 'empresa') {
 }
 const candidatos = obterTodosCandidatos();
 const empresas = obterTodasEmpresas();
-const vagas = obterTodasVagas();
+let vagas = obterTodasVagas();
 let recrutadores = obterTodosRecrutadores();
 let rejeicoes = obterTodasRejeicoes();
 const empresaAtual = empresas.find(e => e.id === logado.id) ?? voltarParaLogin();
@@ -128,6 +128,11 @@ function criarCardVaga(vaga) {
     const card = criarElemento('article', 'vaga-card');
     const detalhes = criarElemento('div', 'vaga-detalhes');
     detalhes.appendChild(criarElemento('h2', 'vaga-titulo', vaga.nome));
+    const btnRemoverVaga = criarElemento('button', 'btn-remover', 'Remover Vaga');
+    btnRemoverVaga.type = 'button';
+    btnRemoverVaga.dataset.acao = 'remover-vaga';
+    btnRemoverVaga.dataset.vaga = String(vaga.id);
+    detalhes.appendChild(btnRemoverVaga);
     const pDescricao = criarElemento('p', '', 'Descrição: ');
     pDescricao.appendChild(criarElemento('span', 'vaga-descricao', vaga.descricao));
     detalhes.appendChild(pDescricao);
@@ -401,6 +406,15 @@ listaRecrutadores.addEventListener('click', (event) => {
         renderizarRecrutadores();
     }
 });
+function removerVaga(idVaga) {
+    vagas = vagas.filter(v => !(v.id === idVaga && v.empresa.id === empresaAtual.id));
+    empresaAtual.vagas = (empresaAtual.vagas ?? []).filter(id => id !== idVaga);
+    for (const c of candidatos) {
+        c.vagasInteresse = (c.vagasInteresse ?? []).filter(id => id !== idVaga);
+    }
+    rejeicoes = rejeicoes.filter(r => r.idVaga !== idVaga);
+    salvarTudo();
+}
 // Um único ouvinte no container atende todos os botões (inclusive os criados depois)
 listaVagas.addEventListener('click', (event) => {
     const botao = event.target.closest('button');
@@ -408,7 +422,10 @@ listaVagas.addEventListener('click', (event) => {
         return;
     const idVaga = Number(botao.dataset.vaga);
     const idCandidato = Number(botao.dataset.candidato);
-    if (botao.dataset.acao === 'match') {
+    if (botao.dataset.acao === 'remover-vaga') {
+        removerVaga(idVaga);
+    }
+    else if (botao.dataset.acao === 'match') {
         darMatch(idVaga, idCandidato);
     }
     else if (botao.dataset.acao === 'recusar') {

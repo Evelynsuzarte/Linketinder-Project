@@ -18,7 +18,7 @@ Consolidação das decisões alinhadas antes da implementação:
 2. **Operações de CRUD:** Inclui **cadastrar, listar, editar e remover** recrutadores.
 3. **Quem gerencia recrutadores:** A **empresa**. No front-end utiliza a autenticação já existente da empresa; no CLI e na API REST não há autenticação de sessão, sendo o vínculo informado/validado pela empresa (`idEmpresa` na API / nome da empresa no CLI).
 4. **Vínculo com empresa:** Relacionamento `1:N` obrigatório (`id_empresa NOT NULL`). Ao remover a empresa, seus recrutadores são removidos em cascata (`ON DELETE CASCADE`).
-5. **Escopo de vagas do recrutador:** O recrutador visualiza **todas as vagas da empresa** à qual pertence (sem filtro por área) e **pode criar e editar vagas** dessa empresa, além de analisar vagas e perfis interessados.
+5. **Escopo de vagas do recrutador:** O recrutador visualiza **todas as vagas da empresa** à qual pertence (sem filtro por área) e **pode criar, editar e remover vagas** dessa empresa, além de analisar vagas e perfis interessados.
 6. **Curtida e match:** A curtida de um recrutador conta como curtida da empresa e gera o match imediatamente. O **primeiro recrutador** da empresa que curtir o candidato para aquela vaga gera o match, e o candidato sai da fila de avaliação dos demais recrutadores daquela empresa.
 7. **Rastreabilidade:** As tabelas `curtida_empresa_candidato` e `match` passam a registrar `id_recrutador` (opcional/nullable para preservar compatibilidade com ações diretas da empresa) para identificar qual recrutador efetuou a curtida/match.
 8. **Rejeição de candidato:** Quando o recrutador (ou empresa) recusa um candidato (`n`), a rejeição passa a ser gravada em uma **lista de rejeitados** (removendo-o da fila principal de avaliação), e essa lista pode ser **consultada** posteriormente.
@@ -79,8 +79,8 @@ Consolidação das decisões alinhadas antes da implementação:
    - O campo `data_nascimento` deve obedecer ao formato `dd-mm-aaaa`, representar uma data calendárica válida e corresponder a idade ≥ 18 anos na data atual.
    - A senha é obrigatória no cadastro; na edição, caso omitida/vazia, mantém a senha atual.
 2. **Gestão de Vagas pelo Recrutador:**
-   - Um recrutador autenticado/identificado pode criar novas vagas vinculadas à sua empresa e editar vagas pertencentes à sua empresa.
-   - Um recrutador **não** pode criar ou editar vagas de outra empresa.
+   - Um recrutador autenticado/identificado pode criar novas vagas vinculadas à sua empresa, editar e remover vagas pertencentes à sua empresa.
+   - Um recrutador **não** pode criar, editar ou remover vagas de outra empresa.
 3. **Avaliação, Curtida, Rejeição e Match:**
    - A fila de candidatos interessados exibida ao recrutador considera todas as vagas da sua empresa cujo candidato ainda **não** foi curtido (`curtida_empresa_candidato`) nem rejeitado (`rejeicao_empresa_candidato`) para aquela vaga.
    - **Curtida (`s`):** registra `curtida_empresa_candidato` e `match` com `id_empresa`, `id_candidato`, `id_vaga` e `id_recrutador`. Uma vez gerado o match, o par `(candidato, vaga)` não aparece mais para outros recrutadores da mesma empresa.
@@ -145,10 +145,10 @@ O recrutador segue exatamente as mesmas regras de anonimato da empresa:
 
 ## 7. Impacto no que já existe
 - **`src/main/resources/db/modelagem.sql` e `src/main/resources/db/migracao_recrutador.sql`:** inclusão das tabelas `recrutadores` e `rejeicao_empresa_candidato`, além da coluna `id_recrutador` em `curtida_empresa_candidato` e `match` (tanto no script completo quanto no script incremental de atualização de bancos existentes).
-- **Camada `model` / `service` / `db/dao`:** novas interfaces/implementações para `Recrutador` e validação de CPF/e-mail/data (`dd-mm-aaaa`), além de métodos em `VagaRepository`/`VagaDao` (edição) e `MatchRepository`/`MatchDao` (rejeição, listagem de rejeitados e `id_recrutador`).
-- **API REST (`Main.groovy` e `controller/`):** novo servlet `/recrutadores` (`GET`, `POST`, `PUT`, `DELETE`), suporte a `PUT /vagas` e endpoints/parâmetros para curtida/rejeição/rejeitados.
-- **CLI (`MainTerminal.groovy`, `Menu.groovy`, `LinketinderController.groovy`):** novas opções de menu para gestão de recrutadores, atuação como recrutador (criar/editar vagas, avaliar candidatos, ver rejeitados).
-- **Front-end (`src/main/resources/frontend/`):** adaptação de `storage.ts`, `acesso.ts`, `painel_empresa.ts` (gerenciar recrutadores + lista de rejeitados) e criação/adaptação do painel/acesso do recrutador, mantendo a compilação via `tsc`.
+- **Camada `model` / `service` / `db/dao`:** novas interfaces/implementações para `Recrutador` e validação de CPF/e-mail/data (`dd-mm-aaaa`), além de métodos em `VagaRepository`/`VagaDao` (edição e remoção) e `MatchRepository`/`MatchDao` (rejeição, listagem de rejeitados e `id_recrutador`).
+- **API REST (`Main.groovy` e `controller/`):** novo servlet `/recrutadores` (`GET`, `POST`, `PUT`, `DELETE`), suporte a `PUT /vagas` e `DELETE /vagas`, e endpoints/parâmetros para curtida/rejeição/rejeitados.
+- **CLI (`MainTerminal.groovy`, `Menu.groovy`, `LinketinderController.groovy`):** novas opções de menu para gestão de recrutadores, atuação como recrutador (criar/editar/remover vagas, avaliar candidatos, ver rejeitados).
+- **Front-end (`src/main/resources/frontend/`):** adaptação de `storage.ts`, `acesso.ts`, `painel_empresa.ts` (gerenciar recrutadores, remover vagas + lista de rejeitados), criação do painel do recrutador (`painel_recrutador.*`, com criação/edição/remoção de vagas) e criação da tela `criar-vaga.html` (`criar_vaga.ts`) para cadastro de novas vagas por empresa ou recrutador, mantendo a compilação via `tsc`.
 
 ---
 
