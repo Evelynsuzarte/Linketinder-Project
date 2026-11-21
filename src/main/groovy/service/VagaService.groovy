@@ -1,5 +1,6 @@
 package service
 
+import model.entity.Empresa
 import model.entity.Vaga
 import model.repository.VagaRepository
 
@@ -25,6 +26,21 @@ class VagaService {
         repo.atualizar(vaga)
     }
 
+    void atualizarComoRecrutador(Vaga vaga, int idEmpresaRecrutador) {
+        if (vaga == null || vaga.id <= 0 || idEmpresaRecrutador <= 0) {
+            throw new IllegalArgumentException("Os dados, o ID da vaga e o ID da empresa do recrutador são obrigatórios.")
+        }
+        Vaga existente = repo.buscarPorId(vaga.id)
+        if (existente == null) {
+            throw new IllegalArgumentException("Vaga não encontrada.")
+        }
+        if (existente.empresa?.id != idEmpresaRecrutador) {
+            throw new IllegalArgumentException("Recrutador não tem permissão para editar vaga de outra empresa.")
+        }
+        vaga.empresa = new Empresa(id: idEmpresaRecrutador)
+        repo.atualizar(vaga)
+    }
+
     Vaga buscarPorId(int id) {
         if (id <= 0) {
             throw new IllegalArgumentException("O ID da vaga deve ser válido.")
@@ -34,6 +50,13 @@ class VagaService {
 
     List listarTodas() {
         return repo.listarTodas()
+    }
+
+    List listarPorEmpresa(int idEmpresa) {
+        if (idEmpresa <= 0) {
+            throw new IllegalArgumentException("O ID da empresa deve ser válido.")
+        }
+        return repo.listarPorEmpresa(idEmpresa)
     }
 
     List<Vaga> listarNaoCurtidas(int idCandidato) {

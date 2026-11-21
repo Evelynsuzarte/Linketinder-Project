@@ -68,7 +68,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Executar `.\gradlew.bat test --tests RecrutadorServiceSpec` e `.\gradlew.bat test`.
 
-- [ ] **5. Edição de vagas, rastreabilidade de match (`id_recrutador`) e lista de rejeitados**
+- [x] **5. Edição de vagas, rastreabilidade de match (`id_recrutador`) e lista de rejeitados**
   - **Camada:** Back-end
   - **O que será feito:**
     - Adicionar atualização de vaga em `VagaRepository`, `VagaDao` e `VagaService`, validando que o recrutador só edita vagas da própria empresa.
