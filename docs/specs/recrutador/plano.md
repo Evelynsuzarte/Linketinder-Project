@@ -88,7 +88,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Executar `.\gradlew.bat test --tests CicloMatchSpec` e `.\gradlew.bat test`.
 
-- [ ] **6. Endpoints REST para Recrutador, edição de vagas e avaliação/rejeitados**
+- [x] **6. Endpoints REST para Recrutador, edição de vagas e avaliação/rejeitados**
   - **Camada:** Back-end (API REST)
   - **O que será feito:**
     - Criar `RecrutadorController` (`/recrutadores`: `GET` por `idEmpresa`, `POST`, `PUT`, `DELETE`) usando `ApiServlet` e retornando apenas campos não sensíveis.

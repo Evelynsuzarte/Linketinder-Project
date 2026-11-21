@@ -15,11 +15,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Entidade `Recrutador`, contrato `RecrutadorRepository` e suíte de testes unitários `RecrutadorValidacaoSpec`.
 - Persistência `RecrutadorDao` com CRUD completo e testes de integração em H2 (`RecrutadorDaoIntegracaoSpec`).
 - Camada de serviço `RecrutadorService` com validações de negócio, projeção segura (sem expor `cpf`, `dataNascimento` ou `senha`) e testes em `RecrutadorServiceSpec`.
+- Endpoints REST `/recrutadores` (`RecrutadorController` com `GET`, `POST`, `PUT`, `DELETE`) e `/matches` (`MatchController` para interessados, curtida, rejeição, rejeitados e matches).
 
 ### Modificado
 - Instruções de teste da API RESTful adicionadas em `AGENTS.md`.
 - Modelagem completa em `src/main/resources/db/modelagem.sql` atualizada para incluir `recrutadores`, `rejeicao_empresa_candidato` e `id_recrutador` em `curtida_empresa_candidato` e `match`.
 - `Validador` atualizado com validações de e-mail, CPF e data de nascimento (`dd-mm-aaaa` com idade mínima de 18 anos).
+- `VagaController` atualizado com filtro `?idEmpresa` e suporte a `PUT /vagas`; novos servlets registrados em `Main.groovy`.
 
 ### Corrigido
 
