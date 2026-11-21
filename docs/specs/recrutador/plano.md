@@ -40,7 +40,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Executar `.\gradlew.bat test --tests RecrutadorValidacaoSpec` e `.\gradlew.bat test`.
 
-- [ ] **3. Persistência de Recrutador (`RecrutadorDao`) e testes de integração em H2**
+- [x] **3. Persistência de Recrutador (`RecrutadorDao`) e testes de integração em H2**
   - **Camada:** Back-end
   - **O que será feito:**
     - Criar `RecrutadorDao` implementando `RecrutadorRepository` com SQL parametrizado via `ConexaoDB`.

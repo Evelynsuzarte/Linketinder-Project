@@ -13,6 +13,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Especificação técnica da feature Recrutador em `docs/specs/recrutador/spec.md`.
 - Script de migração incremental `src/main/resources/db/migracao_recrutador.sql` para criação de `recrutadores`, `rejeicao_empresa_candidato` e coluna `id_recrutador` em bancos existentes.
 - Entidade `Recrutador`, contrato `RecrutadorRepository` e suíte de testes unitários `RecrutadorValidacaoSpec`.
+- Persistência `RecrutadorDao` com CRUD completo e testes de integração em H2 (`RecrutadorDaoIntegracaoSpec`).
 
 ### Modificado
 - Instruções de teste da API RESTful adicionadas em `AGENTS.md`.
