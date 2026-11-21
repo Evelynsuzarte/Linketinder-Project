@@ -10,8 +10,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ### Adicionado
 - Documentação de contexto do projeto em `AGENTS.md`.
 - Adaptação da skill `skills/feature-com-spec/SKILL.md` para o Linketinder (specs em `docs/specs/<nome-da-feature>/`, validação do Princípio do Anonimato e atualização obrigatória do `CHANGELOG.md` por tarefa).
+- Especificação técnica da feature Recrutador em `docs/specs/recrutador/spec.md`.
 
 ### Modificado
+- Instruções de teste da API RESTful adicionadas em `AGENTS.md`.
 
 ### Corrigido
 

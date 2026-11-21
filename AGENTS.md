@@ -92,6 +92,19 @@ Certifique-se de que o PostgreSQL está rodando com o banco `linketinder` criado
 ```
 O servidor sobe em `http://localhost:8080`.
 
+### Testar a API RESTful
+Com o servidor rodando em `http://localhost:8080` (via `.\gradlew.bat run`), envie requisições com **Postman**, **Insomnia**, **Thunder Client** ou `curl.exe` (sempre com `Content-Type: application/json` nos envios `POST`):
+
+- **Endpoints atuais:**
+  - `GET /candidatos` e `POST /candidatos` (obrigatórios: `cpf`, `nome`, `email`, `senha`)
+  - `GET /empresas` e `POST /empresas` (obrigatórios: `cnpj`, `nome`, `email`, `senha`)
+  - `GET /vagas` e `POST /vagas` (obrigatórios: `nome`, `descricao`, `local`, `idEmpresa`)
+- **Exemplo (`GET` e `POST` com `curl.exe`):**
+  ```powershell
+  curl.exe http://localhost:8080/vagas
+  curl.exe -X POST http://localhost:8080/vagas -H "Content-Type: application/json" -d "{\"nome\":\"Dev Backend\",\"descricao\":\"API REST\",\"local\":\"Remoto\",\"idEmpresa\":1,\"competencias\":[\"Groovy\",\"SQL\"]}"
+  ```
+
 ### Rodar o modo Terminal (CLI — `MainTerminal.groovy`)
 Execute a classe `MainTerminal` diretamente pela IDE (com o classpath do projeto carregado) ou configurando `mainClass` para `MainTerminal`.
 
