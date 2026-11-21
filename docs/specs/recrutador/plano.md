@@ -154,7 +154,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Rodar `npx tsc`, abrir `painel_empresa.html` via servidor local e testar CRUD de recrutadores, rejeição de candidato e consulta à lista de rejeitados.
 
-- [ ] **10. Painel do Recrutador e validação final**
+- [x] **10. Painel do Recrutador e validação final**
   - **Camada:** Front-end
   - **O que será feito:**
     - Criar `painel_recrutador.html`, `painel_recrutador_style.css` e `painel_recrutador.ts` permitindo ao recrutador logado: visualizar vagas da sua empresa, criar/editar vagas, avaliar candidatos interessados (curtir gerando match ou rejeitar), consultar rejeitados e ver matches (preservando estritamente o Princípio do Anonimato).

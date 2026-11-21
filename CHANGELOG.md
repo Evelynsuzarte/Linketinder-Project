@@ -16,6 +16,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Persistência `RecrutadorDao` com CRUD completo e testes de integração em H2 (`RecrutadorDaoIntegracaoSpec`).
 - Camada de serviço `RecrutadorService` com validações de negócio, projeção segura (sem expor `cpf`, `dataNascimento` ou `senha`) e testes em `RecrutadorServiceSpec`.
 - Endpoints REST `/recrutadores` (`RecrutadorController` com `GET`, `POST`, `PUT`, `DELETE`) e `/matches` (`MatchController` para interessados, curtida, rejeição, rejeitados e matches).
+- Painel do Recrutador no front-end (`painel_recrutador.html`, `painel_recrutador_style.css`, `painel_recrutador.ts`) para criação/edição de vagas da empresa, avaliação anônima de candidatos, lista anônima de rejeitados e visualização de matches.
 
 ### Modificado
 - Instruções de teste da API RESTful adicionadas em `AGENTS.md`.
