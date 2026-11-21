@@ -5,14 +5,21 @@ import controller.LinketinderController
 import db.dao.CandidatoDao
 import db.dao.EmpresaDao
 import db.dao.MatchDao
+import db.dao.RecrutadorDao
 import db.dao.VagaDao
+import service.RecrutadorService
+import service.VagaService
 
 class MainTerminal {
     static void main(String[] args) {
+        EmpresaDao empresaDao = new EmpresaDao()
+        VagaDao vagaDao = new VagaDao()
         LinketinderController gerenciador = new LinketinderController(
-                new CandidatoDao(), new EmpresaDao(),
-                new VagaDao(), new MatchDao(),
-                new LeitorConsole(), new AvisoErros())
+                new CandidatoDao(), empresaDao,
+                vagaDao, new MatchDao(),
+                new LeitorConsole(), new AvisoErros(),
+                new RecrutadorService(new RecrutadorDao(), empresaDao),
+                new VagaService(vagaDao))
 
         Menu inicio = new Menu(new LeitorConsole())
         Scanner scanner = new Scanner(System.in)
@@ -49,6 +56,18 @@ class MainTerminal {
                     gerenciador.verMatches(scanner)
                     break;
                 case 10:
+                    gerenciador.gerenciarRecrutadores(scanner)
+                    break;
+                case 11:
+                    gerenciador.gerenciarVagasRecrutador(scanner)
+                    break;
+                case 12:
+                    gerenciador.avaliarCandidatosComoRecrutador(scanner)
+                    break;
+                case 13:
+                    gerenciador.verRejeitados(scanner)
+                    break;
+                case 0:
                     println("Encerrando...")
                     System.exit(0)
                     break;

@@ -105,7 +105,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Executar `.\gradlew.bat test`, subir a API com `.\gradlew.bat run` e validar `GET/POST/PUT/DELETE /recrutadores`, `PUT /vagas` e rotas de match/rejeitados via `curl.exe` ou Postman (conferindo ausência de `cpf`, `dataNascimento` e `senha` nas respostas).
 
-- [ ] **7. Fluxo CLI para Recrutador, gestão pela Empresa e lista de rejeitados**
+- [x] **7. Fluxo CLI para Recrutador, gestão pela Empresa e lista de rejeitados**
   - **Camada:** Back-end (CLI)
   - **O que será feito:**
     - Atualizar `Menu.groovy`, `LinketinderController.groovy` e `MainTerminal.groovy` para incluir: CRUD de recrutadores pela empresa, atuação do recrutador (criar/editar vagas da sua empresa, avaliar candidatos interessados, consultar lista anônima de rejeitados e ver matches).

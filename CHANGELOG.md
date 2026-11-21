@@ -22,6 +22,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Modelagem completa em `src/main/resources/db/modelagem.sql` atualizada para incluir `recrutadores`, `rejeicao_empresa_candidato` e `id_recrutador` em `curtida_empresa_candidato` e `match`.
 - `Validador` atualizado com validações de e-mail, CPF e data de nascimento (`dd-mm-aaaa` com idade mínima de 18 anos).
 - `VagaController` atualizado com filtro `?idEmpresa` e suporte a `PUT /vagas`; novos servlets registrados em `Main.groovy`.
+- CLI (`Menu`, `LinketinderController` e `MainTerminal`) atualizado com gestão de recrutadores pela empresa, criação/edição de vagas e avaliação de candidatos pelo recrutador, e consulta anônima de candidatos rejeitados.
 
 ### Corrigido
 
