@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/painel_recrutador_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cagliostro&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Tilt+Warp&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../../images/logo.png">
+    <title>Criar Nova Vaga - Linketinder</title>
+</head>
+<body>
+
+<header>
+    <nav>
+        <span><a href="index.html"><img class="logo" src="../../images/logo.png" alt="logo"></a></span>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a id="link-voltar" href="painel_empresa.html">Voltar ao Painel</a></li>
+            <li><a href="index.html">Logoff</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="painel-secao">
+        <h1>Criar Nova Vaga</h1>
+        <p id="empresa-vinculada"></p>
+
+        <form id="form-criar-vaga" class="form-vaga">
+            <input type="text" id="vaga-nome" placeholder="Nome da vaga" required>
+            <input type="text" id="vaga-descricao" placeholder="Descrição da vaga" required>
+            <input type="text" id="vaga-competencias" placeholder="Competências (separadas por vírgula)" required>
+            <div class="form-vaga-acoes">
+                <button type="submit">Cadastrar Vaga</button>
+                <a id="btn-cancelar-vaga" href="painel_empresa.html">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer>
+    <span>Evelyn Suzarte Fernandes - ACZG 2026.2</span>
+</footer>
+
+<script type="module" src="../js/criar_vaga.js"></script>
+
+</body>
+</html>

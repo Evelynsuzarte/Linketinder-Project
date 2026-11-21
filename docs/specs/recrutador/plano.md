@@ -168,3 +168,31 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
     - Alterar: `CHANGELOG.md`
   - **Como validar:**
     - Rodar `npx tsc`, testar todo o fluxo do recrutador no navegador (`npx serve src/main/resources`), rodar `.\gradlew.bat test` e executar o checklist completo da Etapa 6 da skill (critérios de aceite, Princípio do Anonimato, `CHANGELOG.md` e regressão).
+
+- [x] **11. Tela de criação de vaga (`criar-vaga.html` e `criar_vaga.ts`)**
+  - **Camada:** Front-end
+  - **O que será feito:**
+    - Criar `criar-vaga.html` (acionada pelo botão `+ Criar Nova Vaga` de `painel_empresa.html` e acessível também por recrutadores) e `criar_vaga.ts` para cadastrar novas vagas vinculadas à empresa do usuário logado no `localStorage`.
+    - Compilar TypeScript para JS (`npx tsc`).
+    - Atualizar `CHANGELOG.md` (seção `[Não lançado]`).
+  - **Arquivos criados ou alterados:**
+    - Criar: `src/main/resources/frontend/html/criar-vaga.html`
+    - Criar: `src/main/resources/frontend/ts/criar_vaga.ts`
+    - Criar (gerados pelo `tsc`): `src/main/resources/frontend/js/criar_vaga.js` (e `.d.ts`/`.map`)
+    - Alterar: `docs/specs/recrutador/spec.md`, `docs/specs/recrutador/plano.md`, `CHANGELOG.md`
+  - **Como validar:**
+    - Rodar `npx tsc`, abrir `painel_empresa.html` via `npx serve src/main/resources`, clicar em `+ Criar Nova Vaga`, cadastrar uma vaga e confirmar que ela aparece listada no painel.
+
+- [ ] **12. Remoção de vagas (Back-end, API, CLI e Front-end)**
+  - **Camada:** Back-end e Front-end
+  - **O que será feito:**
+    - Adicionar `remover` em `VagaRepository` e `VagaDao`, e `remover` / `removerComoRecrutador` em `VagaService` (validando pertencimento à empresa), com testes em `CicloMatchSpec`.
+    - Adicionar `DELETE /vagas` em `VagaController` e opção de remover vaga no CLI (`LinketinderController`).
+    - Adicionar botão `Remover Vaga` nos cards de vaga em `painel_empresa.ts` e `painel_recrutador.ts`, limpando vínculos no `localStorage` e recompilando via `npx tsc`.
+    - Atualizar `CHANGELOG.md` (seção `[Não lançado]`).
+  - **Arquivos criados ou alterados:**
+    - Alterar: `src/main/groovy/model/repository/VagaRepository.groovy`, `src/main/groovy/db/dao/VagaDao.groovy`, `src/main/groovy/service/VagaService.groovy`, `src/main/groovy/controller/VagaController.groovy`, `src/main/groovy/controller/LinketinderController.groovy`, `src/test/groovy/CicloMatchSpec.groovy`
+    - Alterar: `src/main/resources/frontend/ts/painel_empresa.ts`, `src/main/resources/frontend/ts/painel_recrutador.ts` (e `.js` gerados)
+    - Alterar: `docs/specs/recrutador/spec.md`, `docs/specs/recrutador/plano.md`, `CHANGELOG.md`
+  - **Como validar:**
+    - Executar `.\gradlew.bat test` e `npx.cmd tsc`; testar exclusão de vaga em `painel_empresa.html` e `painel_recrutador.html`.
