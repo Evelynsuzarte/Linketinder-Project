@@ -138,7 +138,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Rodar `npx tsc` em `src/main/resources/frontend` sem erros de compilação e testar login na página `acessar.html` servida via `npx serve src/main/resources`.
 
-- [ ] **9. Gestão de Recrutadores e lista de rejeitados no Painel da Empresa**
+- [x] **9. Gestão de Recrutadores e lista de rejeitados no Painel da Empresa**
   - **Camada:** Front-end
   - **O que será feito:**
     - Atualizar `painel_empresa.html`, `painel_empresa_style.css` e `painel_empresa.ts` para permitir à empresa autenticada cadastrar, listar, editar e remover seus recrutadores (validando e-mail, CPF e data `dd-mm-aaaa` ≥ 18 anos, sem exibir dados sensíveis na listagem).

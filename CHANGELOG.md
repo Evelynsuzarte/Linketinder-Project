@@ -24,6 +24,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - `VagaController` atualizado com filtro `?idEmpresa` e suporte a `PUT /vagas`; novos servlets registrados em `Main.groovy`.
 - CLI (`Menu`, `LinketinderController` e `MainTerminal`) atualizado com gestão de recrutadores pela empresa, criação/edição de vagas e avaliação de candidatos pelo recrutador, e consulta anônima de candidatos rejeitados.
 - Front-end (`storage.ts` e `acesso.ts`) atualizado com modelo e persistência de `Recrutador` e `Rejeicao` no `localStorage`, além de login de recrutador redirecionando para `painel_recrutador.html`.
+- Painel da Empresa (`painel_empresa.html`, `painel_empresa_style.css`, `painel_empresa.ts`) atualizado com gestão de recrutadores (CRUD com validações) e lista anônima de candidatos rejeitados.
 
 ### Corrigido
 
