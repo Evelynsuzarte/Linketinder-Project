@@ -54,7 +54,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Executar `.\gradlew.bat test --tests RecrutadorDaoIntegracaoSpec` e `.\gradlew.bat test`.
 
-- [ ] **4. Serviço `RecrutadorService` e projeção segura (sem dados sensíveis)**
+- [x] **4. Serviço `RecrutadorService` e projeção segura (sem dados sensíveis)**
   - **Camada:** Back-end
   - **O que será feito:**
     - Criar `RecrutadorService` orquestrando validações (e-mail/CPF únicos, `dd-mm-aaaa` ≥ 18 anos, empresa existente, senha obrigatória no cadastro e preservada na edição se omitida).
