@@ -23,7 +23,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
 
 ## Back-end com Testes
 
-- [ ] **2. Entidade `Recrutador`, contrato `RecrutadorRepository` e validações**
+- [x] **2. Entidade `Recrutador`, contrato `RecrutadorRepository` e validações**
   - **Camada:** Back-end
   - **O que será feito:**
     - Criar a entidade `Recrutador` com vínculo obrigatório à `Empresa`.
