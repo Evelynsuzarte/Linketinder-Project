@@ -23,6 +23,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - `Validador` atualizado com validações de e-mail, CPF e data de nascimento (`dd-mm-aaaa` com idade mínima de 18 anos).
 - `VagaController` atualizado com filtro `?idEmpresa` e suporte a `PUT /vagas`; novos servlets registrados em `Main.groovy`.
 - CLI (`Menu`, `LinketinderController` e `MainTerminal`) atualizado com gestão de recrutadores pela empresa, criação/edição de vagas e avaliação de candidatos pelo recrutador, e consulta anônima de candidatos rejeitados.
+- Front-end (`storage.ts` e `acesso.ts`) atualizado com modelo e persistência de `Recrutador` e `Rejeicao` no `localStorage`, além de login de recrutador redirecionando para `painel_recrutador.html`.
 
 ### Corrigido
 

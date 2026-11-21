@@ -123,7 +123,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
 
 ## Front-end
 
-- [ ] **8. Modelo de dados, `localStorage` e login de Recrutador**
+- [x] **8. Modelo de dados, `localStorage` e login de Recrutador**
   - **Camada:** Front-end
   - **O que será feito:**
     - Atualizar `storage.ts` com a interface `Recrutador`, armazenamento de recrutadores e rejeições (`rejeicoes`) no `localStorage`, além de recrutadores fictícios iniciais para teste.

@@ -34,6 +34,26 @@ export interface Vaga {
     matches?: number[];
 }
 
+export interface Recrutador {
+    id: number;
+    idEmpresa: number;
+    nome: string;
+    areaRecrutamento: string;
+    descricao: string;
+    email: string;
+    cpf: string;
+    dataNascimento: string; // dd-mm-aaaa
+    senha: string;
+    tipo: 'recrutador';
+}
+
+export interface Rejeicao {
+    idEmpresa: number;
+    idCandidato: number;
+    idVaga: number;
+    idRecrutador?: number;
+}
+
 // DADOS FICTÍCIOS
 
 // Candidatos
@@ -66,11 +86,40 @@ const vagasIniciais: Vaga[] = [
     { id: 9, nome: "Analista de Segurança", interessados: [], empresa: emp3, descricao: "Monitoramento de redes.", competencias: ["Cybersecurity", "Firewalls"] }
 ];
 
+const recrutadoresIniciais: Recrutador[] = [
+    {
+        id: 101,
+        idEmpresa: 11,
+        nome: "Fernanda Lima",
+        areaRecrutamento: "TI",
+        descricao: "Tech Recruiter focada em desenvolvimento web.",
+        email: "fernanda@techsolutions.com",
+        cpf: "52998224725",
+        dataNascimento: "12-03-1995",
+        senha: "123",
+        tipo: "recrutador"
+    },
+    {
+        id: 102,
+        idEmpresa: 22,
+        nome: "Rafael Mendes",
+        areaRecrutamento: "RH",
+        descricao: "Recrutador de produto e design.",
+        email: "rafael@inovastudio.com",
+        cpf: "15350946056",
+        dataNascimento: "20-09-1992",
+        senha: "123",
+        tipo: "recrutador"
+    }
+];
+
 
 // Grava os dados fictícios apenas se as chaves estiverem vazias
 function inicializarLocalStorage(): void {
     const usuariosSalvos = localStorage.getItem('linketinder_usuarios');
     const vagasSalvas = localStorage.getItem('linketinder_vagas');
+    const recrutadoresSalvos = localStorage.getItem('linketinder_recrutadores');
+    const rejeicoesSalvas = localStorage.getItem('linketinder_rejeicoes');
 
     if (usuariosSalvos === null || usuariosSalvos.trim() === "") {
         const todosUsuarios = [...candidatosIniciais, ...empresasIniciais];
@@ -79,6 +128,14 @@ function inicializarLocalStorage(): void {
 
     if (vagasSalvas === null || vagasSalvas.trim() === "") {
         localStorage.setItem('linketinder_vagas', JSON.stringify(vagasIniciais));
+    }
+
+    if (recrutadoresSalvos === null || recrutadoresSalvos.trim() === "") {
+        localStorage.setItem('linketinder_recrutadores', JSON.stringify(recrutadoresIniciais));
+    }
+
+    if (rejeicoesSalvas === null || rejeicoesSalvas.trim() === "") {
+        localStorage.setItem('linketinder_rejeicoes', JSON.stringify([]));
     }
 }
 
@@ -127,6 +184,34 @@ export function salvarUsuarios(usuarios: (Candidato | Empresa)[]): void {
 
 export function salvarVagas(vagas: Vaga[]): void {
     localStorage.setItem('linketinder_vagas', JSON.stringify(vagas));
+}
+
+export function obterTodosRecrutadores(): Recrutador[] {
+    const dados = localStorage.getItem('linketinder_recrutadores');
+    if (dados !== null && dados.trim() !== "") {
+        return JSON.parse(dados) as Recrutador[];
+    }
+    return [];
+}
+
+export function obterRecrutadoresPorEmpresa(idEmpresa: number): Recrutador[] {
+    return obterTodosRecrutadores().filter(r => r.idEmpresa === idEmpresa);
+}
+
+export function salvarRecrutadores(recrutadores: Recrutador[]): void {
+    localStorage.setItem('linketinder_recrutadores', JSON.stringify(recrutadores));
+}
+
+export function obterTodasRejeicoes(): Rejeicao[] {
+    const dados = localStorage.getItem('linketinder_rejeicoes');
+    if (dados !== null && dados.trim() !== "") {
+        return JSON.parse(dados) as Rejeicao[];
+    }
+    return [];
+}
+
+export function salvarRejeicoes(rejeicoes: Rejeicao[]): void {
+    localStorage.setItem('linketinder_rejeicoes', JSON.stringify(rejeicoes));
 }
 
 inicializarLocalStorage();
