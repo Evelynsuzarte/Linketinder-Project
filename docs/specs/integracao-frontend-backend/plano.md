@@ -54,7 +54,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Compilar o TypeScript com `npx tsc` em `src/main/resources/frontend/` sem erros e verificar os módulos `.js` gerados em `js/`.
 
-- [ ] **6. Integrar Login (`acessar.html` / `acesso.ts`) com `POST /login`**
+- [x] **6. Integrar Login (`acessar.html` / `acesso.ts`) com `POST /login`**
   - **O que será feito:** Atualizar `acesso.ts` para autenticar via `POST /login` usando o cliente HTTP criado na tarefa 5, armazenar os dados seguros da sessão retornados pelo back-end e redirecionar para `painel_candidato.html`, `painel_empresa.html` ou `painel_recrutador.html`, exibindo mensagem de erro em caso de credenciais inválidas ou falha de conexão.
   - **Arquivos criados ou alterados:**
     - Alterar: `src/main/resources/frontend/ts/acesso.ts` (e recompilar `js/acesso.js`)

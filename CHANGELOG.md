@@ -20,6 +20,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - `CandidatoController` e `EmpresaController` atualizados para retornar projeção segura no `GET` sem expor `senha` (nem `cpf` na listagem de candidatos).
 - `CompetenciaRepository`, `CompetenciaDao` e `CompetenciaService` atualizados com `listarTodas()`.
 - `VagaController` atualizado com filtro `?idCandidato=` (`VagaControllerSpec`) retornando apenas vagas ainda não curtidas em projeção anônima (sem expor dados da empresa antes do match).
+- Tela de login (`acesso.ts` / `js/acesso.js`) integrada ao endpoint `POST /login` via `api.ts`, armazenando sessão segura no navegador e redirecionando para o painel de candidato, empresa ou recrutador.
 
 ### Corrigido
 

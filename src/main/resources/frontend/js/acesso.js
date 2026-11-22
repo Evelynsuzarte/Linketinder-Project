@@ -1,46 +1,37 @@
-import { obterTodosUsuarios, obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas, obterTodosRecrutadores, salvarUsuarios, salvarVagas } from "./storage.js";
-let candidatos = obterTodosCandidatos();
-let empresas = obterTodasEmpresas();
-let vagas = obterTodasVagas();
-function salvarTudo() {
-    salvarUsuarios([...candidatos, ...empresas]);
-    salvarVagas(vagas);
-}
-// LOGIN
+import { HttpError, loginApi, salvarSessao } from "./api.js";
 const inputEmail = document.querySelector('.form-email input');
 const inputSenha = document.querySelector('.form-senha input');
-function buscarSenha(email) {
-    const usuarios = obterTodosUsuarios();
-    const recrutadores = obterTodosRecrutadores();
-    return [...usuarios, ...recrutadores].find(u => u.email === email);
-}
-function fazerLogin() {
-    const usuarioEncontrado = buscarSenha(inputEmail.value);
-    if (usuarioEncontrado) {
-        if (usuarioEncontrado.senha === inputSenha.value) {
-            console.log("Login efetuado com sucesso!");
-            localStorage.setItem('linketinder_usuario_logado', JSON.stringify(usuarioEncontrado));
-            if (usuarioEncontrado.tipo === 'candidato') {
-                window.location.href = "painel_candidato.html";
-            }
-            else if (usuarioEncontrado.tipo === 'empresa') {
-                window.location.href = "painel_empresa.html";
-            }
-            else if (usuarioEncontrado.tipo === 'recrutador') {
-                window.location.href = "painel_recrutador.html";
-            }
-        }
-        else {
-            alert("Senha incorreta!");
-        }
-    }
-    else {
-        alert("Usuário não encontrado!");
-    }
-}
 const form = document.querySelector('#meuFormulario');
+async function fazerLogin() {
+    const email = inputEmail.value.trim();
+    const senha = inputSenha.value;
+    if (!email || !senha) {
+        alert("Informe e-mail e senha para entrar.");
+        return;
+    }
+    try {
+        const usuarioAutenticado = await loginApi(email, senha);
+        salvarSessao(usuarioAutenticado);
+        if (usuarioAutenticado.tipo === 'candidato') {
+            window.location.href = "painel_candidato.html";
+        }
+        else if (usuarioAutenticado.tipo === 'empresa') {
+            window.location.href = "painel_empresa.html";
+        }
+        else if (usuarioAutenticado.tipo === 'recrutador') {
+            window.location.href = "painel_recrutador.html";
+        }
+    }
+    catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(erro.message);
+            return;
+        }
+        alert("Erro inesperado ao tentar realizar login.");
+    }
+}
 form.addEventListener('submit', (e) => {
     e.preventDefault();
-    fazerLogin();
+    void fazerLogin();
 });
 //# sourceMappingURL=acesso.js.map
