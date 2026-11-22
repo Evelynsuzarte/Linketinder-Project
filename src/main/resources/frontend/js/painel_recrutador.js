@@ -1,20 +1,13 @@
-import { obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas, obterTodosRecrutadores, obterTodasRejeicoes, salvarUsuarios, salvarVagas, salvarRejeicoes } from "./storage.js";
+import { HttpError, atualizarVagaApi, cadastrarVagaApi, curtirCandidatoApi, listarInteressadosApi, listarMatchesEmpresaApi, listarRejeitadosApi, listarVagasPorEmpresaApi, obterSessao, rejeitarCandidatoApi, removerVagaApi } from "./api.js";
 function voltarParaLogin() {
     window.location.href = "acessar.html";
     throw new Error("Sessão inválida: faça login como recrutador.");
 }
-const dadosLogado = localStorage.getItem('linketinder_usuario_logado');
-const logado = dadosLogado ? JSON.parse(dadosLogado) : null;
+const logado = obterSessao();
 if (logado === null || logado.tipo !== 'recrutador') {
     voltarParaLogin();
 }
-const candidatos = obterTodosCandidatos();
-const empresas = obterTodasEmpresas();
-const recrutadores = obterTodosRecrutadores();
-let vagas = obterTodasVagas();
-let rejeicoes = obterTodasRejeicoes();
-const recrutadorAtual = recrutadores.find(r => r.id === logado.id) ?? voltarParaLogin();
-const empresaAtual = empresas.find(e => e.id === recrutadorAtual.idEmpresa) ?? voltarParaLogin();
+const recrutadorAtual = logado;
 const tituloRecrutador = document.querySelector('#titulo-recrutador');
 const subtituloRecrutador = document.querySelector('#subtitulo-recrutador');
 const listaVagas = document.querySelector('#lista-vagas');
@@ -27,7 +20,11 @@ const inputVagaDescricao = document.querySelector('#vaga-descricao');
 const inputVagaCompetencias = document.querySelector('#vaga-competencias');
 const btnCancelarVaga = document.querySelector('#btn-cancelar-vaga');
 tituloRecrutador.textContent = `Painel do Recrutador — ${recrutadorAtual.nome}`;
-subtituloRecrutador.textContent = `Empresa: ${empresaAtual.nome} | Área: ${recrutadorAtual.areaRecrutamento}`;
+subtituloRecrutador.textContent = `Empresa: ${recrutadorAtual.nomeEmpresa ?? `#${recrutadorAtual.idEmpresa}`} | Área: ${recrutadorAtual.areaRecrutamento}`;
+let vagas = [];
+let interessados = [];
+let rejeitados = [];
+let matches = [];
 function criarElemento(tag, classe, texto) {
     const el = document.createElement(tag);
     if (classe)
@@ -36,36 +33,22 @@ function criarElemento(tag, classe, texto) {
         el.textContent = texto;
     return el;
 }
-function vagasDaEmpresa() {
-    return vagas.filter(v => v.empresa.id === empresaAtual.id);
-}
-function salvarTudo() {
-    salvarVagas(vagas);
-    salvarUsuarios([...candidatos, ...empresas]);
-    salvarRejeicoes(rejeicoes);
-}
-function buscarCandidato(interessado) {
-    return candidatos.find(c => c.id === interessado.id) ?? interessado;
-}
-function criarLinhaCandidato(vaga, interessado) {
-    const candidato = buscarCandidato(interessado);
-    const jaTemMatch = (vaga.matches ?? []).includes(candidato.id);
+function criarLinhaCandidato(vaga, item) {
     const tr = criarElemento('tr');
-    // Princípio do Anonimato: exibe apenas identificador anônimo e descrição
-    tr.appendChild(criarElemento('td', '', `Candidato #${candidato.id}`));
-    tr.appendChild(criarElemento('td', '', candidato.descricao));
+    // Princípio do Anonimato (idêntico à visão da empresa): apenas descrição e competências antes do match
+    tr.appendChild(criarElemento('td', '', `Candidato #${item.idCandidato}`));
+    tr.appendChild(criarElemento('td', '', `${item.descricaoCandidato || '-'} (${(item.competencias ?? []).join(', ')})`));
     const tdAcoes = criarElemento('td');
-    const btnMatch = criarElemento('button', 'btn-match', jaTemMatch ? '✅ Match feito' : '❤️ Match');
+    const btnMatch = criarElemento('button', 'btn-match', '❤️ Match');
     btnMatch.type = 'button';
     btnMatch.dataset.acao = 'match';
     btnMatch.dataset.vaga = String(vaga.id);
-    btnMatch.dataset.candidato = String(candidato.id);
-    btnMatch.disabled = jaTemMatch;
+    btnMatch.dataset.candidato = String(item.idCandidato);
     const btnRecusar = criarElemento('button', 'btn-recusar', '❌ Não Interessado');
     btnRecusar.type = 'button';
     btnRecusar.dataset.acao = 'recusar';
     btnRecusar.dataset.vaga = String(vaga.id);
-    btnRecusar.dataset.candidato = String(candidato.id);
+    btnRecusar.dataset.candidato = String(item.idCandidato);
     tdAcoes.appendChild(btnMatch);
     tdAcoes.appendChild(btnRecusar);
     tr.appendChild(tdAcoes);
@@ -89,22 +72,26 @@ function criarCardVaga(vaga) {
     cabecalho.appendChild(acoesVaga);
     card.appendChild(cabecalho);
     card.appendChild(criarElemento('p', '', `Descrição: ${vaga.descricao}`));
-    card.appendChild(criarElemento('p', '', `Competências: ${vaga.competencias.join(', ')}`));
-    const tabela = criarElemento('table');
+    card.appendChild(criarElemento('p', '', `Competências: ${(vaga.competencias ?? []).join(', ')}`));
+    const tabela = criarElemento('table', 'tabela-candidatos');
     const thead = criarElemento('thead');
-    const trCab = criarElemento('tr');
-    ['Candidato', 'Descrição / Perfil', 'Ações'].forEach(t => trCab.appendChild(criarElemento('th', '', t)));
-    thead.appendChild(trCab);
+    const trCabecalho = criarElemento('tr');
+    ['Candidato', 'Descrição e Competências', 'Ações']
+        .forEach(t => trCabecalho.appendChild(criarElemento('th', '', t)));
+    thead.appendChild(trCabecalho);
     const tbody = criarElemento('tbody');
-    if (vaga.interessados.length === 0) {
+    const interessadosDaVaga = interessados.filter(i => i.idVaga === vaga.id);
+    if (interessadosDaVaga.length === 0) {
         const tr = criarElemento('tr');
-        const td = criarElemento('td', '', 'Nenhum candidato interessado no momento.');
+        const td = criarElemento('td', '', 'Nenhum candidato pendente de avaliação.');
         td.colSpan = 3;
         tr.appendChild(td);
         tbody.appendChild(tr);
     }
     else {
-        vaga.interessados.forEach(i => tbody.appendChild(criarLinhaCandidato(vaga, i)));
+        for (const item of interessadosDaVaga) {
+            tbody.appendChild(criarLinhaCandidato(vaga, item));
+        }
     }
     tabela.appendChild(thead);
     tabela.appendChild(tbody);
@@ -113,25 +100,17 @@ function criarCardVaga(vaga) {
 }
 function renderizarVagas() {
     listaVagas.innerHTML = '';
-    const minhasVagas = vagasDaEmpresa();
-    if (minhasVagas.length === 0) {
-        listaVagas.appendChild(criarElemento('p', '', 'Nenhuma vaga cadastrada para esta empresa.'));
+    if (vagas.length === 0) {
+        listaVagas.appendChild(criarElemento('p', '', 'A empresa ainda não possui vagas cadastradas.'));
         return;
     }
-    minhasVagas.forEach(v => listaVagas.appendChild(criarCardVaga(v)));
+    for (const vaga of vagas) {
+        listaVagas.appendChild(criarCardVaga(vaga));
+    }
 }
 function renderizarMatches() {
     listaMatches.innerHTML = '';
-    const linhas = [];
-    for (const vaga of vagasDaEmpresa()) {
-        for (const idCand of (vaga.matches ?? [])) {
-            const cand = candidatos.find(c => c.id === idCand);
-            if (cand) {
-                linhas.push({ vaga: vaga.nome, nome: cand.nome, email: cand.email });
-            }
-        }
-    }
-    if (linhas.length === 0) {
+    if (matches.length === 0) {
         const tr = criarElemento('tr');
         const td = criarElemento('td', '', 'Nenhum match confirmado ainda.');
         td.colSpan = 3;
@@ -139,18 +118,18 @@ function renderizarMatches() {
         listaMatches.appendChild(tr);
         return;
     }
-    for (const m of linhas) {
+    for (const m of matches) {
         const tr = criarElemento('tr');
-        tr.appendChild(criarElemento('td', '', m.vaga));
-        tr.appendChild(criarElemento('td', '', m.nome));
-        tr.appendChild(criarElemento('td', '', m.email));
+        const nomeCompleto = m.sobrenomeCandidato ? `${m.nomeCandidato} ${m.sobrenomeCandidato}` : m.nomeCandidato;
+        tr.appendChild(criarElemento('td', '', m.nomeVaga));
+        tr.appendChild(criarElemento('td', '', nomeCompleto));
+        tr.appendChild(criarElemento('td', '', m.emailCandidato));
         listaMatches.appendChild(tr);
     }
 }
 function renderizarRejeitados() {
     listaRejeitados.innerHTML = '';
-    const daEmpresa = rejeicoes.filter(r => r.idEmpresa === empresaAtual.id);
-    if (daEmpresa.length === 0) {
+    if (rejeitados.length === 0) {
         const tr = criarElemento('tr');
         const td = criarElemento('td', '', 'Nenhum candidato rejeitado.');
         td.colSpan = 3;
@@ -158,27 +137,40 @@ function renderizarRejeitados() {
         listaRejeitados.appendChild(tr);
         return;
     }
-    for (const rej of daEmpresa) {
-        const vaga = vagas.find(v => v.id === rej.idVaga);
-        const cand = candidatos.find(c => c.id === rej.idCandidato);
+    for (const rej of rejeitados) {
         const tr = criarElemento('tr');
-        tr.appendChild(criarElemento('td', '', vaga ? vaga.nome : `Vaga #${rej.idVaga}`));
         tr.appendChild(criarElemento('td', '', `Candidato #${rej.idCandidato}`));
-        tr.appendChild(criarElemento('td', '', cand ? cand.descricao : 'Descrição não disponível'));
+        tr.appendChild(criarElemento('td', '', `${rej.descricaoCandidato || '-'} (${(rej.competencias ?? []).join(', ')})`));
+        tr.appendChild(criarElemento('td', '', rej.nomeVaga));
         listaRejeitados.appendChild(tr);
     }
-}
-function renderizarTudo() {
-    renderizarVagas();
-    renderizarMatches();
-    renderizarRejeitados();
 }
 function limparFormularioVaga() {
     formVaga.reset();
     inputVagaId.value = '';
     btnCancelarVaga.classList.add('escondido');
 }
-formVaga.addEventListener('submit', (e) => {
+async function carregarPainel() {
+    try {
+        [vagas, interessados, rejeitados, matches] = await Promise.all([
+            listarVagasPorEmpresaApi(recrutadorAtual.idEmpresa),
+            listarInteressadosApi(recrutadorAtual.idEmpresa),
+            listarRejeitadosApi(recrutadorAtual.idEmpresa),
+            listarMatchesEmpresaApi(recrutadorAtual.idEmpresa)
+        ]);
+        renderizarVagas();
+        renderizarMatches();
+        renderizarRejeitados();
+    }
+    catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(`Erro ao carregar painel: ${erro.message}`);
+            return;
+        }
+        alert('Erro inesperado ao carregar painel do recrutador.');
+    }
+}
+formVaga.addEventListener('submit', async (e) => {
     e.preventDefault();
     const idEditando = inputVagaId.value ? Number(inputVagaId.value) : 0;
     const nome = inputVagaNome.value.trim();
@@ -191,95 +183,76 @@ formVaga.addEventListener('submit', (e) => {
         alert('Nome e descrição da vaga são obrigatórios.');
         return;
     }
-    if (idEditando > 0) {
-        const vaga = vagas.find(v => v.id === idEditando && v.empresa.id === empresaAtual.id);
-        if (!vaga) {
-            alert('Você só pode editar vagas da sua empresa.');
+    try {
+        if (idEditando > 0) {
+            await atualizarVagaApi({
+                id: idEditando,
+                nome,
+                descricao,
+                local: 'Remoto',
+                idEmpresa: recrutadorAtual.idEmpresa,
+                competencias,
+                idRecrutador: recrutadorAtual.id
+            });
+        }
+        else {
+            await cadastrarVagaApi({
+                nome,
+                descricao,
+                local: 'Remoto',
+                idEmpresa: recrutadorAtual.idEmpresa,
+                competencias
+            });
+        }
+        limparFormularioVaga();
+        await carregarPainel();
+    }
+    catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(erro.message);
             return;
         }
-        vaga.nome = nome;
-        vaga.descricao = descricao;
-        vaga.competencias = competencias;
+        alert('Erro inesperado ao salvar vaga.');
     }
-    else {
-        const proximoId = vagas.reduce((max, v) => Math.max(max, v.id), 0) + 1;
-        vagas.push({
-            id: proximoId,
-            nome,
-            descricao,
-            competencias,
-            empresa: empresaAtual,
-            interessados: [],
-            matches: []
-        });
-        if (!empresaAtual.vagas.includes(proximoId)) {
-            empresaAtual.vagas.push(proximoId);
-        }
-    }
-    salvarTudo();
-    limparFormularioVaga();
-    renderizarTudo();
 });
 btnCancelarVaga.addEventListener('click', limparFormularioVaga);
-listaVagas.addEventListener('click', (event) => {
+listaVagas.addEventListener('click', async (event) => {
     const botao = event.target.closest('button');
     if (!botao || botao.disabled)
         return;
     const acao = botao.dataset.acao;
     const idVaga = Number(botao.dataset.vaga);
     if (acao === 'editar-vaga') {
-        const vaga = vagas.find(v => v.id === idVaga && v.empresa.id === empresaAtual.id);
+        const vaga = vagas.find(v => v.id === idVaga);
         if (!vaga)
             return;
         inputVagaId.value = String(vaga.id);
         inputVagaNome.value = vaga.nome;
         inputVagaDescricao.value = vaga.descricao;
-        inputVagaCompetencias.value = vaga.competencias.join(', ');
+        inputVagaCompetencias.value = (vaga.competencias ?? []).join(', ');
         btnCancelarVaga.classList.remove('escondido');
         return;
     }
-    if (acao === 'remover-vaga') {
-        vagas = vagas.filter(v => !(v.id === idVaga && v.empresa.id === empresaAtual.id));
-        empresaAtual.vagas = (empresaAtual.vagas ?? []).filter(id => id !== idVaga);
-        for (const c of candidatos) {
-            c.vagasInteresse = (c.vagasInteresse ?? []).filter(id => id !== idVaga);
-        }
-        rejeicoes = rejeicoes.filter(r => r.idVaga !== idVaga);
-        salvarTudo();
-        renderizarTudo();
-        return;
-    }
     const idCandidato = Number(botao.dataset.candidato);
-    const vaga = vagas.find(v => v.id === idVaga && v.empresa.id === empresaAtual.id);
-    if (!vaga)
-        return;
-    if (acao === 'match') {
-        const matches = vaga.matches ?? [];
-        if (!matches.includes(idCandidato)) {
-            matches.push(idCandidato);
+    try {
+        if (acao === 'remover-vaga') {
+            await removerVagaApi(idVaga, recrutadorAtual.id);
         }
-        vaga.matches = matches;
-        salvarTudo();
+        else if (acao === 'match') {
+            await curtirCandidatoApi(recrutadorAtual.idEmpresa, idCandidato, idVaga, recrutadorAtual.id);
+        }
+        else if (acao === 'recusar') {
+            await rejeitarCandidatoApi(recrutadorAtual.idEmpresa, idCandidato, idVaga, recrutadorAtual.id);
+        }
+        await carregarPainel();
     }
-    else if (acao === 'recusar') {
-        vaga.interessados = vaga.interessados.filter(c => c.id !== idCandidato);
-        vaga.matches = (vaga.matches ?? []).filter(id => id !== idCandidato);
-        const cand = candidatos.find(c => c.id === idCandidato);
-        if (cand) {
-            cand.vagasInteresse = (cand.vagasInteresse ?? []).filter(id => id !== idVaga);
+    catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(erro.message);
+            return;
         }
-        const jaRejeitado = rejeicoes.some(r => r.idEmpresa === empresaAtual.id && r.idCandidato === idCandidato && r.idVaga === idVaga);
-        if (!jaRejeitado) {
-            rejeicoes.push({
-                idEmpresa: empresaAtual.id,
-                idCandidato,
-                idVaga,
-                idRecrutador: recrutadorAtual.id
-            });
-        }
-        salvarTudo();
+        alert('Erro inesperado ao processar ação.');
     }
-    renderizarTudo();
 });
-renderizarTudo();
+void carregarPainel();
 //# sourceMappingURL=painel_recrutador.js.map

@@ -90,15 +90,19 @@ Certifique-se de que o PostgreSQL está rodando com o banco `linketinder` criado
 # Linux/macOS
 ./gradlew run
 ```
-O servidor sobe em `http://localhost:8080`.
+O servidor sobe em `http://localhost:8080` e serve também os arquivos estáticos do front-end (acessando `http://localhost:8080/`, você é redirecionado automaticamente para `/frontend/html/index.html`).
 
 ### Testar a API RESTful
-Com o servidor rodando em `http://localhost:8080` (via `.\gradlew.bat run`), envie requisições com **Postman**, **Insomnia**, **Thunder Client** ou `curl.exe` (sempre com `Content-Type: application/json` nos envios `POST`):
+Com o servidor rodando em `http://localhost:8080` (via `.\gradlew.bat run`), envie requisições com **Postman**, **Insomnia**, **Thunder Client** ou `curl.exe` (sempre com `Content-Type: application/json` nos envios `POST`/`PUT`):
 
 - **Endpoints atuais:**
+  - `POST /login` (obrigatórios: `email`, `senha`)
   - `GET /candidatos` e `POST /candidatos` (obrigatórios: `cpf`, `nome`, `email`, `senha`)
   - `GET /empresas` e `POST /empresas` (obrigatórios: `cnpj`, `nome`, `email`, `senha`)
-  - `GET /vagas` e `POST /vagas` (obrigatórios: `nome`, `descricao`, `local`, `idEmpresa`)
+  - `GET /competencias` (`?idCandidato=`) e `POST /competencias`
+  - `GET /vagas` (`?idEmpresa=` ou `?idCandidato=`), `POST /vagas`, `PUT /vagas` e `DELETE /vagas`
+  - `GET /recrutadores` (`?idEmpresa=`), `POST /recrutadores`, `PUT /recrutadores` e `DELETE /recrutadores`
+  - `GET /matches` (`?tipo=interessados|rejeitados|candidato|empresa`) e `POST /matches`
 - **Exemplo (`GET` e `POST` com `curl.exe`):**
   ```powershell
   curl.exe http://localhost:8080/vagas
@@ -109,24 +113,25 @@ Com o servidor rodando em `http://localhost:8080` (via `.\gradlew.bat run`), env
 Execute a classe `MainTerminal` diretamente pela IDE (com o classpath do projeto carregado) ou configurando `mainClass` para `MainTerminal`.
 
 ### Rodar o Front-end Web
-> **Status de integração:** o front-end **ainda não está integrado ao back-end**. Não há chamadas HTTP para a API REST (`Main.groovy`); os dados são persistidos no `localStorage` do navegador com carga inicial fictícia definida em `src/main/resources/frontend/ts/storage.ts`.
+> **Status de integração:** o front-end está **integrado ao back-end** via API REST (`src/main/resources/frontend/ts/api.ts`), sem uso de frameworks, utilizando o `localStorage` apenas para manter a sessão segura do usuário autenticado (`linketinder_usuario_logado`).
 
-1. **Compilar o TypeScript** *(necessário apenas se alterar arquivos em `ts/`, pois os `.js` já vêm compilados)*:
+1. **Acesso direto pelo Tomcat (recomendado):**
+   - Suba a aplicação com `.\gradlew.bat run` e acesse **`http://localhost:8080/`** no navegador.
+2. **Compilar o TypeScript** *(necessário apenas se alterar arquivos em `ts/`, pois os `.js` já vêm compilados)*:
    ```powershell
-   cd src/main/resources/frontend
-   npm install   # caso node_modules não esteja instalado
-   npx tsc       # lê ./ts e gera os módulos ES em ./js (conforme tsconfig.json)
+   # Da raiz do projeto:
+   node src/main/resources/frontend/ts/node_modules/typescript/bin/tsc -p src/main/resources/frontend/tsconfig.json
+
+   # Ou dentro de src/main/resources/frontend:
+   npx.cmd tsc
    ```
-2. **Servir via servidor HTTP local** *(os HTMLs usam `<script type="module">` e não funcionam via `file://`)*:
-   - Sirva `src/main/resources/` para que os caminhos de imagens (`../../images/logo.png`) também resolvam:
-     ```powershell
-     npx serve src/main/resources
-     ```
-     Acesse `http://localhost:<porta>/frontend/html/index.html`.
-   - Alternativamente, abra `src/main/resources/frontend/html/index.html` via Live Server (VS Code) ou servidor embutido da IDE.
-3. **Credenciais de teste** *(gravadas no `localStorage` ao abrir `index.html`)*:
-   - **Candidatos:** `gabriel@email.com` (`123`), `mariana@email.com` (`abc`), `carlos@email.com` (`456`)
-   - **Empresas:** `vagas@techsolutions.com` (`admin`), `rh@inovastudio.com` (`inova`), `careers@softglobal.com` (`cloud`)
+3. **Servir separado (opcional):**
+   ```powershell
+   npx.cmd serve src/main/resources
+   ```
+   Acesse `http://localhost:<porta>/frontend/html/index.html` (a API REST continua em `http://localhost:8080` com CORS habilitado).
+4. **Credenciais iniciais do banco SQL (`modelagem.sql` / `migracao_recrutador.sql`):**
+   - Senha padrão **`123456`** para todos os candidatos, empresas e recrutadores iniciais.
 
 ---
 

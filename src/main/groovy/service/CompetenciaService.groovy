@@ -47,4 +47,8 @@ class CompetenciaService {
         }
         return repo.buscarPorId(id)
     }
+
+    List<String> listarTodas() {
+        return repo.listarTodas()
+    }
 }

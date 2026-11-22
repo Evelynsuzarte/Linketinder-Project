@@ -5,6 +5,30 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Integração do frontend e backend]
+
+### Adicionado
+- Especificação técnica da feature de integração entre front-end e back-end em `docs/specs/integracao-frontend-backend/spec.md` (contexto e objetivo, regras de negócio, critérios de aceite em Dado/Quando/Então, impacto e fora de escopo).
+- Plano de implementação em `docs/specs/integracao-frontend-backend/plano.md`.
+- Suporte a requisições preflight `OPTIONS` (HTTP `204`) e cabeçalhos CORS em `ApiServlet` (`ApiServletCorsSpec`) para consumo da API REST pelo front-end.
+- Endpoint de autenticação `POST /login` (`LoginController` registrado em `Main.groovy` e `LoginControllerSpec`) validando hash `PBKDF2WithHmacSHA256` para candidatos, empresas e recrutadores com retorno seguro (sem `senha`, `cpf` de recrutador ou `dataNascimento`).
+- Endpoint `/competencias` (`CompetenciaController` registrado em `Main.groovy` e `CompetenciaControllerSpec`) com `GET` (listagem geral ou por `?idCandidato=`) e `POST` (`201 Created` para vincular competências ao candidato ou cadastrar nova competência).
+- Camada HTTP Client tipada em TypeScript puro (`src/main/resources/frontend/ts/api.ts` compilada para `js/api.js`), sem uso de frameworks, centralizando requisições REST (`HttpClient`, `HttpError`), sessão no navegador e contratos dos endpoints.
+
+### Modificado
+- `RecrutadorService` atualizado com `buscarPorEmail` para suporte à autenticação.
+- `CandidatoController` e `EmpresaController` atualizados para retornar projeção segura no `GET` sem expor `senha` (nem `cpf` na listagem de candidatos).
+- `CompetenciaRepository`, `CompetenciaDao` e `CompetenciaService` atualizados com `listarTodas()`.
+- `VagaController` atualizado com filtro `?idCandidato=` (`VagaControllerSpec`) retornando apenas vagas ainda não curtidas em projeção anônima (sem expor dados da empresa antes do match).
+- `Main.groovy` atualizado para servir os arquivos estáticos do front-end (`src/main/resources`) via `DefaultServlet` e redirecionar `http://localhost:8080/` para `/frontend/html/index.html`.
+- Tela de login (`acesso.ts` / `js/acesso.js`) integrada ao endpoint `POST /login` via `api.ts`, armazenando sessão segura no navegador e redirecionando para o painel de candidato, empresa ou recrutador.
+- Tela de cadastro (`novo_cadastro.html`, `cadastro.ts` / `js/cadastro.js`) integrada a `POST /candidatos`, `POST /empresas`, `GET /competencias` e `POST /competencias` (`201 Created`), incluindo etapa pós-cadastro de competências para candidato e redirecionamento para `painel_candidato.html`.
+- Painéis e criação de vagas (`criar_vaga.ts`, `painel_candidato.ts`, `painel_empresa.ts`, `painel_recrutador.ts` e respectivos `.js` compilados) integrados aos endpoints `/vagas`, `/recrutadores` e `/matches`, preservando o Princípio do Anonimato para candidato, empresa e recrutador.
+
+### Corrigido
+
+### Removido
+
 ## [Feature de adicionar recrutador no sistema]
 
 ### Adicionado

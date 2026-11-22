@@ -113,6 +113,13 @@ class RecrutadorService {
         return repo.buscarPorNome(nome.trim())
     }
 
+    Recrutador buscarPorEmail(String email) {
+        if (!email?.trim()) {
+            throw new IllegalArgumentException("O e-mail do recrutador não pode ser vazio.")
+        }
+        return repo.buscarPorEmail(email.trim())
+    }
+
     static Map paraVisaoSegura(Recrutador r) {
         return [
                 id              : r.id,
