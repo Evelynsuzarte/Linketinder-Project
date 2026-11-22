@@ -20,8 +20,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Tela de criação de vaga no front-end (`criar-vaga.html` e `criar_vaga.ts`) para empresa e recrutador cadastrarem novas vagas no `localStorage`.
 - Remoção de vagas (`VagaRepository`, `VagaDao`, `VagaService`, `DELETE /vagas`, CLI e botões `Remover Vaga` em `painel_empresa.ts` e `painel_recrutador.ts`).
 - Armazenamento seguro de senhas com hash `PBKDF2WithHmacSHA256` + salt (`SegurancaSenha`, `SegurancaSenhaSpec`) nos serviços de `Recrutador`, `Candidato` e `Empresa`, além de documentação das senhas de teste em `AGENTS.md` e `spec.md`.
+- Registro do fluxo SDD em `docs/PROMPTS.md`.
 
 ### Modificado
+- `README.md` atualizado com o fluxo de Recrutador, rejeições, hash de senhas, novos endpoints REST e telas do front-end.
 - Instruções de teste da API RESTful adicionadas em `AGENTS.md`.
 - Modelagem completa em `src/main/resources/db/modelagem.sql` atualizada para incluir `recrutadores`, `rejeicao_empresa_candidato` e `id_recrutador` em `curtida_empresa_candidato` e `match`.
 - `Validador` atualizado com validações de e-mail, CPF e data de nascimento (`dd-mm-aaaa` com idade mínima de 18 anos).
