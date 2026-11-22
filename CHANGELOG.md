@@ -9,6 +9,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ### Adicionado
 - Especificação técnica da feature de integração entre front-end e back-end em `docs/specs/integracao-frontend-backend/spec.md` (contexto e objetivo, regras de negócio, critérios de aceite em Dado/Quando/Então, impacto e fora de escopo).
+- Plano de implementação em `docs/specs/integracao-frontend-backend/plano.md`.
+- Suporte a requisições preflight `OPTIONS` (HTTP `204`) e cabeçalhos CORS em `ApiServlet` (`ApiServletCorsSpec`) para consumo da API REST pelo front-end.
 
 ### Modificado
 

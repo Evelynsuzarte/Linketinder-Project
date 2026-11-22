@@ -23,7 +23,20 @@ abstract class ApiServlet extends HttpServlet {
         }
     }
 
+    protected void configurarCors(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*")
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
+        configurarCors(resp)
+        resp.status = HttpServletResponse.SC_NO_CONTENT
+    }
+
     protected void responder(HttpServletResponse response, int status, Object dados) {
+        configurarCors(response)
         response.status = status
         response.contentType = "application/json"
         response.characterEncoding = "UTF-8"

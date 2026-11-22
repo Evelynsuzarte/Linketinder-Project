@@ -2,7 +2,7 @@
 
 Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e numeradas, respeitando [AGENTS.md](../../../AGENTS.md) e o fluxo da skill `feature-com-spec`.
 
-- [ ] **1. Habilitar CORS na API REST (`ApiServlet`)**
+- [x] **1. Habilitar CORS na API REST (`ApiServlet`)**
   - **O que será feito:** Adicionar cabeçalhos CORS (`Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`, `Access-Control-Allow-Headers`) nas respostas de `ApiServlet` e suporte a requisições `OPTIONS` (preflight) para permitir consumo pelo front-end em servidor local, sem alterar a lógica de negócio dos controllers.
   - **Arquivos criados ou alterados:**
     - Alterar: `src/main/groovy/controller/api/ApiServlet.groovy`
