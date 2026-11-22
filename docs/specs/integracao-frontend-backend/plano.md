@@ -71,7 +71,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Compilar com `npx tsc` e testar manualmente o fluxo completo de cadastro de candidato + competências + cadastro de empresa persistindo no PostgreSQL.
 
-- [ ] **8. Integrar Painéis (`painel_candidato.ts`, `painel_empresa.ts`, `painel_recrutador.ts`) e Criação de Vagas (`criar_vaga.ts`) com a API REST**
+- [x] **8. Integrar Painéis (`painel_candidato.ts`, `painel_empresa.ts`, `painel_recrutador.ts`) e Criação de Vagas (`criar_vaga.ts`) com a API REST**
   - **O que será feito:** Conectar os painéis e a tela de criação de vagas aos endpoints `/vagas`, `/recrutadores` e `/matches` (`curtirVaga`, `curtirCandidato`, `rejeitarCandidato`, listagens de interessados, rejeitados e matches), garantindo proteção de sessão ao carregar cada painel e respeito estrito ao Princípio do Anonimato para candidato, empresa e recrutador.
   - **Arquivos criados ou alterados:**
     - Alterar: `src/main/resources/frontend/ts/criar_vaga.ts`

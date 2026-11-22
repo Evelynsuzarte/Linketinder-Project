@@ -1,54 +1,35 @@
-import type { Candidato, Empresa, Recrutador, Rejeicao, Vaga } from "./storage.js";
 import {
-    obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas,
-    obterTodosRecrutadores, obterTodasRejeicoes,
-    salvarUsuarios, salvarVagas, salvarRecrutadores, salvarRejeicoes
-} from "./storage.js";
+    HttpError,
+    atualizarRecrutadorApi,
+    cadastrarRecrutadorApi,
+    curtirCandidatoApi,
+    listarInteressadosApi,
+    listarRecrutadoresApi,
+    listarRejeitadosApi,
+    listarVagasPorEmpresaApi,
+    obterSessao,
+    rejeitarCandidatoApi,
+    removerRecrutadorApi,
+    removerVagaApi
+} from "./api.js";
+import type {
+    CandidatoInteressadoDto,
+    RecrutadorDto,
+    VagaEmpresaDto
+} from "./api.js";
 
 declare const Chart: any;
-
-// USUÁRIO LOGADO (só empresa pode ver esta página)
 
 function voltarParaLogin(): never {
     window.location.href = "acessar.html";
     throw new Error("Sessão inválida: faça login como empresa.");
 }
 
-const dadosLogado = localStorage.getItem('linketinder_usuario_logado');
-const logado = dadosLogado ? JSON.parse(dadosLogado) : null;
-
+const logado = obterSessao();
 if (logado === null || logado.tipo !== 'empresa') {
     voltarParaLogin();
 }
-
-
-const candidatos: Candidato[] = obterTodosCandidatos();
-const empresas: Empresa[] = obterTodasEmpresas();
-let vagas: Vaga[] = obterTodasVagas();
-let recrutadores: Recrutador[] = obterTodosRecrutadores();
-let rejeicoes: Rejeicao[] = obterTodasRejeicoes();
-
-const empresaAtual: Empresa = empresas.find(e => e.id === logado.id) ?? voltarParaLogin();
-
-function vagasDaEmpresa(): Vaga[] {
-    return vagas.filter(v => v.empresa.id === empresaAtual.id);
-}
-
-if (!Array.isArray(empresaAtual.vagas)) {
-    empresaAtual.vagas = [];
-}
-
-let precisaSalvar = false;
-for (const vaga of vagasDaEmpresa()) {
-    if (!empresaAtual.vagas.includes(vaga.id)) {
-        empresaAtual.vagas.push(vaga.id);
-        precisaSalvar = true;
-    }
-}
-if (precisaSalvar) {
-    salvarUsuarios([...candidatos, ...empresas]);
-}
-
+const empresaAtual = logado;
 
 const listaVagas = document.querySelector('#lista-vagas') as HTMLDivElement;
 const canvasGrafico = document.querySelector('#graficoCompetencias') as HTMLCanvasElement;
@@ -65,29 +46,20 @@ const inputRecrutadorNascimento = document.querySelector('#recrutador-nascimento
 const inputRecrutadorSenha = document.querySelector('#recrutador-senha') as HTMLInputElement;
 const btnCancelarEdicao = document.querySelector('#btn-cancelar-edicao') as HTMLButtonElement;
 
+let vagas: VagaEmpresaDto[] = [];
+let interessados: CandidatoInteressadoDto[] = [];
+let rejeitados: CandidatoInteressadoDto[] = [];
+let recrutadores: RecrutadorDto[] = [];
+let grafico: any = null;
 
 function criarElemento<K extends keyof HTMLElementTagNameMap>(
     tag: K, classe?: string, texto?: string
 ): HTMLElementTagNameMap[K] {
     const el = document.createElement(tag);
     if (classe) el.className = classe;
-    if (texto !== undefined) el.textContent = texto; // textContent evita injetar HTML vindo dos dados
+    if (texto !== undefined) el.textContent = texto;
     return el;
 }
-
-function buscarCandidato(interessado: Candidato): Candidato {
-    return candidatos.find(c => c.id === interessado.id) ?? interessado;
-}
-
-function salvarTudo(): void {
-    salvarVagas(vagas);
-    salvarUsuarios([...candidatos, ...empresas]);
-    salvarRecrutadores(recrutadores);
-    salvarRejeicoes(rejeicoes);
-}
-
-
-let grafico: any = null;
 
 function desenharGrafico(): void {
     if (typeof Chart === 'undefined') {
@@ -95,16 +67,15 @@ function desenharGrafico(): void {
         return;
     }
 
-    // Para cada competência exigida nas vagas da empresa, conta candidatos distintos inscritos
     const contagem = new Map<string, Set<number>>();
-
-    for (const vaga of vagasDaEmpresa()) {
-        for (const competencia of vaga.competencias) {
+    for (const vaga of vagas) {
+        const interessadosDaVaga = interessados.filter(i => i.idVaga === vaga.id);
+        for (const competencia of (vaga.competencias ?? [])) {
             if (!contagem.has(competencia)) {
                 contagem.set(competencia, new Set<number>());
             }
             const conjunto = contagem.get(competencia) as Set<number>;
-            vaga.interessados.forEach(c => conjunto.add(c.id));
+            interessadosDaVaga.forEach(i => conjunto.add(i.idCandidato));
         }
     }
 
@@ -133,30 +104,25 @@ function desenharGrafico(): void {
     });
 }
 
-
-function criarLinhaCandidato(vaga: Vaga, interessado: Candidato): HTMLTableRowElement {
-    const candidato = buscarCandidato(interessado);
-    const jaTemMatch = (vaga.matches ?? []).includes(candidato.id);
-
+function criarLinhaCandidato(vaga: VagaEmpresaDto, item: CandidatoInteressadoDto): HTMLTableRowElement {
     const tr = criarElemento('tr');
 
-    // mostra só o número do candidato, sem nome
-    tr.appendChild(criarElemento('td', 'candidato-id', `Candidato #${candidato.id}`));
-    tr.appendChild(criarElemento('td', 'candidato-skills', candidato.descricao));
-    tr.appendChild(criarElemento('td', 'candidato-formacao', 'Não informada'));
+    // Princípio do Anonimato: exibe apenas identificador anônimo, descrição e competências
+    tr.appendChild(criarElemento('td', 'candidato-id', `Candidato #${item.idCandidato}`));
+    tr.appendChild(criarElemento('td', 'candidato-skills', `${item.descricaoCandidato || '-'} (${(item.competencias ?? []).join(', ')})`));
+    tr.appendChild(criarElemento('td', 'candidato-formacao', 'Anônimo'));
 
     const tdAcoes = criarElemento('td', 'acoes-tabela');
 
-    const btnMatch = criarElemento('button', 'btn-match', jaTemMatch ? '✅ Match feito' : '❤️ Match');
+    const btnMatch = criarElemento('button', 'btn-match', '❤️ Match');
     btnMatch.dataset.acao = 'match';
     btnMatch.dataset.vaga = String(vaga.id);
-    btnMatch.dataset.candidato = String(candidato.id);
-    btnMatch.disabled = jaTemMatch;
+    btnMatch.dataset.candidato = String(item.idCandidato);
 
     const btnRecusar = criarElemento('button', 'btn-recusar', '❌ Não Interessado');
     btnRecusar.dataset.acao = 'recusar';
     btnRecusar.dataset.vaga = String(vaga.id);
-    btnRecusar.dataset.candidato = String(candidato.id);
+    btnRecusar.dataset.candidato = String(item.idCandidato);
 
     tdAcoes.appendChild(btnMatch);
     tdAcoes.appendChild(btnRecusar);
@@ -165,7 +131,7 @@ function criarLinhaCandidato(vaga: Vaga, interessado: Candidato): HTMLTableRowEl
     return tr;
 }
 
-function criarCardVaga(vaga: Vaga): HTMLElement {
+function criarCardVaga(vaga: VagaEmpresaDto): HTMLElement {
     const card = criarElemento('article', 'vaga-card');
 
     const detalhes = criarElemento('div', 'vaga-detalhes');
@@ -181,32 +147,32 @@ function criarCardVaga(vaga: Vaga): HTMLElement {
     pDescricao.appendChild(criarElemento('span', 'vaga-descricao', vaga.descricao));
     detalhes.appendChild(pDescricao);
 
-    const pStatus = criarElemento('p', '', 'Status: ');
-    pStatus.appendChild(criarElemento('span', 'vaga-status', 'Aberta'));
+    const pStatus = criarElemento('p', '', 'Local: ');
+    pStatus.appendChild(criarElemento('span', 'vaga-status', vaga.local || 'Não informado'));
     detalhes.appendChild(pStatus);
 
     const areaCandidatos = criarElemento('div', 'vaga-candidatos');
     areaCandidatos.appendChild(criarElemento('p', '', 'Candidatos Aplicados'));
 
     const tabela = criarElemento('table', 'tabela-candidatos');
-
     const thead = criarElemento('thead');
     const trCabecalho = criarElemento('tr');
-    ['Candidato', 'Skills (Competências)', 'Formação', 'Ações']
+    ['Candidato', 'Descrição e Competências', 'Perfil', 'Ações']
         .forEach(titulo => trCabecalho.appendChild(criarElemento('th', '', titulo)));
     thead.appendChild(trCabecalho);
 
     const tbody = criarElemento('tbody');
+    const interessadosDaVaga = interessados.filter(i => i.idVaga === vaga.id);
 
-    if (vaga.interessados.length === 0) {
+    if (interessadosDaVaga.length === 0) {
         const tr = criarElemento('tr');
-        const td = criarElemento('td', '', 'Nenhum candidato inscrito ainda.');
+        const td = criarElemento('td', '', 'Nenhum candidato pendente de avaliação.');
         td.colSpan = 4;
         tr.appendChild(td);
         tbody.appendChild(tr);
     } else {
-        for (const interessado of vaga.interessados) {
-            tbody.appendChild(criarLinhaCandidato(vaga, interessado));
+        for (const item of interessadosDaVaga) {
+            tbody.appendChild(criarLinhaCandidato(vaga, item));
         }
     }
 
@@ -216,30 +182,23 @@ function criarCardVaga(vaga: Vaga): HTMLElement {
 
     card.appendChild(detalhes);
     card.appendChild(areaCandidatos);
-
     return card;
 }
 
 function renderizarVagas(): void {
     listaVagas.innerHTML = '';
-
-    const minhasVagas = vagasDaEmpresa();
-
-    if (minhasVagas.length === 0) {
+    if (vagas.length === 0) {
         listaVagas.appendChild(criarElemento('p', '', 'Você ainda não criou nenhuma vaga.'));
         return;
     }
-
-    for (const vaga of minhasVagas) {
+    for (const vaga of vagas) {
         listaVagas.appendChild(criarCardVaga(vaga));
     }
 }
 
 function renderizarRecrutadores(): void {
     listaRecrutadores.innerHTML = '';
-    const daEmpresa = recrutadores.filter(r => r.idEmpresa === empresaAtual.id);
-
-    if (daEmpresa.length === 0) {
+    if (recrutadores.length === 0) {
         const tr = criarElemento('tr');
         const td = criarElemento('td', '', 'Nenhum recrutador cadastrado.');
         td.colSpan = 5;
@@ -248,7 +207,7 @@ function renderizarRecrutadores(): void {
         return;
     }
 
-    for (const rec of daEmpresa) {
+    for (const rec of recrutadores) {
         const tr = criarElemento('tr');
         tr.appendChild(criarElemento('td', '', rec.nome));
         tr.appendChild(criarElemento('td', '', rec.areaRecrutamento));
@@ -275,9 +234,7 @@ function renderizarRecrutadores(): void {
 
 function renderizarRejeitados(): void {
     listaRejeitados.innerHTML = '';
-    const daEmpresa = rejeicoes.filter(r => r.idEmpresa === empresaAtual.id);
-
-    if (daEmpresa.length === 0) {
+    if (rejeitados.length === 0) {
         const tr = criarElemento('tr');
         const td = criarElemento('td', '', 'Nenhum candidato rejeitado.');
         td.colSpan = 3;
@@ -286,102 +243,13 @@ function renderizarRejeitados(): void {
         return;
     }
 
-    for (const rej of daEmpresa) {
-        const vaga = vagas.find(v => v.id === rej.idVaga);
-        const cand = candidatos.find(c => c.id === rej.idCandidato);
+    for (const rej of rejeitados) {
         const tr = criarElemento('tr');
-        tr.appendChild(criarElemento('td', '', vaga ? vaga.nome : `Vaga #${rej.idVaga}`));
         tr.appendChild(criarElemento('td', '', `Candidato #${rej.idCandidato}`));
-        tr.appendChild(criarElemento('td', '', cand ? cand.descricao : 'Descrição não disponível'));
+        tr.appendChild(criarElemento('td', '', `${rej.descricaoCandidato || '-'} (${(rej.competencias ?? []).join(', ')})`));
+        tr.appendChild(criarElemento('td', '', rej.nomeVaga));
         listaRejeitados.appendChild(tr);
     }
-}
-
-function renderizarTudo(): void {
-    renderizarVagas();
-    desenharGrafico();
-    renderizarRecrutadores();
-    renderizarRejeitados();
-}
-
-
-function darMatch(idVaga: number, idCandidato: number): void {
-    const vaga = vagas.find(v => v.id === idVaga);
-    if (!vaga) return;
-
-    const matches = vaga.matches ?? [];
-    if (!matches.includes(idCandidato)) {
-        matches.push(idCandidato);
-    }
-    vaga.matches = matches;
-
-    salvarTudo();
-}
-
-function recusarCandidato(idVaga: number, idCandidato: number): void {
-    const vaga = vagas.find(v => v.id === idVaga);
-    if (!vaga) return;
-
-    // Tira o candidato da vaga (e o match, se houver)
-    vaga.interessados = vaga.interessados.filter(c => c.id !== idCandidato);
-    vaga.matches = (vaga.matches ?? []).filter(id => id !== idCandidato);
-
-    // Tira a vaga da lista de interesses do candidato
-    const candidato = candidatos.find(c => c.id === idCandidato);
-    if (candidato) {
-        candidato.vagasInteresse = (candidato.vagasInteresse ?? []).filter(id => id !== idVaga);
-    }
-
-    const jaRejeitado = rejeicoes.some(
-        r => r.idEmpresa === empresaAtual.id && r.idCandidato === idCandidato && r.idVaga === idVaga
-    );
-    if (!jaRejeitado) {
-        rejeicoes.push({ idEmpresa: empresaAtual.id, idCandidato, idVaga });
-    }
-
-    salvarTudo();
-}
-
-function validarEmail(email: string): boolean {
-    return /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email.trim());
-}
-
-function validarCpf(cpf: string): string | null {
-    const digitos = cpf.replace(/\D/g, '');
-    if (digitos.length !== 11 || /^(\d)\1{10}$/.test(digitos)) return null;
-
-    const calcDigito = (base: number): number => {
-        let soma = 0;
-        for (let i = 0; i < base; i++) {
-            soma += Number(digitos.charAt(i)) * (base + 1 - i);
-        }
-        const resto = (soma * 10) % 11;
-        return resto === 10 ? 0 : resto;
-    };
-
-    if (Number(digitos.charAt(9)) !== calcDigito(9) || Number(digitos.charAt(10)) !== calcDigito(10)) {
-        return null;
-    }
-    return digitos;
-}
-
-function validarNascimentoMaior18(texto: string): boolean {
-    const match = /^(\d{2})-(\d{2})-(\d{4})$/.exec(texto.trim());
-    if (!match) return false;
-
-    const dia = Number(match[1]);
-    const mes = Number(match[2]);
-    const ano = Number(match[3]);
-    const data = new Date(ano, mes - 1, dia);
-    if (data.getFullYear() !== ano || data.getMonth() !== mes - 1 || data.getDate() !== dia) {
-        return false;
-    }
-
-    const hoje = new Date();
-    let idade = hoje.getFullYear() - ano;
-    const aniversarioPassou = hoje.getMonth() + 1 > mes || (hoje.getMonth() + 1 === mes && hoje.getDate() >= dia);
-    if (!aniversarioPassou) idade--;
-    return idade >= 18;
 }
 
 function limparFormularioRecrutador(): void {
@@ -390,132 +258,145 @@ function limparFormularioRecrutador(): void {
     btnCancelarEdicao.classList.add('escondido');
 }
 
-formRecrutador.addEventListener('submit', (e: Event) => {
-    e.preventDefault();
+async function carregarPainel(): Promise<void> {
+    try {
+        [vagas, interessados, rejeitados, recrutadores] = await Promise.all([
+            listarVagasPorEmpresaApi(empresaAtual.id),
+            listarInteressadosApi(empresaAtual.id),
+            listarRejeitadosApi(empresaAtual.id),
+            listarRecrutadoresApi(empresaAtual.id)
+        ]);
+        renderizarVagas();
+        desenharGrafico();
+        renderizarRecrutadores();
+        renderizarRejeitados();
+    } catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(`Erro ao carregar painel: ${erro.message}`);
+            return;
+        }
+        alert('Erro inesperado ao carregar painel da empresa.');
+    }
+}
+
+formRecrutador.addEventListener('submit', async (event: Event) => {
+    event.preventDefault();
+
     const idEditando = inputRecrutadorId.value ? Number(inputRecrutadorId.value) : 0;
     const nome = inputRecrutadorNome.value.trim();
-    const area = inputRecrutadorArea.value.trim();
+    const areaRecrutamento = inputRecrutadorArea.value.trim();
     const descricao = inputRecrutadorDescricao.value.trim();
     const email = inputRecrutadorEmail.value.trim();
-    const cpfLimpo = validarCpf(inputRecrutadorCpf.value);
+    const cpf = inputRecrutadorCpf.value.trim();
     const dataNascimento = inputRecrutadorNascimento.value.trim();
     const senha = inputRecrutadorSenha.value;
 
-    if (!nome || !area) {
-        alert('Nome e área de recrutamento são obrigatórios.');
-        return;
-    }
-    if (!validarEmail(email)) {
-        alert('E-mail inválido.');
-        return;
-    }
-    if (!cpfLimpo) {
-        alert('CPF inválido.');
-        return;
-    }
-    if (!validarNascimentoMaior18(dataNascimento)) {
-        alert('Data de nascimento inválida (use dd-mm-aaaa e idade mínima de 18 anos).');
-        return;
-    }
-    if (recrutadores.some(r => r.email === email && r.id !== idEditando)) {
-        alert('Já existe um recrutador cadastrado com este e-mail.');
-        return;
-    }
-    if (recrutadores.some(r => r.cpf.replace(/\D/g, '') === cpfLimpo && r.id !== idEditando)) {
-        alert('Já existe um recrutador cadastrado com este CPF.');
-        return;
-    }
-
-    if (idEditando > 0) {
-        const atual = recrutadores.find(r => r.id === idEditando && r.idEmpresa === empresaAtual.id);
-        if (!atual) return;
-        atual.nome = nome;
-        atual.areaRecrutamento = area;
-        atual.descricao = descricao;
-        atual.email = email;
-        atual.cpf = cpfLimpo;
-        atual.dataNascimento = dataNascimento;
-        if (senha.trim() !== '') {
-            atual.senha = senha;
+    try {
+        if (idEditando > 0) {
+            const payload: {
+                id: number;
+                idEmpresa: number;
+                nome: string;
+                areaRecrutamento: string;
+                descricao: string;
+                email: string;
+                cpf: string;
+                dataNascimento: string;
+                senha?: string;
+            } = {
+                id: idEditando,
+                idEmpresa: empresaAtual.id,
+                nome,
+                areaRecrutamento,
+                descricao,
+                email,
+                cpf,
+                dataNascimento
+            };
+            if (senha.trim() !== '') {
+                payload.senha = senha;
+            }
+            await atualizarRecrutadorApi(payload);
+        } else {
+            await cadastrarRecrutadorApi({
+                idEmpresa: empresaAtual.id,
+                nome,
+                areaRecrutamento,
+                descricao,
+                email,
+                cpf,
+                dataNascimento,
+                senha
+            });
         }
-    } else {
-        if (senha.trim() === '') {
-            alert('A senha é obrigatória no cadastro.');
+
+        limparFormularioRecrutador();
+        await carregarPainel();
+    } catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(erro.message);
             return;
         }
-        const proximoId = recrutadores.reduce((max, r) => Math.max(max, r.id), 100) + 1;
-        recrutadores.push({
-            id: proximoId,
-            idEmpresa: empresaAtual.id,
-            nome,
-            areaRecrutamento: area,
-            descricao,
-            email,
-            cpf: cpfLimpo,
-            dataNascimento,
-            senha,
-            tipo: 'recrutador'
-        });
+        alert('Erro inesperado ao salvar recrutador.');
     }
-
-    salvarTudo();
-    limparFormularioRecrutador();
-    renderizarRecrutadores();
 });
 
 btnCancelarEdicao.addEventListener('click', limparFormularioRecrutador);
 
-listaRecrutadores.addEventListener('click', (event: Event) => {
+listaRecrutadores.addEventListener('click', async (event: Event) => {
     const botao = (event.target as HTMLElement).closest('button');
     if (!botao) return;
 
     const id = Number(botao.dataset.id);
     if (botao.dataset.acao === 'editar-recrutador') {
-        const rec = recrutadores.find(r => r.id === id && r.idEmpresa === empresaAtual.id);
+        const rec = recrutadores.find(r => r.id === id);
         if (!rec) return;
         inputRecrutadorId.value = String(rec.id);
         inputRecrutadorNome.value = rec.nome;
         inputRecrutadorArea.value = rec.areaRecrutamento;
-        inputRecrutadorDescricao.value = rec.descricao;
+        inputRecrutadorDescricao.value = rec.descricao ?? '';
         inputRecrutadorEmail.value = rec.email;
-        inputRecrutadorCpf.value = rec.cpf;
-        inputRecrutadorNascimento.value = rec.dataNascimento;
+        inputRecrutadorCpf.value = '';
+        inputRecrutadorNascimento.value = '';
         inputRecrutadorSenha.value = '';
         btnCancelarEdicao.classList.remove('escondido');
     } else if (botao.dataset.acao === 'remover-recrutador') {
-        recrutadores = recrutadores.filter(r => !(r.id === id && r.idEmpresa === empresaAtual.id));
-        salvarTudo();
-        renderizarRecrutadores();
+        try {
+            await removerRecrutadorApi(id);
+            await carregarPainel();
+        } catch (erro) {
+            if (erro instanceof HttpError) {
+                alert(erro.message);
+                return;
+            }
+            alert('Erro inesperado ao remover recrutador.');
+        }
     }
 });
 
-function removerVaga(idVaga: number): void {
-    vagas = vagas.filter(v => !(v.id === idVaga && v.empresa.id === empresaAtual.id));
-    empresaAtual.vagas = (empresaAtual.vagas ?? []).filter(id => id !== idVaga);
-    for (const c of candidatos) {
-        c.vagasInteresse = (c.vagasInteresse ?? []).filter(id => id !== idVaga);
-    }
-    rejeicoes = rejeicoes.filter(r => r.idVaga !== idVaga);
-    salvarTudo();
-}
-
-// Um único ouvinte no container atende todos os botões (inclusive os criados depois)
-listaVagas.addEventListener('click', (event: Event) => {
+listaVagas.addEventListener('click', async (event: Event) => {
     const botao = (event.target as HTMLElement).closest('button');
     if (!botao || botao.disabled) return;
 
     const idVaga = Number(botao.dataset.vaga);
     const idCandidato = Number(botao.dataset.candidato);
 
-    if (botao.dataset.acao === 'remover-vaga') {
-        removerVaga(idVaga);
-    } else if (botao.dataset.acao === 'match') {
-        darMatch(idVaga, idCandidato);
-    } else if (botao.dataset.acao === 'recusar') {
-        recusarCandidato(idVaga, idCandidato);
+    try {
+        if (botao.dataset.acao === 'remover-vaga') {
+            await removerVagaApi(idVaga);
+        } else if (botao.dataset.acao === 'match') {
+            await curtirCandidatoApi(empresaAtual.id, idCandidato, idVaga);
+        } else if (botao.dataset.acao === 'recusar') {
+            await rejeitarCandidatoApi(empresaAtual.id, idCandidato, idVaga);
+        }
+        await carregarPainel();
+    } catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(erro.message);
+            return;
+        }
+        alert('Erro inesperado ao processar ação.');
     }
-
-    renderizarTudo();
 });
 
-renderizarTudo();
+void carregarPainel();

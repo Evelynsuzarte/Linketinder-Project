@@ -1,45 +1,18 @@
-import type { Candidato, Empresa, Recrutador, Vaga } from "./storage.js";
-import {
-    obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas,
-    obterTodosRecrutadores, salvarUsuarios, salvarVagas
-} from "./storage.js";
+import { HttpError, cadastrarVagaApi, obterSessao } from "./api.js";
 
 function voltarParaLogin(): never {
     window.location.href = "acessar.html";
     throw new Error("Sessão inválida: faça login como empresa ou recrutador.");
 }
 
-const dadosLogado = localStorage.getItem('linketinder_usuario_logado');
-const logado = dadosLogado ? JSON.parse(dadosLogado) : null;
-
+const logado = obterSessao();
 if (logado === null || (logado.tipo !== 'empresa' && logado.tipo !== 'recrutador')) {
     voltarParaLogin();
 }
 
-const candidatos: Candidato[] = obterTodosCandidatos();
-const empresas: Empresa[] = obterTodasEmpresas();
-const recrutadores: Recrutador[] = obterTodosRecrutadores();
-const vagas: Vaga[] = obterTodasVagas();
-
-let empresaAtual: Empresa | undefined;
-let paginaPainel = "painel_empresa.html";
-
-if (logado.tipo === 'empresa') {
-    empresaAtual = empresas.find(e => e.id === logado.id);
-    paginaPainel = "painel_empresa.html";
-} else {
-    const rec = recrutadores.find(r => r.id === logado.id);
-    if (rec) {
-        empresaAtual = empresas.find(e => e.id === rec.idEmpresa);
-    }
-    paginaPainel = "painel_recrutador.html";
-}
-
-if (!empresaAtual) {
-    voltarParaLogin();
-}
-
-const empresaConfirmada: Empresa = empresaAtual;
+const idEmpresa = logado.tipo === 'empresa' ? logado.id : logado.idEmpresa;
+const nomeEmpresa = logado.tipo === 'empresa' ? logado.nome : (logado.nomeEmpresa ?? `Empresa #${logado.idEmpresa}`);
+const paginaPainel = logado.tipo === 'empresa' ? "painel_empresa.html" : "painel_recrutador.html";
 
 const linkVoltar = document.querySelector('#link-voltar') as HTMLAnchorElement;
 const btnCancelar = document.querySelector('#btn-cancelar-vaga') as HTMLAnchorElement;
@@ -51,9 +24,9 @@ const inputCompetencias = document.querySelector('#vaga-competencias') as HTMLIn
 
 linkVoltar.href = paginaPainel;
 btnCancelar.href = paginaPainel;
-infoEmpresa.textContent = `Empresa vinculada: ${empresaConfirmada.nome}`;
+infoEmpresa.textContent = `Empresa vinculada: ${nomeEmpresa}`;
 
-formCriarVaga.addEventListener('submit', (e: Event) => {
+formCriarVaga.addEventListener('submit', async (e: Event) => {
     e.preventDefault();
     const nome = inputNome.value.trim();
     const descricao = inputDescricao.value.trim();
@@ -67,24 +40,21 @@ formCriarVaga.addEventListener('submit', (e: Event) => {
         return;
     }
 
-    const proximoId = vagas.reduce((max, v) => Math.max(max, v.id), 0) + 1;
-    vagas.push({
-        id: proximoId,
-        nome,
-        descricao,
-        competencias,
-        empresa: empresaConfirmada,
-        interessados: [],
-        matches: []
-    });
-
-    if (!Array.isArray(empresaConfirmada.vagas)) {
-        empresaConfirmada.vagas = [];
+    try {
+        await cadastrarVagaApi({
+            nome,
+            descricao,
+            local: 'Remoto',
+            idEmpresa,
+            competencias
+        });
+        alert('Vaga cadastrada com sucesso!');
+        window.location.href = paginaPainel;
+    } catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(erro.message);
+            return;
+        }
+        alert('Erro inesperado ao cadastrar vaga.');
     }
-    empresaConfirmada.vagas.push(proximoId);
-
-    salvarVagas(vagas);
-    salvarUsuarios([...candidatos, ...empresas]);
-
-    window.location.href = paginaPainel;
 });
