@@ -19,7 +19,11 @@ class Menu {
         println("7 - CANDIDATO: CURTIR VAGAS")
         println("8 - EMPRESA: CURTIR CANDIDATOS")
         println("9 - VER MATCHS")
-        println("10 -  SAIR")
+        println("10 - EMPRESA: GERENCIAR RECRUTADORES")
+        println("11 - RECRUTADOR: CRIAR/EDITAR VAGAS")
+        println("12 - RECRUTADOR: AVALIAR CANDIDATOS")
+        println("13 - VER CANDIDATOS REJEITADOS")
+        println("0 - SAIR")
         println("===== ESCOLHA:")
 
         String texto = leitor.lerObrigatorio(scanner, "----->")

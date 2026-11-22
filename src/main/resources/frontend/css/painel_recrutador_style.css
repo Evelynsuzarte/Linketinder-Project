@@ -1,0 +1,58 @@
+@import url("painel_empresa_style.css");
+
+.painel-recrutador {
+    width: 100%;
+    padding: 20px 0 40px;
+}
+
+.cabecalho-vagas {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#subtitulo-recrutador {
+    margin-top: 6px;
+    color: #003d82;
+    font-size: 16px;
+}
+
+.form-vaga {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.form-vaga input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-vaga-acoes {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.vaga-card {
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.vaga-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.btn-match, .btn-recusar {
+    padding: 6px 12px;
+    font-size: 14px;
+    margin-right: 6px;
+}

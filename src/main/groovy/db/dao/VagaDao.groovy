@@ -40,6 +40,10 @@ class VagaDao implements VagaRepository {
         println("!!!! Vaga atualizada com sucesso !!!!")
     }
 
+    void remover(int id) {
+        sql.executeUpdate("DELETE FROM vagas WHERE id = ?", [id])
+    }
+
     Vaga buscarPorId(int id) {
         def linha = sql.firstRow(SELECT_VAGAS + " WHERE v.id = ?", [id])
         return linha ? montar(linha) : null

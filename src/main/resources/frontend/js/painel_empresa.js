@@ -1,4 +1,4 @@
-import { obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas, salvarUsuarios, salvarVagas } from "./storage.js";
+import { obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas, obterTodosRecrutadores, obterTodasRejeicoes, salvarUsuarios, salvarVagas, salvarRecrutadores, salvarRejeicoes } from "./storage.js";
 // USUÁRIO LOGADO (só empresa pode ver esta página)
 function voltarParaLogin() {
     window.location.href = "acessar.html";
@@ -11,7 +11,9 @@ if (logado === null || logado.tipo !== 'empresa') {
 }
 const candidatos = obterTodosCandidatos();
 const empresas = obterTodasEmpresas();
-const vagas = obterTodasVagas();
+let vagas = obterTodasVagas();
+let recrutadores = obterTodosRecrutadores();
+let rejeicoes = obterTodasRejeicoes();
 const empresaAtual = empresas.find(e => e.id === logado.id) ?? voltarParaLogin();
 function vagasDaEmpresa() {
     return vagas.filter(v => v.empresa.id === empresaAtual.id);
@@ -31,6 +33,18 @@ if (precisaSalvar) {
 }
 const listaVagas = document.querySelector('#lista-vagas');
 const canvasGrafico = document.querySelector('#graficoCompetencias');
+const listaRecrutadores = document.querySelector('#lista-recrutadores');
+const listaRejeitados = document.querySelector('#lista-rejeitados');
+const formRecrutador = document.querySelector('#form-recrutador');
+const inputRecrutadorId = document.querySelector('#recrutador-id');
+const inputRecrutadorNome = document.querySelector('#recrutador-nome');
+const inputRecrutadorArea = document.querySelector('#recrutador-area');
+const inputRecrutadorDescricao = document.querySelector('#recrutador-descricao');
+const inputRecrutadorEmail = document.querySelector('#recrutador-email');
+const inputRecrutadorCpf = document.querySelector('#recrutador-cpf');
+const inputRecrutadorNascimento = document.querySelector('#recrutador-nascimento');
+const inputRecrutadorSenha = document.querySelector('#recrutador-senha');
+const btnCancelarEdicao = document.querySelector('#btn-cancelar-edicao');
 function criarElemento(tag, classe, texto) {
     const el = document.createElement(tag);
     if (classe)
@@ -45,6 +59,8 @@ function buscarCandidato(interessado) {
 function salvarTudo() {
     salvarVagas(vagas);
     salvarUsuarios([...candidatos, ...empresas]);
+    salvarRecrutadores(recrutadores);
+    salvarRejeicoes(rejeicoes);
 }
 let grafico = null;
 function desenharGrafico() {
@@ -112,6 +128,11 @@ function criarCardVaga(vaga) {
     const card = criarElemento('article', 'vaga-card');
     const detalhes = criarElemento('div', 'vaga-detalhes');
     detalhes.appendChild(criarElemento('h2', 'vaga-titulo', vaga.nome));
+    const btnRemoverVaga = criarElemento('button', 'btn-remover', 'Remover Vaga');
+    btnRemoverVaga.type = 'button';
+    btnRemoverVaga.dataset.acao = 'remover-vaga';
+    btnRemoverVaga.dataset.vaga = String(vaga.id);
+    detalhes.appendChild(btnRemoverVaga);
     const pDescricao = criarElemento('p', '', 'Descrição: ');
     pDescricao.appendChild(criarElemento('span', 'vaga-descricao', vaga.descricao));
     detalhes.appendChild(pDescricao);
@@ -157,9 +178,64 @@ function renderizarVagas() {
         listaVagas.appendChild(criarCardVaga(vaga));
     }
 }
+function renderizarRecrutadores() {
+    listaRecrutadores.innerHTML = '';
+    const daEmpresa = recrutadores.filter(r => r.idEmpresa === empresaAtual.id);
+    if (daEmpresa.length === 0) {
+        const tr = criarElemento('tr');
+        const td = criarElemento('td', '', 'Nenhum recrutador cadastrado.');
+        td.colSpan = 5;
+        tr.appendChild(td);
+        listaRecrutadores.appendChild(tr);
+        return;
+    }
+    for (const rec of daEmpresa) {
+        const tr = criarElemento('tr');
+        tr.appendChild(criarElemento('td', '', rec.nome));
+        tr.appendChild(criarElemento('td', '', rec.areaRecrutamento));
+        tr.appendChild(criarElemento('td', '', rec.email));
+        tr.appendChild(criarElemento('td', '', rec.descricao || '-'));
+        const tdAcoes = criarElemento('td');
+        const btnEditar = criarElemento('button', 'btn-editar', 'Editar');
+        btnEditar.type = 'button';
+        btnEditar.dataset.acao = 'editar-recrutador';
+        btnEditar.dataset.id = String(rec.id);
+        const btnRemover = criarElemento('button', 'btn-remover', 'Remover');
+        btnRemover.type = 'button';
+        btnRemover.dataset.acao = 'remover-recrutador';
+        btnRemover.dataset.id = String(rec.id);
+        tdAcoes.appendChild(btnEditar);
+        tdAcoes.appendChild(btnRemover);
+        tr.appendChild(tdAcoes);
+        listaRecrutadores.appendChild(tr);
+    }
+}
+function renderizarRejeitados() {
+    listaRejeitados.innerHTML = '';
+    const daEmpresa = rejeicoes.filter(r => r.idEmpresa === empresaAtual.id);
+    if (daEmpresa.length === 0) {
+        const tr = criarElemento('tr');
+        const td = criarElemento('td', '', 'Nenhum candidato rejeitado.');
+        td.colSpan = 3;
+        tr.appendChild(td);
+        listaRejeitados.appendChild(tr);
+        return;
+    }
+    for (const rej of daEmpresa) {
+        const vaga = vagas.find(v => v.id === rej.idVaga);
+        const cand = candidatos.find(c => c.id === rej.idCandidato);
+        const tr = criarElemento('tr');
+        tr.appendChild(criarElemento('td', '', vaga ? vaga.nome : `Vaga #${rej.idVaga}`));
+        tr.appendChild(criarElemento('td', '', `Candidato #${rej.idCandidato}`));
+        tr.appendChild(criarElemento('td', '', cand ? cand.descricao : 'Descrição não disponível'));
+        listaRejeitados.appendChild(tr);
+    }
+}
 function renderizarTudo() {
     renderizarVagas();
     desenharGrafico();
+    renderizarRecrutadores();
+    renderizarRejeitados();
 }
 function darMatch(idVaga, idCandidato) {
     const vaga = vagas.find(v => v.id === idVaga);
@@ -184,6 +260,159 @@ function recusarCandidato(idVaga, idCandidato) {
     if (candidato) {
         candidato.vagasInteresse = (candidato.vagasInteresse ?? []).filter(id => id !== idVaga);
     }
+    const jaRejeitado = rejeicoes.some(r => r.idEmpresa === empresaAtual.id && r.idCandidato === idCandidato && r.idVaga === idVaga);
+    if (!jaRejeitado) {
+        rejeicoes.push({ idEmpresa: empresaAtual.id, idCandidato, idVaga });
+    }
+    salvarTudo();
+}
+function validarEmail(email) {
+    return /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email.trim());
+}
+function validarCpf(cpf) {
+    const digitos = cpf.replace(/\D/g, '');
+    if (digitos.length !== 11 || /^(\d)\1{10}$/.test(digitos))
+        return null;
+    const calcDigito = (base) => {
+        let soma = 0;
+        for (let i = 0; i < base; i++) {
+            soma += Number(digitos.charAt(i)) * (base + 1 - i);
+        }
+        const resto = (soma * 10) % 11;
+        return resto === 10 ? 0 : resto;
+    };
+    if (Number(digitos.charAt(9)) !== calcDigito(9) || Number(digitos.charAt(10)) !== calcDigito(10)) {
+        return null;
+    }
+    return digitos;
+}
+function validarNascimentoMaior18(texto) {
+    const match = /^(\d{2})-(\d{2})-(\d{4})$/.exec(texto.trim());
+    if (!match)
+        return false;
+    const dia = Number(match[1]);
+    const mes = Number(match[2]);
+    const ano = Number(match[3]);
+    const data = new Date(ano, mes - 1, dia);
+    if (data.getFullYear() !== ano || data.getMonth() !== mes - 1 || data.getDate() !== dia) {
+        return false;
+    }
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - ano;
+    const aniversarioPassou = hoje.getMonth() + 1 > mes || (hoje.getMonth() + 1 === mes && hoje.getDate() >= dia);
+    if (!aniversarioPassou)
+        idade--;
+    return idade >= 18;
+}
+function limparFormularioRecrutador() {
+    formRecrutador.reset();
+    inputRecrutadorId.value = '';
+    btnCancelarEdicao.classList.add('escondido');
+}
+formRecrutador.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const idEditando = inputRecrutadorId.value ? Number(inputRecrutadorId.value) : 0;
+    const nome = inputRecrutadorNome.value.trim();
+    const area = inputRecrutadorArea.value.trim();
+    const descricao = inputRecrutadorDescricao.value.trim();
+    const email = inputRecrutadorEmail.value.trim();
+    const cpfLimpo = validarCpf(inputRecrutadorCpf.value);
+    const dataNascimento = inputRecrutadorNascimento.value.trim();
+    const senha = inputRecrutadorSenha.value;
+    if (!nome || !area) {
+        alert('Nome e área de recrutamento são obrigatórios.');
+        return;
+    }
+    if (!validarEmail(email)) {
+        alert('E-mail inválido.');
+        return;
+    }
+    if (!cpfLimpo) {
+        alert('CPF inválido.');
+        return;
+    }
+    if (!validarNascimentoMaior18(dataNascimento)) {
+        alert('Data de nascimento inválida (use dd-mm-aaaa e idade mínima de 18 anos).');
+        return;
+    }
+    if (recrutadores.some(r => r.email === email && r.id !== idEditando)) {
+        alert('Já existe um recrutador cadastrado com este e-mail.');
+        return;
+    }
+    if (recrutadores.some(r => r.cpf.replace(/\D/g, '') === cpfLimpo && r.id !== idEditando)) {
+        alert('Já existe um recrutador cadastrado com este CPF.');
+        return;
+    }
+    if (idEditando > 0) {
+        const atual = recrutadores.find(r => r.id === idEditando && r.idEmpresa === empresaAtual.id);
+        if (!atual)
+            return;
+        atual.nome = nome;
+        atual.areaRecrutamento = area;
+        atual.descricao = descricao;
+        atual.email = email;
+        atual.cpf = cpfLimpo;
+        atual.dataNascimento = dataNascimento;
+        if (senha.trim() !== '') {
+            atual.senha = senha;
+        }
+    }
+    else {
+        if (senha.trim() === '') {
+            alert('A senha é obrigatória no cadastro.');
+            return;
+        }
+        const proximoId = recrutadores.reduce((max, r) => Math.max(max, r.id), 100) + 1;
+        recrutadores.push({
+            id: proximoId,
+            idEmpresa: empresaAtual.id,
+            nome,
+            areaRecrutamento: area,
+            descricao,
+            email,
+            cpf: cpfLimpo,
+            dataNascimento,
+            senha,
+            tipo: 'recrutador'
+        });
+    }
+    salvarTudo();
+    limparFormularioRecrutador();
+    renderizarRecrutadores();
+});
+btnCancelarEdicao.addEventListener('click', limparFormularioRecrutador);
+listaRecrutadores.addEventListener('click', (event) => {
+    const botao = event.target.closest('button');
+    if (!botao)
+        return;
+    const id = Number(botao.dataset.id);
+    if (botao.dataset.acao === 'editar-recrutador') {
+        const rec = recrutadores.find(r => r.id === id && r.idEmpresa === empresaAtual.id);
+        if (!rec)
+            return;
+        inputRecrutadorId.value = String(rec.id);
+        inputRecrutadorNome.value = rec.nome;
+        inputRecrutadorArea.value = rec.areaRecrutamento;
+        inputRecrutadorDescricao.value = rec.descricao;
+        inputRecrutadorEmail.value = rec.email;
+        inputRecrutadorCpf.value = rec.cpf;
+        inputRecrutadorNascimento.value = rec.dataNascimento;
+        inputRecrutadorSenha.value = '';
+        btnCancelarEdicao.classList.remove('escondido');
+    }
+    else if (botao.dataset.acao === 'remover-recrutador') {
+        recrutadores = recrutadores.filter(r => !(r.id === id && r.idEmpresa === empresaAtual.id));
+        salvarTudo();
+        renderizarRecrutadores();
+    }
+});
+function removerVaga(idVaga) {
+    vagas = vagas.filter(v => !(v.id === idVaga && v.empresa.id === empresaAtual.id));
+    empresaAtual.vagas = (empresaAtual.vagas ?? []).filter(id => id !== idVaga);
+    for (const c of candidatos) {
+        c.vagasInteresse = (c.vagasInteresse ?? []).filter(id => id !== idVaga);
+    }
+    rejeicoes = rejeicoes.filter(r => r.idVaga !== idVaga);
     salvarTudo();
 }
 // Um único ouvinte no container atende todos os botões (inclusive os criados depois)
@@ -193,7 +422,10 @@ listaVagas.addEventListener('click', (event) => {
         return;
     const idVaga = Number(botao.dataset.vaga);
     const idCandidato = Number(botao.dataset.candidato);
-    if (botao.dataset.acao === 'match') {
+    if (botao.dataset.acao === 'remover-vaga') {
+        removerVaga(idVaga);
+    }
+    else if (botao.dataset.acao === 'match') {
         darMatch(idVaga, idCandidato);
     }
     else if (botao.dataset.acao === 'recusar') {

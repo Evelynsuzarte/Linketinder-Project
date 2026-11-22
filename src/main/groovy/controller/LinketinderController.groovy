@@ -2,15 +2,20 @@ package controller
 
 import model.entity.Empresa
 import model.entity.Candidato
+import model.entity.Recrutador
 import model.entity.Vaga
 import model.repository.CandidatoRepository
 import model.repository.EmpresaRepository
 import model.repository.MatchRepository
 import model.repository.VagaRepository
+import service.RecrutadorService
+import service.VagaService
+import service.Validador
 import view.AvisoErros
 import view.LeitorConsole
 
 import java.sql.SQLException
+import java.time.LocalDate
 
 class LinketinderController{
 
@@ -20,16 +25,22 @@ class LinketinderController{
     private final MatchRepository matchDao
     private final LeitorConsole leitor
     private final AvisoErros erros
+    private final RecrutadorService recrutadorService
+    private final VagaService vagaService
 
     LinketinderController(CandidatoRepository candidatoDao, EmpresaRepository empresaDao,
                           VagaRepository vagaDao, MatchRepository matchDao,
-                          LeitorConsole leitor, AvisoErros erros) {
+                          LeitorConsole leitor, AvisoErros erros,
+                          RecrutadorService recrutadorService = null,
+                          VagaService vagaService = null) {
         this.candidatoDao = candidatoDao
         this.empresaDao = empresaDao
         this.vagaDao = vagaDao
         this.matchDao = matchDao
         this.leitor = leitor
         this.erros = erros
+        this.recrutadorService = recrutadorService
+        this.vagaService = vagaService ?: new VagaService(vagaDao)
     }
 
     enum StatusMatch {
@@ -354,16 +365,239 @@ class LinketinderController{
 
             if (escolha == 's') {
                 try {
-                    matchDao.curtirCandidato(empresa.id, perfilMatch.idCandidato, perfilMatch.idVaga)
+                    matchDao.curtirCandidato(empresa.id, perfilMatch.idCandidato, perfilMatch.idVaga, null)
                     println("\n!!! MATCH !!!")
                 } catch (SQLException erro) {
                     erros.avisarErroDeBanco(erro)
                 }
             } else {
-                println("\nPerfil ignorado! Próximo!!!")
+                try {
+                    matchDao.rejeitarCandidato(empresa.id, perfilMatch.idCandidato, perfilMatch.idVaga, null)
+                    println("\nPerfil rejeitado e salvo na lista de rejeitados!")
+                } catch (SQLException erro) {
+                    erros.avisarErroDeBanco(erro)
+                }
             }
         }
         println("\nVocê já viu todos os candidatos interessados no momento!")
+    }
+
+    void gerenciarRecrutadores(Scanner scanner) {
+        String nomeEmpresa = leitor.lerObrigatorio(scanner, "Nome da empresa: ")
+        Empresa empresa = empresaDao.buscarPorNome(nomeEmpresa)
+        if (empresa == null) {
+            println("\nEmpresa não encontrada.")
+            return
+        }
+
+        println("\n--- GERENCIAR RECRUTADORES (${empresa.nome}) ---")
+        println("1 - Listar | 2 - Cadastrar | 3 - Editar | 4 - Remover")
+        int acao = leitor.lerInteiro(scanner, "Escolha: ")
+
+        try {
+            switch (acao) {
+                case 1:
+                    listarRecrutadoresEmpresa(empresa)
+                    break
+                case 2:
+                    cadastrarRecrutador(scanner, empresa)
+                    break
+                case 3:
+                    editarRecrutador(scanner, empresa)
+                    break
+                case 4:
+                    removerRecrutador(scanner, empresa)
+                    break
+                default:
+                    println("Opção inválida.")
+            }
+        } catch (IllegalArgumentException e) {
+            println("Erro: ${e.message}")
+        } catch (SQLException erro) {
+            erros.avisarErroDeBanco(erro)
+        }
+    }
+
+    private void listarRecrutadoresEmpresa(Empresa empresa) {
+        List<Map> lista = recrutadorService.listarSegurosPorEmpresa(empresa.id)
+        if (lista.isEmpty()) {
+            println("\nNenhum recrutador cadastrado para ${empresa.nome}.")
+            return
+        }
+        println("\n=== RECRUTADORES DE ${empresa.nome} ===")
+        lista.each { r ->
+            println("ID: ${r.id} | Nome: ${r.nome} | Área: ${r.areaRecrutamento} | Email: ${r.email} | Descrição: ${r.descricao ?: ''}")
+        }
+    }
+
+    private void cadastrarRecrutador(Scanner scanner, Empresa empresa) {
+        String nome = leitor.lerObrigatorio(scanner, "Nome do recrutador: ")
+        String area = leitor.lerObrigatorio(scanner, "Área de recrutamento: ")
+        print("Descrição: ")
+        String descricao = scanner.nextLine()
+        String email = leitor.lerObrigatorio(scanner, "E-mail: ")
+        String cpf = leitor.lerObrigatorio(scanner, "CPF: ")
+        String dataTexto = leitor.lerObrigatorio(scanner, "Data de nascimento (dd-mm-aaaa): ")
+        LocalDate dataNascimento = Validador.parseDataNascimento(dataTexto)
+        String senha = leitor.lerObrigatorio(scanner, "Senha: ")
+
+        Recrutador recrutador = new Recrutador(
+                empresa: empresa, nome: nome, areaRecrutamento: area,
+                descricao: descricao, email: email, cpf: cpf,
+                dataNascimento: dataNascimento, senha: senha
+        )
+        recrutadorService.inserir(recrutador)
+        println("Recrutador cadastrado com sucesso! ID: ${recrutador.id}")
+    }
+
+    private void editarRecrutador(Scanner scanner, Empresa empresa) {
+        listarRecrutadoresEmpresa(empresa)
+        int id = leitor.lerInteiro(scanner, "ID do recrutador para editar: ")
+        Recrutador atual = recrutadorService.buscarPorId(id)
+        if (atual == null || atual.empresa?.id != empresa.id) {
+            println("Recrutador não encontrado para esta empresa.")
+            return
+        }
+        String nome = leitor.lerObrigatorio(scanner, "Nome (${atual.nome}): ")
+        String area = leitor.lerObrigatorio(scanner, "Área (${atual.areaRecrutamento}): ")
+        print("Descrição (${atual.descricao ?: ''}): ")
+        String descricao = scanner.nextLine()
+        String email = leitor.lerObrigatorio(scanner, "E-mail (${atual.email}): ")
+        String cpf = leitor.lerObrigatorio(scanner, "CPF: ")
+        String dataTexto = leitor.lerObrigatorio(scanner, "Data de nascimento (dd-mm-aaaa): ")
+        LocalDate dataNascimento = Validador.parseDataNascimento(dataTexto)
+        print("Nova senha (deixe vazio para manter a atual): ")
+        String senha = scanner.nextLine()
+
+        Recrutador editado = new Recrutador(
+                id: id, empresa: empresa, nome: nome, areaRecrutamento: area,
+                descricao: descricao, email: email, cpf: cpf,
+                dataNascimento: dataNascimento, senha: senha
+        )
+        recrutadorService.atualizar(editado)
+        println("Recrutador atualizado com sucesso!")
+    }
+
+    private void removerRecrutador(Scanner scanner, Empresa empresa) {
+        listarRecrutadoresEmpresa(empresa)
+        int id = leitor.lerInteiro(scanner, "ID do recrutador para remover: ")
+        Recrutador atual = recrutadorService.buscarPorId(id)
+        if (atual == null || atual.empresa?.id != empresa.id) {
+            println("Recrutador não encontrado para esta empresa.")
+            return
+        }
+        recrutadorService.remover(id)
+        println("Recrutador removido com sucesso!")
+    }
+
+    void gerenciarVagasRecrutador(Scanner scanner) {
+        String nomeRecrutador = leitor.lerObrigatorio(scanner, "Nome do recrutador: ")
+        Recrutador recrutador = recrutadorService.buscarPorNome(nomeRecrutador)
+        if (recrutador == null) {
+            println("\nRecrutador não encontrado.")
+            return
+        }
+
+        println("\n--- VAGAS DA EMPRESA ${recrutador.empresa.nome} (Recrutador: ${recrutador.nome}) ---")
+        println("1 - Listar vagas | 2 - Criar vaga | 3 - Editar vaga | 4 - Remover vaga")
+        int acao = leitor.lerInteiro(scanner, "Escolha: ")
+
+        try {
+            switch (acao) {
+                case 1:
+                    vagaService.listarPorEmpresa(recrutador.empresa.id).each { v ->
+                        println("ID: ${v.id} | Vaga: ${v.nome} | Local: ${v.local} | Descrição: ${v.descricao} | Competências: ${v.competencias}")
+                    }
+                    break
+                case 2:
+                    String nome = leitor.lerObrigatorio(scanner, "Nome da vaga: ")
+                    print("Descrição da vaga: ")
+                    String descricao = scanner.nextLine()
+                    print("Local: ")
+                    String local = scanner.nextLine()
+                    List<String> competencias = leitor.lerCompetencias(scanner, "Competências exigidas (separadas por vírgula): ")
+                    Vaga nova = new Vaga(nome: nome, descricao: descricao, local: local, competencias: competencias, empresa: recrutador.empresa)
+                    vagaService.inserir(nova)
+                    break
+                case 3:
+                    int idVaga = leitor.lerInteiro(scanner, "ID da vaga para editar: ")
+                    String nome = leitor.lerObrigatorio(scanner, "Novo nome da vaga: ")
+                    print("Nova descrição: ")
+                    String descricao = scanner.nextLine()
+                    print("Novo local: ")
+                    String local = scanner.nextLine()
+                    List<String> competencias = leitor.lerCompetencias(scanner, "Competências (separadas por vírgula): ")
+                    Vaga editada = new Vaga(id: idVaga, nome: nome, descricao: descricao, local: local, competencias: competencias)
+                    vagaService.atualizarComoRecrutador(editada, recrutador.empresa.id)
+                    break
+                case 4:
+                    int idVaga = leitor.lerInteiro(scanner, "ID da vaga para remover: ")
+                    vagaService.removerComoRecrutador(idVaga, recrutador.empresa.id)
+                    println("Vaga removida com sucesso!")
+                    break
+                default:
+                    println("Opção inválida.")
+            }
+        } catch (IllegalArgumentException e) {
+            println("Erro: ${e.message}")
+        } catch (SQLException erro) {
+            erros.avisarErroDeBanco(erro)
+        }
+    }
+
+    void avaliarCandidatosComoRecrutador(Scanner scanner) {
+        String nomeRecrutador = leitor.lerObrigatorio(scanner, "Nome do recrutador: ")
+        Recrutador recrutador = recrutadorService.buscarPorNome(nomeRecrutador)
+        if (recrutador == null) {
+            println("\nRecrutador não encontrado.")
+            return
+        }
+
+        println("\n=== AVALIAÇÃO DE CANDIDATOS — ${recrutador.nome} (${recrutador.empresa.nome}) ===")
+        println("Digite 's' para Curtir ou 'n' para Rejeitar.")
+
+        List<Map> interessados = matchDao.listarInteressados(recrutador.empresa.id)
+        if (interessados.isEmpty()) {
+            println("\nNenhum candidato para curtir.")
+            return
+        }
+
+        for (perfilMatch in interessados) {
+            exibirMatch(perfilMatch)
+            print("Tem interesse neste perfil? (s/n): ")
+            String escolha = scanner.nextLine().trim().toLowerCase()
+
+            try {
+                if (escolha == 's') {
+                    matchDao.curtirCandidato(recrutador.empresa.id, perfilMatch.idCandidato, perfilMatch.idVaga, recrutador.id)
+                    println("\n!!! MATCH !!!")
+                } else {
+                    matchDao.rejeitarCandidato(recrutador.empresa.id, perfilMatch.idCandidato, perfilMatch.idVaga, recrutador.id)
+                    println("\nPerfil rejeitado e salvo na lista de rejeitados!")
+                }
+            } catch (SQLException erro) {
+                erros.avisarErroDeBanco(erro)
+            }
+        }
+        println("\nVocê já viu todos os candidatos interessados no momento!")
+    }
+
+    void verRejeitados(Scanner scanner) {
+        String nomeEmpresa = leitor.lerObrigatorio(scanner, "Nome da empresa: ")
+        Empresa empresa = empresaDao.buscarPorNome(nomeEmpresa)
+        if (empresa == null) {
+            println("\nEmpresa não encontrada.")
+            return
+        }
+
+        List<Map> rejeitados = matchDao.listarRejeitados(empresa.id)
+        if (rejeitados.isEmpty()) {
+            println("\nNenhum candidato rejeitado para ${empresa.nome}.")
+            return
+        }
+
+        println("\n=== CANDIDATOS REJEITADOS (${empresa.nome}) ===")
+        rejeitados.each { exibirMatch(it) }
     }
 
 

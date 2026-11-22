@@ -1,7 +1,7 @@
-import type { Candidato, Empresa, Vaga } from "./storage.js";
+import type { Candidato, Empresa, Recrutador, Vaga } from "./storage.js";
 import {
     obterTodosUsuarios, obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas,
-    salvarUsuarios, salvarVagas
+    obterTodosRecrutadores, salvarUsuarios, salvarVagas
 } from "./storage.js";
 
 
@@ -19,9 +19,10 @@ function salvarTudo(): void {
 const inputEmail = document.querySelector('.form-email input') as HTMLInputElement;
 const inputSenha = document.querySelector('.form-senha input') as HTMLInputElement;
 
-function buscarSenha(email: string): Candidato | Empresa | undefined {
+function buscarSenha(email: string): Candidato | Empresa | Recrutador | undefined {
     const usuarios = obterTodosUsuarios();
-    return usuarios.find(u => u.email === email);
+    const recrutadores = obterTodosRecrutadores();
+    return [...usuarios, ...recrutadores].find(u => u.email === email);
 }
 
 function fazerLogin(): void {
@@ -35,6 +36,8 @@ function fazerLogin(): void {
                 window.location.href = "painel_candidato.html";
             } else if (usuarioEncontrado.tipo === 'empresa') {
                 window.location.href = "painel_empresa.html";
+            } else if (usuarioEncontrado.tipo === 'recrutador') {
+                window.location.href = "painel_recrutador.html";
             }
         } else {
             alert("Senha incorreta!");

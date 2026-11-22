@@ -1,4 +1,4 @@
-import { obterTodosUsuarios, obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas, salvarUsuarios, salvarVagas } from "./storage.js";
+import { obterTodosUsuarios, obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas, obterTodosRecrutadores, salvarUsuarios, salvarVagas } from "./storage.js";
 let candidatos = obterTodosCandidatos();
 let empresas = obterTodasEmpresas();
 let vagas = obterTodasVagas();
@@ -11,7 +11,8 @@ const inputEmail = document.querySelector('.form-email input');
 const inputSenha = document.querySelector('.form-senha input');
 function buscarSenha(email) {
     const usuarios = obterTodosUsuarios();
-    return usuarios.find(u => u.email === email);
+    const recrutadores = obterTodosRecrutadores();
+    return [...usuarios, ...recrutadores].find(u => u.email === email);
 }
 function fazerLogin() {
     const usuarioEncontrado = buscarSenha(inputEmail.value);
@@ -24,6 +25,9 @@ function fazerLogin() {
             }
             else if (usuarioEncontrado.tipo === 'empresa') {
                 window.location.href = "painel_empresa.html";
+            }
+            else if (usuarioEncontrado.tipo === 'recrutador') {
+                window.location.href = "painel_recrutador.html";
             }
         }
         else {

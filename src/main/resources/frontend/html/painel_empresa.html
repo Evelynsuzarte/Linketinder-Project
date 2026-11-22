@@ -42,6 +42,51 @@
 
         <!-- O TypeScript cria um <article class="vaga-card"> para cada vaga da empresa -->
         <div id="lista-vagas" class="lista-vagas"></div>
+
+        <section id="secao-recrutadores" class="painel-secao">
+            <h2>Gerenciar Recrutadores</h2>
+            <form id="form-recrutador" class="form-recrutador">
+                <input type="hidden" id="recrutador-id" value="">
+                <input type="text" id="recrutador-nome" placeholder="Nome completo" required>
+                <input type="text" id="recrutador-area" placeholder="Área (ex.: TI, RH)" required>
+                <input type="text" id="recrutador-descricao" placeholder="Descrição">
+                <input type="email" id="recrutador-email" placeholder="E-mail" required>
+                <input type="text" id="recrutador-cpf" placeholder="CPF (somente números ou 000.000.000-00)" required>
+                <input type="text" id="recrutador-nascimento" placeholder="Nascimento (dd-mm-aaaa)" required>
+                <input type="password" id="recrutador-senha" placeholder="Senha (obrigatória no cadastro)">
+                <div class="form-recrutador-acoes">
+                    <button type="submit" id="btn-salvar-recrutador">Salvar Recrutador</button>
+                    <button type="button" id="btn-cancelar-edicao" class="escondido">Cancelar Edição</button>
+                </div>
+            </form>
+
+            <table class="tabela-recrutadores">
+                <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Área</th>
+                    <th>E-mail</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody id="lista-recrutadores"></tbody>
+            </table>
+        </section>
+
+        <section id="secao-rejeitados" class="painel-secao">
+            <h2>Candidatos Rejeitados (Anônimo)</h2>
+            <table class="tabela-rejeitados">
+                <thead>
+                <tr>
+                    <th>Vaga</th>
+                    <th>Candidato</th>
+                    <th>Descrição</th>
+                </tr>
+                </thead>
+                <tbody id="lista-rejeitados"></tbody>
+            </table>
+        </section>
     </section>
 </main>
 

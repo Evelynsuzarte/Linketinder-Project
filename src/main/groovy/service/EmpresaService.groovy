@@ -15,12 +15,18 @@ class EmpresaService{
         if (!empresa) {
             throw new IllegalArgumentException("Os dados da empresa não podem ser nulos.")
         }
+        if (empresa.senha?.trim() && !SegurancaSenha.estaHasheada(empresa.senha)) {
+            empresa.senha = SegurancaSenha.gerarHash(empresa.senha)
+        }
         repo.inserir(empresa)
     }
 
     void editar(Empresa empresa) {
         if (!empresa || !empresa.id) {
             throw new IllegalArgumentException("Os dados e o ID da empresa são obrigatórios para edição.")
+        }
+        if (empresa.senha?.trim() && !SegurancaSenha.estaHasheada(empresa.senha)) {
+            empresa.senha = SegurancaSenha.gerarHash(empresa.senha)
         }
         repo.editar(empresa)
     }

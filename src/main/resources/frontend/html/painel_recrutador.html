@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/painel_recrutador_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cagliostro&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Tilt+Warp&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../../images/logo.png">
+    <title>Painel do Recrutador - Linketinder</title>
+</head>
+<body>
+
+<header>
+    <nav>
+        <span><a href="../html/index.html"><img class="logo" src="../../images/logo.png" alt="logo"></a></span>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="painel_recrutador.html">Vagas</a></li>
+            <li><a href="index.html">Logoff</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="painel-recrutador">
+        <div class="cabecalho-vagas">
+            <h1 id="titulo-recrutador">Painel do Recrutador</h1>
+            <p id="subtitulo-recrutador"></p>
+        </div>
+
+        <section class="painel-secao">
+            <h2>Criar / Editar Vaga</h2>
+            <form id="form-vaga" class="form-vaga">
+                <input type="hidden" id="vaga-id" value="">
+                <input type="text" id="vaga-nome" placeholder="Nome da vaga" required>
+                <input type="text" id="vaga-descricao" placeholder="Descrição da vaga" required>
+                <input type="text" id="vaga-competencias" placeholder="Competências (separadas por vírgula)" required>
+                <div class="form-vaga-acoes">
+                    <button type="submit" id="btn-salvar-vaga">Salvar Vaga</button>
+                    <button type="button" id="btn-cancelar-vaga" class="escondido">Cancelar Edição</button>
+                </div>
+            </form>
+        </section>
+
+        <div id="lista-vagas" class="lista-vagas"></div>
+
+        <section class="painel-secao">
+            <h2>Matches Confirmados</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Vaga</th>
+                    <th>Candidato</th>
+                    <th>E-mail</th>
+                </tr>
+                </thead>
+                <tbody id="lista-matches"></tbody>
+            </table>
+        </section>
+
+        <section class="painel-secao">
+            <h2>Candidatos Rejeitados (Anônimo)</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Vaga</th>
+                    <th>Candidato</th>
+                    <th>Descrição</th>
+                </tr>
+                </thead>
+                <tbody id="lista-rejeitados"></tbody>
+            </table>
+        </section>
+    </section>
+</main>
+
+<footer>
+    <span>Evelyn Suzarte Fernandes - ACZG 2026.2</span>
+</footer>
+
+<script type="module" src="../js/painel_recrutador.js"></script>
+
+</body>
+</html>

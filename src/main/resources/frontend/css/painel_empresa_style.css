@@ -117,6 +117,57 @@ button {
     background-color: #c82333;
 }
 
+.painel-secao {
+    width: 90%;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.painel-secao h2 {
+    margin-bottom: 15px;
+    color: #005cc6;
+}
+
+.form-recrutador {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.form-recrutador input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-recrutador-acoes {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-editar {
+    background-color: #005cc6;
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-right: 6px;
+}
+
+.btn-remover {
+    background-color: #dc3545;
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
 .btn-main{
     display: flex;
     flex-direction: column;
