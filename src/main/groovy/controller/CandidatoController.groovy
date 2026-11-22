@@ -18,7 +18,21 @@ class CandidatoController extends ApiServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         executar(resp) {
-            responder(resp, HttpServletResponse.SC_OK, service.listarTodos())
+            def candidatosSeguros = service.listarTodos().collect { Candidato c ->
+                [
+                        id          : c.id,
+                        nome        : c.nome,
+                        sobrenome   : c.sobrenome,
+                        idade       : c.idade,
+                        email       : c.email,
+                        pais        : c.pais,
+                        estado      : c.estado,
+                        cep         : c.cep,
+                        descricao   : c.descricao,
+                        competencias: c.competencias ?: []
+                ]
+            }
+            responder(resp, HttpServletResponse.SC_OK, candidatosSeguros)
         }
     }
 

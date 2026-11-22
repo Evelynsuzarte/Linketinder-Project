@@ -1,5 +1,6 @@
 import controller.CandidatoController
 import controller.EmpresaController
+import controller.LoginController
 import controller.MatchController
 import controller.RecrutadorController
 import controller.VagaController
@@ -21,6 +22,7 @@ class Main {
         Tomcat.addServlet(ctx, "vagaServlet", new VagaController()).addMapping("/vagas")
         Tomcat.addServlet(ctx, "recrutadorServlet", new RecrutadorController()).addMapping("/recrutadores")
         Tomcat.addServlet(ctx, "matchServlet", new MatchController()).addMapping("/matches")
+        Tomcat.addServlet(ctx, "loginServlet", new LoginController()).addMapping("/login")
 
         tomcat.start()
         println("Servidor Tomcat iniciado em: http://localhost:8080")

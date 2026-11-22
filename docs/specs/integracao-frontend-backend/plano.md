@@ -11,7 +11,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Executar `.\gradlew.bat test` e verificar que todos os testes Spock passam (incluindo headers CORS e `OPTIONS 200/204`).
 
-- [ ] **2. Criar endpoint de autenticação (`POST /login`) e sanitizar retornos `GET` sensíveis**
+- [x] **2. Criar endpoint de autenticação (`POST /login`) e sanitizar retornos `GET` sensíveis**
   - **O que será feito:** Criar `LoginController` mapeado em `/login` no `Main.groovy`, validando `email` e `senha` contra `CandidatoService`, `EmpresaService` e `RecrutadorService` usando `SegurancaSenha.verificarSenha`. Retornar `200 OK` com projeção segura do usuário autenticado (tipo, `id`, `nome`, `email`, `idEmpresa` quando recrutador — nunca `senha`, `cpf` de recrutador ou `dataNascimento`) e `401 Unauthorized` para credenciais inválidas. Garantir também que `GET /candidatos` e `GET /empresas` não exponham `senha`.
   - **Arquivos criados ou alterados:**
     - Criar: `src/main/groovy/controller/LoginController.groovy`

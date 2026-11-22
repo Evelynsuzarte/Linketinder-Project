@@ -18,7 +18,19 @@ class EmpresaController extends ApiServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         executar(resp) {
-            responder(resp, HttpServletResponse.SC_OK, service.listarTodas())
+            def empresasSeguras = service.listarTodas().collect { Empresa e ->
+                [
+                        id       : e.id,
+                        nome     : e.nome,
+                        cnpj     : e.cnpj,
+                        email    : e.email,
+                        pais     : e.pais,
+                        estado   : e.estado,
+                        cep      : e.cep,
+                        descricao: e.descricao
+                ]
+            }
+            responder(resp, HttpServletResponse.SC_OK, empresasSeguras)
         }
     }
 

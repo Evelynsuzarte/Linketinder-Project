@@ -11,8 +11,11 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Especificação técnica da feature de integração entre front-end e back-end em `docs/specs/integracao-frontend-backend/spec.md` (contexto e objetivo, regras de negócio, critérios de aceite em Dado/Quando/Então, impacto e fora de escopo).
 - Plano de implementação em `docs/specs/integracao-frontend-backend/plano.md`.
 - Suporte a requisições preflight `OPTIONS` (HTTP `204`) e cabeçalhos CORS em `ApiServlet` (`ApiServletCorsSpec`) para consumo da API REST pelo front-end.
+- Endpoint de autenticação `POST /login` (`LoginController` registrado em `Main.groovy` e `LoginControllerSpec`) validando hash `PBKDF2WithHmacSHA256` para candidatos, empresas e recrutadores com retorno seguro (sem `senha`, `cpf` de recrutador ou `dataNascimento`).
 
 ### Modificado
+- `RecrutadorService` atualizado com `buscarPorEmail` para suporte à autenticação.
+- `CandidatoController` e `EmpresaController` atualizados para retornar projeção segura no `GET` sem expor `senha` (nem `cpf` na listagem de candidatos).
 
 ### Corrigido
 
