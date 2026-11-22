@@ -18,6 +18,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - `RecrutadorService` atualizado com `buscarPorEmail` para suporte à autenticação.
 - `CandidatoController` e `EmpresaController` atualizados para retornar projeção segura no `GET` sem expor `senha` (nem `cpf` na listagem de candidatos).
 - `CompetenciaRepository`, `CompetenciaDao` e `CompetenciaService` atualizados com `listarTodas()`.
+- `VagaController` atualizado com filtro `?idCandidato=` (`VagaControllerSpec`) retornando apenas vagas ainda não curtidas em projeção anônima (sem expor dados da empresa antes do match).
 
 ### Corrigido
 

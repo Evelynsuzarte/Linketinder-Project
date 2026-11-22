@@ -17,13 +17,40 @@ import javax.servlet.http.HttpServletResponse
 @WebServlet("/vagas")
 class VagaController extends ApiServlet {
 
-    private final VagaService service = new VagaService(new VagaDao())
-    private final RecrutadorService recrutadorService = new RecrutadorService(new RecrutadorDao(), new EmpresaDao())
+    private final VagaService service
+    private final RecrutadorService recrutadorService
+
+    VagaController() {
+        this(
+                new VagaService(new VagaDao()),
+                new RecrutadorService(new RecrutadorDao(), new EmpresaDao())
+        )
+    }
+
+    VagaController(VagaService service, RecrutadorService recrutadorService) {
+        this.service = service
+        this.recrutadorService = recrutadorService
+    }
 
     // metodo get para listar as vagas as empresas
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         executar(resp) {
+            String idCandidatoParam = req.getParameter("idCandidato")
+            if (idCandidatoParam) {
+                def vagasAnonimas = service.listarNaoCurtidas(idCandidatoParam.toInteger()).collect { Vaga v ->
+                    [
+                            id          : v.id,
+                            nome        : v.nome,
+                            descricao   : v.descricao,
+                            local       : v.local,
+                            competencias: v.competencias ?: []
+                    ]
+                }
+                responder(resp, HttpServletResponse.SC_OK, vagasAnonimas)
+                return
+            }
+
             String idEmpresaParam = req.getParameter("idEmpresa")
             if (idEmpresaParam) {
                 responder(resp, HttpServletResponse.SC_OK, service.listarPorEmpresa(idEmpresaParam.toInteger()))

@@ -35,7 +35,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Executar `.\gradlew.bat test` e verificar `GET /competencias` (`200 OK`) e `POST /competencias` (`201 Created`).
 
-- [ ] **4. Garantir projeção anônima de vagas para avaliação do candidato (`GET /vagas?idCandidato=`)**
+- [x] **4. Garantir projeção anônima de vagas para avaliação do candidato (`GET /vagas?idCandidato=`)**
   - **O que será feito:** No `VagaController`, adicionar suporte ao parâmetro opcional `idCandidato` utilizando `VagaService.listarNaoCurtidas(idCandidato)` e retornando apenas `id`, `nome`, `descricao`, `local` e `competencias` (ocultando dados da empresa antes do match, conforme o Princípio do Anonimato).
   - **Arquivos criados ou alterados:**
     - Alterar: `src/main/groovy/controller/VagaController.groovy`
