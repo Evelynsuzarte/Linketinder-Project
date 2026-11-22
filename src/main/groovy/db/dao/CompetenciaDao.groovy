@@ -68,6 +68,10 @@ class CompetenciaDao implements CompetenciaRepository {
         return linha?.nome
     }
 
+    List<String> listarTodas() {
+        return sql.rows("SELECT nome FROM competencias ORDER BY nome")*.nome
+    }
+
 }
 
 

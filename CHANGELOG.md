@@ -12,10 +12,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Plano de implementação em `docs/specs/integracao-frontend-backend/plano.md`.
 - Suporte a requisições preflight `OPTIONS` (HTTP `204`) e cabeçalhos CORS em `ApiServlet` (`ApiServletCorsSpec`) para consumo da API REST pelo front-end.
 - Endpoint de autenticação `POST /login` (`LoginController` registrado em `Main.groovy` e `LoginControllerSpec`) validando hash `PBKDF2WithHmacSHA256` para candidatos, empresas e recrutadores com retorno seguro (sem `senha`, `cpf` de recrutador ou `dataNascimento`).
+- Endpoint `/competencias` (`CompetenciaController` registrado em `Main.groovy` e `CompetenciaControllerSpec`) com `GET` (listagem geral ou por `?idCandidato=`) e `POST` (`201 Created` para vincular competências ao candidato ou cadastrar nova competência).
 
 ### Modificado
 - `RecrutadorService` atualizado com `buscarPorEmail` para suporte à autenticação.
 - `CandidatoController` e `EmpresaController` atualizados para retornar projeção segura no `GET` sem expor `senha` (nem `cpf` na listagem de candidatos).
+- `CompetenciaRepository`, `CompetenciaDao` e `CompetenciaService` atualizados com `listarTodas()`.
 
 ### Corrigido
 

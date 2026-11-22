@@ -23,7 +23,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Executar `.\gradlew.bat test` e validar os cenários de login válido/inválido para candidato, empresa e recrutador com H2 + `SegurancaSenha`.
 
-- [ ] **3. Criar endpoint de competências (`GET /competencias` e `POST /competencias`)**
+- [x] **3. Criar endpoint de competências (`GET /competencias` e `POST /competencias`)**
   - **O que será feito:** Expor `CompetenciaController` mapeado em `/competencias` no `Main.groovy`. No `GET /competencias`, listar todas as competências cadastradas no banco (ou por `?idCandidato=`) reutilizando `CompetenciaDao`/`CompetenciaService`. No `POST /competencias`, receber `{ idCandidato, competencias }` (ou `{ nome }`) e persistir via `CompetenciaService`, retornando `201 Created`.
   - **Arquivos criados ou alterados:**
     - Alterar: `src/main/groovy/model/repository/CompetenciaRepository.groovy` e `src/main/groovy/db/dao/CompetenciaDao.groovy` (adicionar método de listagem geral de competências, se ausente)
