@@ -59,8 +59,10 @@ modelagem.sql                            -> criação das tabelas e dados de exe
 | `candidato_competencia` | liga candidatos às suas competências |
 | `vaga_competencia` | liga vagas às competências exigidas |
 | `curtida_candidato_vaga` | vagas que o candidato curtiu (lista de interesses) |
-| `curtida_empresa_candidato` | candidatos que a empresa curtiu, para uma vaga |
-| `match` | matches gerados (candidato, empresa e vaga) |
+| `curtida_empresa_candidato` | candidatos que a empresa/recrutador curtiu, para uma vaga (`id_recrutador` opcional) |
+| `rejeicao_empresa_candidato` | candidatos rejeitados pela empresa/recrutador para uma vaga |
+| `recrutadores` | recrutadores vinculados a uma empresa (`id_empresa` com `ON DELETE CASCADE`) |
+| `match` | matches gerados (candidato, empresa, vaga e `id_recrutador` opcional) |
 
 As competências da empresa não ficam na empresa: elas são definidas em cada vaga.
 
@@ -102,7 +104,11 @@ CREATE DATABASE linketinder;
 7 - CANDIDATO: CURTIR VAGAS
 8 - EMPRESA: CURTIR CANDIDATOS
 9 - VER MATCHS
-10 -  SAIR
+10 - EMPRESA: GERENCIAR RECRUTADORES
+11 - RECRUTADOR: CRIAR/EDITAR VAGAS
+12 - RECRUTADOR: AVALIAR CANDIDATOS
+13 - VER CANDIDATOS REJEITADOS
+0 - SAIR
 ===== ESCOLHA:
 ```
 
@@ -110,16 +116,16 @@ CREATE DATABASE linketinder;
 
 O match acontece quando os dois lados demonstram interesse:
 
-1. **Candidato curte a vaga (opção 7):** o candidato informa o nome e o sobrenome e vê as vagas uma de cada vez, mostrando apenas o **nome da vaga, as competências e o local**. Digitando `s`, a vaga entra na lista de interesses dele. Vagas já curtidas não aparecem de novo.
-2. **Empresa curte o candidato (opção 8):** a empresa informa o nome e vê os candidatos interessados nas suas vagas. Para preservar o anonimato, aparecem apenas a **descrição e as competências** do candidato. Digitando `s`, o match é gerado.
+1. **Candidato curte a vaga (opção 7):** o candidato informa o nome e vê as vagas uma de cada vez, mostrando apenas o **nome da vaga, as competências e o local**. Digitando `s`, a vaga entra na lista de interesses dele. Vagas já curtidas não aparecem de novo.
+2. **Empresa ou Recrutador curte o candidato (opções 8 e 12):** informa o nome da empresa/recrutador e vê os candidatos interessados nas vagas da empresa. Para preservar o anonimato, aparecem apenas a **descrição e as competências** do candidato. Digitando `s`, o match é gerado (registrando também `id_recrutador` quando feito pelo recrutador), e o candidato sai da fila dos demais recrutadores daquela empresa.
 3. **Ver matches (opção 9):** escolhendo a visão `c` (candidato) ou `e` (empresa) e informando o nome:
 - Na visão do candidato aparecem a vaga, a empresa e o local.
 - Na visão da empresa aparecem a vaga e o nome, o sobrenome e o e-mail do candidato.
 
 ### Observações
 
-- Vagas ou candidatos recusados (`n`) não são guardados e voltam a aparecer na próxima avaliação.
-- As senhas são salvas em texto puro, por se tratar de um projeto de estudo.
+- Vagas ou candidatos recusados (`n`) são gravados na lista de rejeitados (`rejeicao_empresa_candidato`), saem da fila principal e podem ser consultados de forma anônima (opção `13` no CLI, `GET /matches?tipo=rejeitados` na API e seção dedicada nos painéis web).
+- As senhas de candidatos, empresas e recrutadores no back-end são armazenadas com hash seguro **`PBKDF2WithHmacSHA256`** + salt aleatório (`SegurancaSenha`). Os dados iniciais do SQL utilizam a senha original de teste **`123456`** (consulte `AGENTS.md`).
 - Candidatos e empresas são identificados pelo nome, então nomes repetidos podem causar confusão.
 
 
@@ -175,7 +181,9 @@ Além do CLI, o Linketinder tem uma versão web feita com **HTML, CSS e TypeScri
 - `novo_cadastro.html`: cadastro de candidato ou empresa (os campos mudam conforme o tipo escolhido).
 - `acessar.html`: login por e-mail e senha.
 - `painel_candidato.html`: lista de vagas com filtro entre "Novas vagas" e "Minhas vagas inscritas", com os botões **Inscrever-se** e **Cancelar interesse**.
-- `painel_empresa.html`: vagas da empresa com os candidatos inscritos (anônimos), botões **Match** e **Não Interessado** e um gráfico de candidatos por competência, feito com Chart.js.
+- `painel_empresa.html`: vagas da empresa (com botão **Remover Vaga**), link `+ Criar Nova Vaga` (`criar-vaga.html`), candidatos inscritos (anônimos), botões **Match** e **Não Interessado**, gestão de recrutadores (CRUD), lista anônima de candidatos rejeitados e gráfico de candidatos por competência (Chart.js).
+- `painel_recrutador.html`: painel do recrutador autenticado para criar, editar e remover vagas da empresa, avaliar candidatos interessados (anônimos), consultar rejeitados e ver matches confirmados.
+- `criar-vaga.html`: tela dedicada de criação de vaga para empresa ou recrutador logado.
 
 ### TypeScript
 
@@ -290,8 +298,16 @@ Além do modo console (CLI) e do front-end estático, o back-end ganhou uma **AP
 | **Candidatos** | `POST` | `/candidatos` | `201` | Cadastra um novo candidato |
 | **Empresas** | `GET` | `/empresas` | `200` | Lista todas as empresas e suas vagas vinculadas |
 | **Empresas** | `POST` | `/empresas` | `201` | Cadastra uma nova empresa |
-| **Vagas** | `GET` | `/vagas` | `200` | Lista todas as vagas cadastradas |
+| **Vagas** | `GET` | `/vagas` | `200` | Lista todas as vagas (ou filtra por `?idEmpresa=`) |
 | **Vagas** | `POST` | `/vagas` | `201` | Cadastra uma nova vaga ligada a uma empresa (`idEmpresa`) |
+| **Vagas** | `PUT` | `/vagas` | `200` | Edita uma vaga (valida empresa quando `idRecrutador` é informado) |
+| **Vagas** | `DELETE` | `/vagas` | `200` | Remove uma vaga (`?id=` e `idRecrutador` opcional) |
+| **Recrutadores** | `GET` | `/recrutadores` | `200` | Lista recrutadores por `?idEmpresa=` ou busca por `?id=` (sem dados sensíveis) |
+| **Recrutadores** | `POST` | `/recrutadores` | `201` | Cadastra um recrutador vinculado à empresa |
+| **Recrutadores** | `PUT` | `/recrutadores` | `200` | Edita um recrutador |
+| **Recrutadores** | `DELETE` | `/recrutadores` | `200` | Remove um recrutador (`?id=`) |
+| **Matches** | `GET` | `/matches` | `200` | Consulta `tipo=interessados\|rejeitados\|candidato\|empresa` |
+| **Matches** | `POST` | `/matches` | `201` | Registra `acao=curtirVaga\|curtirCandidato\|rejeitarCandidato` |
 
 ### Como executar e testar
 
