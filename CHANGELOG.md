@@ -13,6 +13,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Suporte a requisições preflight `OPTIONS` (HTTP `204`) e cabeçalhos CORS em `ApiServlet` (`ApiServletCorsSpec`) para consumo da API REST pelo front-end.
 - Endpoint de autenticação `POST /login` (`LoginController` registrado em `Main.groovy` e `LoginControllerSpec`) validando hash `PBKDF2WithHmacSHA256` para candidatos, empresas e recrutadores com retorno seguro (sem `senha`, `cpf` de recrutador ou `dataNascimento`).
 - Endpoint `/competencias` (`CompetenciaController` registrado em `Main.groovy` e `CompetenciaControllerSpec`) com `GET` (listagem geral ou por `?idCandidato=`) e `POST` (`201 Created` para vincular competências ao candidato ou cadastrar nova competência).
+- Camada HTTP Client tipada em TypeScript puro (`src/main/resources/frontend/ts/api.ts` compilada para `js/api.js`), sem uso de frameworks, centralizando requisições REST (`HttpClient`, `HttpError`), sessão no navegador e contratos dos endpoints.
 
 ### Modificado
 - `RecrutadorService` atualizado com `buscarPorEmail` para suporte à autenticação.

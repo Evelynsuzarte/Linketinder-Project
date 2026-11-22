@@ -44,7 +44,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Executar `.\gradlew.bat test` e conferir que `GET /vagas?idCandidato=<id>` não retorna campos da empresa.
 
-- [ ] **5. Configurar camada HTTP Client em TypeScript no front-end (`httpClient.ts` / `api.ts`)**
+- [x] **5. Configurar camada HTTP Client em TypeScript no front-end (`httpClient.ts` / `api.ts`)**
   - **O que será feito:** Explorar e integrar `typescript-http-client` (ou cliente HTTP tipado em TypeScript puro sobre `fetch`, compatível com ES Modules no navegador e sem frameworks) para centralizar requisições `GET`, `POST`, `PUT` e `DELETE` para `http://localhost:8080`, tratando status HTTP (`200`, `201`, `400`, `401`, `500`) e erros de rede. Atualizar `storage.ts` (ou criar `sessao.ts`) para manter apenas a sessão do usuário autenticado.
   - **Arquivos criados ou alterados:**
     - Alterar: `src/main/resources/frontend/package.json` (se instalar `typescript-http-client`) e `tsconfig.json` (se necessário para resolução de módulos)
