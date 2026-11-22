@@ -62,7 +62,7 @@ Este plano divide a implementação de [spec.md](spec.md) em tarefas pequenas e 
   - **Como validar:**
     - Subir a API (`.\gradlew.bat run`), servir `src/main/resources/` e testar login de candidato, empresa e recrutador com senha `123456` e com senha inválida.
 
-- [ ] **7. Integrar Cadastro e Competências (`novo_cadastro.html` / `cadastro.ts`) com a API REST**
+- [x] **7. Integrar Cadastro e Competências (`novo_cadastro.html` / `cadastro.ts`) com a API REST**
   - **O que será feito:** Atualizar `cadastro.ts` para enviar `POST /candidatos` e `POST /empresas` via HTTP client, tratando resposta `201 Created` e erros `400 Bad Request`. Para candidato recém-cadastrado (caso de referência Sandubinha), carregar competências existentes via `GET /competencias`, permitir selecionar/inserir novas competências e enviar `POST /competencias` (`201 Created`) antes de prosseguir para a visualização de vagas.
   - **Arquivos criados ou alterados:**
     - Alterar: `src/main/resources/frontend/html/novo_cadastro.html` (se necessário para seleção/entrada de competências)

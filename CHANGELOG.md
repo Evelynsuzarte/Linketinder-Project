@@ -21,6 +21,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - `CompetenciaRepository`, `CompetenciaDao` e `CompetenciaService` atualizados com `listarTodas()`.
 - `VagaController` atualizado com filtro `?idCandidato=` (`VagaControllerSpec`) retornando apenas vagas ainda não curtidas em projeção anônima (sem expor dados da empresa antes do match).
 - Tela de login (`acesso.ts` / `js/acesso.js`) integrada ao endpoint `POST /login` via `api.ts`, armazenando sessão segura no navegador e redirecionando para o painel de candidato, empresa ou recrutador.
+- Tela de cadastro (`novo_cadastro.html`, `cadastro.ts` / `js/cadastro.js`) integrada a `POST /candidatos`, `POST /empresas`, `GET /competencias` e `POST /competencias` (`201 Created`), incluindo etapa pós-cadastro de competências para candidato e redirecionamento para `painel_candidato.html`.
 
 ### Corrigido
 

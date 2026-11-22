@@ -120,6 +120,20 @@
         </div>
             <button type="submit" class="btn-enviar">Cadastrar</button>
         </form>
+
+        <div class="secao-competencias" style="display: none; margin-top: 24px;">
+            <h2>Suas Competências</h2>
+            <p>Selecione as competências existentes ou adicione novas separadas por vírgula:</p>
+            <div class="lista-competencias-existentes" style="display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0;"></div>
+            <div class="form-competencias-novas" style="margin: 12px 0;">
+                <label for="input-novas-competencias">Novas competências (separadas por vírgula):</label>
+                <input id="input-novas-competencias" type="text" placeholder="Ex.: Groovy, SQL, TypeScript" style="width: 100%; padding: 8px; margin-top: 6px;">
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <button type="button" class="btn-salvar-competencias btn-enviar">Salvar competências e ver vagas</button>
+                <button type="button" class="btn-pular-competencias btn-enviar">Ir para vagas</button>
+            </div>
+        </div>
     </section>
 
 </main>

@@ -1,9 +1,12 @@
-import type { Candidato, Empresa, Vaga } from "./storage.js";
 import {
-    obterTodosUsuarios, obterTodosCandidatos, obterTodasEmpresas, obterTodasVagas,
-    salvarUsuarios, salvarVagas
-} from "./storage.js";
-
+    HttpError,
+    cadastrarCandidatoApi,
+    cadastrarEmpresaApi,
+    listarCompetenciasApi,
+    salvarCompetenciasCandidatoApi,
+    salvarSessao
+} from "./api.js";
+import type { SessaoCandidato } from "./api.js";
 
 // Mapeamento dos botões de rádio e seções por classe
 const radioCandidato = document.querySelector('.classe-radio-candidato') as HTMLInputElement;
@@ -12,14 +15,13 @@ const secaoCandidato = document.querySelector('.cadastro-candidato') as HTMLDivE
 const secaoEmpresa = document.querySelector('.cadastro-empresa') as HTMLDivElement;
 const formulario = document.querySelector('.formulario-adicionar-conta') as HTMLFormElement;
 
-// Mapeamento dos inputs baseado nas classes dos seus blocos
+// Mapeamento dos inputs
 const inputNome = document.querySelector('.form-nome input') as HTMLInputElement;
 const inputEmail = document.querySelector('.form-email input') as HTMLInputElement;
 const inputDescricao = document.querySelector('.form-descricao textarea') as HTMLTextAreaElement;
 const inputCep = document.querySelector('.form-cep input') as HTMLInputElement;
 const selectEstado = document.querySelector('.form-estado select') as HTMLSelectElement;
 
-// Inputs específicos por classe
 const inputCpf = document.querySelector('.form-cpf input') as HTMLInputElement;
 const inputIdade = document.querySelector('.form-idade input') as HTMLInputElement;
 const inputCnpj = document.querySelector('.form-cnpj input') as HTMLInputElement;
@@ -27,25 +29,29 @@ const inputPais = document.querySelector('.form-pais input') as HTMLInputElement
 const inputSenha = document.querySelector('.form-senha input') as HTMLInputElement;
 const inputSenhaEmpresa = document.querySelector('.form-senha-empresa input') as HTMLInputElement;
 
+// Seção de competências pós-cadastro do candidato
+const secaoCompetencias = document.querySelector('.secao-competencias') as HTMLDivElement;
+const listaCompetenciasExistentes = document.querySelector('.lista-competencias-existentes') as HTMLDivElement;
+const inputNovasCompetencias = document.querySelector('#input-novas-competencias') as HTMLInputElement;
+const btnSalvarCompetencias = document.querySelector('.btn-salvar-competencias') as HTMLButtonElement;
+const btnPularCompetencias = document.querySelector('.btn-pular-competencias') as HTMLButtonElement;
 
-// Função para alternar a exibição dos blocos de campos
+let candidatoRecemCadastrado: SessaoCandidato | null = null;
+
 function alternarCampos(): void {
     if (radioCandidato.checked) {
         secaoCandidato.style.display = 'block';
         secaoEmpresa.style.display = 'none';
-
         inputCnpj.value = '';
         inputPais.value = '';
     } else if (radioEmpresa.checked) {
         secaoCandidato.style.display = 'none';
         secaoEmpresa.style.display = 'block';
-
         inputCpf.value = '';
         inputIdade.value = '';
     } else {
         secaoCandidato.style.display = 'none';
         secaoEmpresa.style.display = 'none';
-
         inputCpf.value = '';
         inputIdade.value = '';
         inputCnpj.value = '';
@@ -53,81 +59,184 @@ function alternarCampos(): void {
     }
 }
 
-// Gera o próximo id livre
-function gerarNovoId(usuarios: (Candidato | Empresa)[]): number {
-    const maiorId = usuarios.reduce((maior, u) => Math.max(maior, u.id), 0);
-    return maiorId + 1;
+async function exibirEtapaCompetencias(candidato: SessaoCandidato): Promise<void> {
+    candidatoRecemCadastrado = candidato;
+    salvarSessao(candidato);
+    formulario.style.display = 'none';
+    secaoCompetencias.style.display = 'block';
+    listaCompetenciasExistentes.innerHTML = '<span>Carregando competências...</span>';
+
+    try {
+        const competencias = await listarCompetenciasApi();
+        listaCompetenciasExistentes.innerHTML = '';
+
+        if (competencias.length === 0) {
+            listaCompetenciasExistentes.innerHTML = '<span>Nenhuma competência cadastrada ainda.</span>';
+            return;
+        }
+
+        competencias.forEach((comp) => {
+            const label = document.createElement('label');
+            label.style.display = 'inline-flex';
+            label.style.alignItems = 'center';
+            label.style.gap = '6px';
+            label.style.cursor = 'pointer';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = comp;
+            checkbox.className = 'checkbox-competencia';
+
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(comp));
+            listaCompetenciasExistentes.appendChild(label);
+        });
+    } catch (erro) {
+        listaCompetenciasExistentes.innerHTML = '';
+        if (erro instanceof HttpError) {
+            alert(`Não foi possível carregar competências: ${erro.message}`);
+        }
+    }
 }
 
-// Ouvintes de evento para os botões de rádio
+async function salvarCompetencias(): Promise<void> {
+    if (!candidatoRecemCadastrado) {
+        return;
+    }
+
+    const selecionadas = Array.from(
+        document.querySelectorAll<HTMLInputElement>('.checkbox-competencia:checked')
+    ).map((cb) => cb.value.trim());
+
+    const digitadas = inputNovasCompetencias.value
+        .split(',')
+        .map((c) => c.trim())
+        .filter((c) => c.length > 0);
+
+    const todas = Array.from(new Set([...selecionadas, ...digitadas]));
+
+    if (todas.length === 0) {
+        alert('Selecione ou digite ao menos uma competência.');
+        return;
+    }
+
+    try {
+        const resposta = await salvarCompetenciasCandidatoApi(candidatoRecemCadastrado.id, todas);
+        candidatoRecemCadastrado = {
+            ...candidatoRecemCadastrado,
+            competencias: resposta.competencias
+        };
+        salvarSessao(candidatoRecemCadastrado);
+        alert('Competências salvas com sucesso!');
+        window.location.href = 'painel_candidato.html';
+    } catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(erro.message);
+            return;
+        }
+        alert('Erro inesperado ao salvar competências.');
+    }
+}
+
 radioCandidato.addEventListener('change', alternarCampos);
 radioEmpresa.addEventListener('change', alternarCampos);
 
-// Evento de envio do formulário
-formulario.addEventListener('submit', (event: Event) => {
+btnSalvarCompetencias.addEventListener('click', () => {
+    void salvarCompetencias();
+});
+
+btnPularCompetencias.addEventListener('click', () => {
+    window.location.href = 'painel_candidato.html';
+});
+
+formulario.addEventListener('submit', async (event: Event) => {
     event.preventDefault();
 
-    const usuarios = obterTodosUsuarios();
+    const nome = inputNome.value.trim();
+    const email = inputEmail.value.trim();
+    const descricao = inputDescricao.value.trim();
+    const cep = inputCep.value.trim();
+    const estado = selectEstado.value;
 
-    const emailJaExiste = usuarios.some(u => u.email === inputEmail.value);
-    if (emailJaExiste) {
-        alert('Já existe uma conta com este e-mail.');
+    if (!nome || !email) {
+        alert('Por favor, preencha o Nome e o Email.');
         return;
     }
 
-    const dadosBase = {
-        id: gerarNovoId(usuarios),
-        nome: inputNome.value,
-        email: inputEmail.value,
-        descricao: inputDescricao.value,
-        cep: inputCep.value,
-        estado: selectEstado.value,
-    };
+    try {
+        if (radioCandidato.checked) {
+            const cpf = inputCpf.value.trim();
+            const idadeValor = inputIdade.value.trim();
+            const senha = inputSenha.value;
 
-    if (radioCandidato.checked) {
-        if (!inputCpf.value || !inputIdade.value) {
-            alert('Por favor, preencha o CPF e a Idade.');
+            if (!cpf || !idadeValor || !senha) {
+                alert('Por favor, preencha CPF, Idade e Senha.');
+                return;
+            }
+
+            const idade = parseInt(idadeValor, 10);
+            const resposta = await cadastrarCandidatoApi({
+                cpf,
+                nome,
+                idade: Number.isNaN(idade) ? null : idade,
+                email,
+                estado,
+                cep,
+                descricao,
+                senha,
+                competencias: []
+            });
+
+            alert('Cadastro de candidato realizado com sucesso! Agora informe suas competências.');
+            await exibirEtapaCompetencias({
+                tipo: 'candidato',
+                id: resposta.id ?? 0,
+                nome,
+                email,
+                idade,
+                estado,
+                cep,
+                descricao,
+                competencias: []
+            });
             return;
         }
 
-        const novoCandidato: Candidato = {
-            ...dadosBase,
-            senha: inputSenha.value,
-            tipo: 'candidato',
-            cpf: inputCpf.value,
-            idade: parseInt(inputIdade.value),
-            vagasInteresse: []
-        };
+        if (radioEmpresa.checked) {
+            const cnpj = inputCnpj.value.trim();
+            const pais = inputPais.value.trim();
+            const senha = inputSenhaEmpresa.value;
 
-        usuarios.push(novoCandidato);
+            if (!cnpj || !pais || !senha) {
+                alert('Por favor, preencha CNPJ, País e Senha.');
+                return;
+            }
 
-    } else if (radioEmpresa.checked) {
-        if (!inputCnpj.value || !inputPais.value) {
-            alert('Por favor, preencha o CNPJ e o País.');
+            await cadastrarEmpresaApi({
+                cnpj,
+                nome,
+                email,
+                pais,
+                estado,
+                cep,
+                descricao,
+                senha
+            });
+
+            alert('Cadastro de empresa realizado com sucesso!');
+            formulario.reset();
+            alternarCampos();
             return;
         }
 
-        const novaEmpresa: Empresa = {
-            ...dadosBase,
-            senha: inputSenhaEmpresa.value,
-            tipo: 'empresa',
-            cnpj: inputCnpj.value,
-            pais: inputPais.value,
-            vagas: []
-        };
-
-        usuarios.push(novaEmpresa);
-
-    } else {
         alert('Selecione se você é candidato ou empresa.');
-        return;
+    } catch (erro) {
+        if (erro instanceof HttpError) {
+            alert(erro.message);
+            return;
+        }
+        alert('Erro inesperado ao realizar cadastro.');
     }
-
-    salvarUsuarios(usuarios);
-
-    alert('Cadastro realizado com sucesso!');
-    formulario.reset();
-    alternarCampos(); // Mantém a interface limpa e correta após o reset
 });
 
 alternarCampos();
